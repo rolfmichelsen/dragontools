@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<TestVectors>
+
+  <!-- Tests that the Disk.Open function can decode all valid disk geometries. -->
+  <DiskGeometryTests>
+
+    <!-- JVC disks -->
+    <DiskGeometry>
+      <file>80t_18spt_256bps_2s.dsk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk</class>
+      <heads>2</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+
+    <DiskGeometry>
+      <file>128t_255spt_256bps_2s.dsk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk</class>
+      <heads>2</heads>
+      <tracks>128</tracks>
+      <sectors>255</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+    
+    <DiskGeometry>
+      <file>40t_255spt_256bps_2s.dsk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk</class>
+      <heads>2</heads>
+      <tracks>40</tracks>
+      <sectors>255</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+
+    <DiskGeometry>
+      <file>80t_18spt_1024bps_2s.dsk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk</class>
+      <heads>2</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>1024</sectorsize>
+    </DiskGeometry>
+
+    <!-- VDK disks -->
+    <DiskGeometry>
+      <file>40t_18spt_256bps_2s.vdk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk</class>
+      <heads>2</heads>
+      <tracks>40</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+
+    <DiskGeometry>
+      <file>40t_18spt_256bps_1s.vdk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk</class>
+      <heads>1</heads>
+      <tracks>40</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+
+    <DiskGeometry>
+      <file>80t_18spt_256bps_2s.vdk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk</class>
+      <heads>2</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+    
+    <DiskGeometry>
+      <file>80t_18spt_256bps_1s.vdk</file>
+      <class>RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk</class>
+      <heads>1</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+    </DiskGeometry>
+
+  </DiskGeometryTests>
+
+</TestVectors>
+
+ 

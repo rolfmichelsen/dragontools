@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException" Collapsed="true">
+    <Position X="2.5" Y="2.5" Width="2.5" />
+    <InheritanceLine Type="RolfMichelsen.Dragon.DragonTools.IO.Disk.FilesystemException" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.5" Y="1.941" />
+        <Point X="1.5" Y="2.813" />
+        <Point X="2.5" Y="2.813" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\FileNotFoundException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.FilesystemException" Collapsed="true">
+    <Position X="0.5" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\FilesystemException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DirectoryFullException" Collapsed="true">
+    <Position X="2.5" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\DirectoryFullException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.FileExistsException" Collapsed="true">
+    <Position X="2.5" Y="4" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\FileExistsException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.FilesystemConsistencyException" Collapsed="true">
+    <Position X="2.5" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\FilesystemConsistencyException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.FilesystemFullException" Collapsed="true">
+    <Position X="2.5" Y="5.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\FilesystemFullException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.InvalidFileException" Collapsed="true">
+    <Position X="2.5" Y="6.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\InvalidFileException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.InvalidFileTypeException" Collapsed="true">
+    <Position X="2.5" Y="7" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\InvalidFileTypeException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException" Collapsed="true">
+    <Position X="2.5" Y="7.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\FilesystemNotWriteableException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.InvalidFilenameException" Collapsed="true">
+    <Position X="2.5" Y="8.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\InvalidFilenameException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DiskNotWriteableException" Collapsed="true">
+    <Position X="7.75" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\DiskNotWriteableException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DiskException" Collapsed="true">
+    <Position X="6" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\DiskException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DiskImageFormatException" Collapsed="true">
+    <Position X="7.75" Y="2.5" Width="2.5" />
+    <InheritanceLine Type="RolfMichelsen.Dragon.DragonTools.IO.Disk.DiskException" FixedToPoint="true">
+      <Path>
+        <Point X="7.125" Y="1.941" />
+        <Point X="7.125" Y="2.938" />
+        <Point X="7.75" Y="2.938" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\DiskImageFormatException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.UnsupportedGeometryException" Collapsed="true">
+    <Position X="7.75" Y="4" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\UnsupportedGeometryException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.TapeException" Collapsed="true">
+    <Position X="11" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\TapeException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.EndOfTapeException" Collapsed="true">
+    <Position X="12.75" Y="2.5" Width="2.5" />
+    <InheritanceLine Type="RolfMichelsen.Dragon.DragonTools.IO.Tape.TapeException" FixedToPoint="true">
+      <Path>
+        <Point X="12.125" Y="1.941" />
+        <Point X="12.125" Y="2.875" />
+        <Point X="12.75" Y="2.875" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\EndOfTapeException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockChecksumException" Collapsed="true">
+    <Position X="12.75" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\InvalidBlockChecksumException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockTypeException" Collapsed="true">
+    <Position X="12.75" Y="4" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\InvalidBlockTypeException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidHeaderBlockException" Collapsed="true">
+    <Position X="12.75" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\InvalidHeaderBlockException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.SynchronizationException" Collapsed="true">
+    <Position X="12.75" Y="5.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\SynchronizationException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

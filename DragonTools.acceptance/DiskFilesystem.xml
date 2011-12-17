@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<TestVectors>
+
+  <FreeTests>
+  
+    <!-- DragonDos -->
+    <Free>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>175104</freespace>
+    </Free>
+
+    <Free>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>10752</freespace>
+    </Free>
+
+    <!-- OS9 -->
+    <Free>
+      <diskimage>os9-empty.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <freespace>177664</freespace>
+    </Free>
+
+    <Free>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <freespace>48896</freespace>
+    </Free>
+
+    <!-- RS-DOS -->
+    <Free>
+      <diskimage>rsdos-empty.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <freespace>156672</freespace>
+    </Free>
+
+    <Free>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <freespace>59904</freespace>
+    </Free>
+
+  </FreeTests>
+
+
+  
+  <ListFilesTests>
+    
+    <!-- DragonDos -->
+    <ListFiles>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filelist></filelist>
+    </ListFiles>
+
+    <ListFiles>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filelist>NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN</filelist>
+    </ListFiles>
+
+    <!-- OS9 -->
+    <ListFiles>
+      <diskimage>os9-empty.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filelist>. ..</filelist>
+    </ListFiles>
+
+    <ListFiles>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filelist>.. . OS9Boot CMDS SYS DEFS startup RUN32 RUN51</filelist>
+    </ListFiles>
+    
+    
+    <!-- FLEX -->
+    <ListFiles>
+      <diskimage>flex-system.vdk</diskimage>
+      <filesystem>flex</filesystem>
+      <filelist>FLEX.SYS ERRORS.SYS PRINT.SYS SERIAL.SYS APPEND.CMD ASN.CMD BACKUP.CMD BAUD.CMD BUILD.CMD CAT.CMD COPY.CMD CS.CMD DATE.CMD DELETE.CMD DRIVES.CMD EXEC.CMD H.CMD I.CMD JUMP.CMD LINK.CMD LIST.CMD       NEWDISK.CMD O.CMD P.CMD PROT.CMD RENAME.CMD S.CMD SAVE.CMD SAVE.LOW SDC.CMD STEP.CMD TTYSET.CMD VERIFY.CMD VERSION.CMD XOUT.CMD STARTUP.TXT WELCOME.TXT DEMO1.TXT CS.ITA CS.UK CS.FRA CS.GER CS.DEN CS.SWE CS.USA CS.SPA CSTEST.TXT SERSYS.TXT</filelist>
+    </ListFiles>
+
+
+    <!-- RS-DOS -->
+    <ListFiles>
+      <diskimage>rsdos-empty.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <filelist></filelist>
+    </ListFiles>
+    
+    <ListFiles>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <filelist>SPACEDEM.BIN DANCER.BAS DANCER.BIN GLASDEMO.BIN LINEDEM2.BIN MPATDEMO.BIN STICKS.BIN 28.BAS 3GOONS.BAS DEMO4CC3.BAS FUNDEMO.BAS GETSMART.BAS RSDEMO.BAS SINX.BAS SPINNERS.BAS</filelist>
+    </ListFiles>
+
+  </ListFilesTests>
+
+
+
+  <FileExistsTests>
+    
+    <!-- DragonDos -->
+    <FileExists>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+    
+    <FileExists>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>SWAN.BIN</file>
+      <exists>true</exists>
+    </FileExists>
+
+
+    <!-- OS9 -->
+    <FileExists>
+      <diskimage>os9-empty.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <file>foo.bar</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <file>foo.bar</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <file>startup</file>
+      <exists>true</exists>
+    </FileExists>
+    
+    
+    <!-- FLEX -->
+    <FileExists>
+      <diskimage>flex-system.vdk</diskimage>
+      <filesystem>flex</filesystem>
+      <file>FLEX.SYS</file>
+      <exists>true</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>flex-system.vdk</diskimage>
+      <filesystem>flex</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+
+
+    <!-- RS-DOS -->
+    <FileExists>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <file>SPINNERS.BAS</file>
+      <exists>true</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <file>DANCER.BIN</file>
+      <exists>true</exists>
+    </FileExists>
+
+  </FileExistsTests>
+
+
+
+  <IsValidFilenameTests>
+    
+    <!-- DragonDos -->
+    <IsValidFilename>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BAR</file>
+      <valid>true</valid>
+    </IsValidFilename>
+
+    <IsValidFilename>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO-BAR.BAR</file>
+      <valid>true</valid>
+    </IsValidFilename>
+
+    <IsValidFilename>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>42FOO.BAR</file>
+      <valid>true</valid>
+    </IsValidFilename>
+
+    <IsValidFilename>   <!-- Extension is too long -->
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BARZ</file>
+      <valid>false</valid>
+    </IsValidFilename>
+
+    <IsValidFilename>    <!-- Filename is too long -->
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOOBARFOO.BAR</file>
+      <valid>false</valid>
+    </IsValidFilename>
+    
+    <!-- OS9 -->
+    
+  </IsValidFilenameTests>
+
+
+  <DeleteFileTests>
+    
+    <!-- DragonDos -->
+    <DeleteFile>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>DRYBONES.BIN</filename>
+    </DeleteFile>
+
+    <DeleteFile>   <!-- File does not exist -->
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>FOO.BAS</filename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+    </DeleteFile>
+
+    <DeleteFile>      <!-- Filesystem is write protected -->
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>true</writeprotected>
+      <filename>DRYBONES.BIN</filename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
+    </DeleteFile>
+
+  </DeleteFileTests>
+
+
+
+  <RenameFileTests>
+    
+    <!-- DragonDos -->
+    <RenameFile>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOO.BAR</newfilename>
+    </RenameFile>
+
+    <RenameFile>
+      <description>File does not exist</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>FOO.BAS</oldfilename>
+      <newfilename>FOOBAR.BAS</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+    </RenameFile>
+
+    <RenameFile> 
+      <description>Filesystem is write protected</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>true</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOO.BAR</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
+    </RenameFile>
+
+    <RenameFile> 
+      <description>Target filename already exists</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>DANCER.BIN</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Disk.FileExistsException</exception>
+    </RenameFile>
+
+    <RenameFile> 
+      <description>Target filename is invalid</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOOBARFOOBAR.FOO</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.InvalidFilenameException</exception>
+    </RenameFile>
+
+  </RenameFileTests>
+
+
+  <ReadFileRawTests>
+    
+    <!-- DragonDos -->
+    <ReadFileRaw>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filename>DRYBONES.BIN</filename>
+      <length>28490</length>
+      <exception/>
+    </ReadFileRaw>
+
+    <ReadFileRaw>  <!-- File does not exist -->
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filename>FOO.BAR</filename>
+      <length>0</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+    </ReadFileRaw>
+
+    
+    <!-- OS9 -->
+    <ReadFileRaw>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>OS9Boot</filename>
+      <length>12172</length>
+      <exception/>
+    </ReadFileRaw>
+
+    <ReadFileRaw>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>SYS/motd</filename>
+      <length>34</length>
+      <exception/>
+    </ReadFileRaw>
+
+    <ReadFileRaw> <!-- File does not exist -->
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>FooBar</filename>
+      <length>12172</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+    </ReadFileRaw>
+
+    
+    <!-- RS-DOS -->
+    <ReadFileRaw>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <filename>MPATDEMO.BIN</filename>
+      <length>10752</length>
+      <exception/>
+    </ReadFileRaw>
+
+    <ReadFileRaw> <!-- File does not exist -->
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <filename>FOO.BAR</filename>
+      <length>0</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+    </ReadFileRaw>
+
+  </ReadFileRawTests>
+
+
+  <ReadFileTests>
+    
+    <!-- DragonDos -->
+    <ReadFile>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filename>DRYBONES.BIN</filename>
+      <length>28490</length>
+      <payloadlength>28481</payloadlength>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosMachineCodeFile</filetype>
+      <exception/>
+      </ReadFile>
+
+      <ReadFile>
+        <description>File does not exist</description>
+        <diskimage>dragondos-tunes.vdk</diskimage>
+        <filesystem>dragondos</filesystem>
+        <filename>FOO.BAR</filename>
+        <length>0</length>
+        <payloadlength>0</payloadlength>
+        <filetype/>
+        <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+      </ReadFile>
+    
+  </ReadFileTests>
+  
+  
+  <WriteFileRawTests>
+    
+    <!-- DragonDos -->
+    <WriteFileRaw>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>FOO.BAR</filename>
+      <length>5000</length>
+      <exception/>
+    </WriteFileRaw>
+
+    <WriteFileRaw>
+      <description>Filesystem is write protected</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>true</writeprotected>
+      <filename>FOO.BAR</filename>
+      <length>5000</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
+    </WriteFileRaw>
+
+    <WriteFileRaw>
+      <description>Invalid (too long) target filename</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>FOOBARFOO.BAR</filename>
+      <length>5000</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.InvalidFilenameException</exception>
+    </WriteFileRaw>
+
+    <WriteFileRaw>
+      <description>Target filename already in use</description>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>DANCER.BIN</filename>
+      <length>5000</length>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Disk.FileExistsException</exception>
+    </WriteFileRaw>
+
+  </WriteFileRawTests>
+
+
+  <GetFileParserTests>
+
+    <!-- DragonDos -->
+    <GetFileParser>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <parserclass>RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosFileParser</parserclass>
+    </GetFileParser>
+    
+  </GetFileParserTests>
+  
+  
+  <CheckTests>
+    
+    <!-- DragonDos -->
+    <Check>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
+      <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    
+    <!-- OS9 -->
+    <Check>
+      <diskimage>os9-empty.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <valid>true</valid>
+    </Check>
+    
+    
+    <!-- RS-DOS -->
+    <Check>
+      <diskimage>rsdos-demos01.dsk</diskimage>
+      <filesystem>rsdos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+  </CheckTests>
+
+
+  <InitializeTests>
+    
+    <!-- DragonDos -->
+    <Initialize>
+      <filesystem>dragondos</filesystem>
+      <heads>1</heads>
+      <tracks>40</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+      <freespace>175104</freespace>
+    </Initialize>
+    
+    
+  </InitializeTests>
+</TestVectors>

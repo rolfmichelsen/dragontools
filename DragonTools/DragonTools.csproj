@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0AA6DBD3-AB80-4EDA-A039-DF7F8DAF9FF7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RolfMichelsen.Dragon.DragonTools</RootNamespace>
+    <AssemblyName>DragonTools</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IO\Tape\DragonTapeFileParser.cs" />
+    <Compile Include="IO\Disk\DragonDosFile.cs" />
+    <Compile Include="IO\Disk\DragonDosFileParser.cs" />
+    <Compile Include="IO\FileFormatException.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IFileParser.cs" />
+    <Compile Include="IO\Disk\DirectoryFullException.cs" />
+    <Compile Include="IO\Disk\AbstractDisk.cs" />
+    <Compile Include="IO\Disk\DiskException.cs" />
+    <Compile Include="IO\Disk\DiskFactory.cs" />
+    <Compile Include="IO\Disk\DiskImageFormatException.cs" />
+    <Compile Include="IO\Disk\DiskNotWriteableException.cs" />
+    <Compile Include="IO\Disk\DragonDos.cs" />
+    <Compile Include="IO\Disk\DragonDosDirectoryEntry.cs" />
+    <Compile Include="IO\Disk\DragonDosDirectoryItem.cs" />
+    <Compile Include="IO\Disk\DragonDosFileHeader.cs" />
+    <Compile Include="IO\Disk\DragonDosFileInfo.cs" />
+    <Compile Include="IO\Disk\FileExistsException.cs" />
+    <Compile Include="IO\FileNotFoundException.cs" />
+    <Compile Include="IO\Disk\FilesystemConsistencyException.cs" />
+    <Compile Include="IO\FilesystemException.cs" />
+    <Compile Include="IO\Disk\DiskFilesystemFactory.cs" />
+    <Compile Include="IO\Disk\FilesystemFullException.cs" />
+    <Compile Include="IO\FilesystemNotWriteableException.cs" />
+    <Compile Include="IO\Disk\Flex.cs" />
+    <Compile Include="IO\Disk\FlexDirectoryEntry.cs" />
+    <Compile Include="IO\Disk\IDisk.cs" />
+    <Compile Include="IO\Disk\IDiskFilesystem.cs" />
+    <Compile Include="IO\Disk\IDiskHierarchicalFilesystem.cs" />
+    <Compile Include="IO\InvalidFileException.cs" />
+    <Compile Include="IO\InvalidFilenameException.cs" />
+    <Compile Include="IO\InvalidFileTypeException.cs" />
+    <Compile Include="IO\Disk\JvcDisk.cs" />
+    <Compile Include="IO\Disk\MemoryDisk.cs" />
+    <Compile Include="IO\Disk\OS9.cs" />
+    <Compile Include="IO\Disk\OS9AllocationMap.cs" />
+    <Compile Include="IO\Disk\OS9DirectoryEntry.cs" />
+    <Compile Include="IO\Disk\OS9DiskInfo.cs" />
+    <Compile Include="IO\Disk\OS9FileAttributes.cs" />
+    <Compile Include="IO\Disk\OS9FileInfo.cs" />
+    <Compile Include="IO\Disk\OS9Utils.cs" />
+    <Compile Include="IO\Disk\RsDos.cs" />
+    <Compile Include="IO\Disk\RsDosDirectoryEntry.cs" />
+    <Compile Include="IO\Disk\UnsupportedGeometryException.cs" />
+    <Compile Include="IO\Disk\VdkDisk.cs" />
+    <Compile Include="IO\FileInfo.cs" />
+    <Compile Include="IO\IOUtils.cs" />
+    <Compile Include="IO\Tape\CasReader.cs" />
+    <Compile Include="IO\Tape\CasWriter.cs" />
+    <Compile Include="IO\Tape\DragonTapeBlock.cs" />
+    <Compile Include="IO\Tape\DragonTapeFilesystem.cs" />
+    <Compile Include="IO\Tape\EndOfTapeException.cs" />
+    <Compile Include="IO\Tape\InvalidBlockChecksumException.cs" />
+    <Compile Include="IO\Tape\InvalidBlockTypeException.cs" />
+    <Compile Include="IO\Tape\InvalidHeaderBlockException.cs" />
+    <Compile Include="IO\Tape\ITapeReader.cs" />
+    <Compile Include="IO\Tape\ITapeWriter.cs" />
+    <Compile Include="IO\Tape\SynchronizationException.cs" />
+    <Compile Include="IO\Tape\TapeException.cs" />
+    <Compile Include="IO\Timestamp.cs" />
+    <Compile Include="IO\Tape\ITapeFilesystem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Disk.cd" />
+    <None Include="Exceptions.cd" />
+    <None Include="Filesystem.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

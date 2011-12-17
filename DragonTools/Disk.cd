@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.SectorWrittenEventArgs" Collapsed="true">
+    <Position X="0.75" Y="7.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACEAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\IDisk.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.SectorReadEventArgs" Collapsed="true">
+    <Position X="0.75" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACEAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\IDisk.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.AbstractDisk" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAGAwEAABACAAFBADAAAAAAAAYBAkAEAIAAA=</HashCode>
+      <FileName>IO\Disk\AbstractDisk.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk" Collapsed="true">
+    <Position X="3.5" Y="3.25" Width="2.25" />
+    <NestedTypes>
+      <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk.VdkHeader" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IO\Disk\VdkDisk.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <InheritanceLine Type="RolfMichelsen.Dragon.DragonTools.IO.Disk.AbstractDisk" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.625" Y="2.312" />
+        <Point X="4.625" Y="3.25" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAACAAIAAEAAAAAAAAAAAAAEAAQBACAAAIAAI=</HashCode>
+      <FileName>IO\Disk\VdkDisk.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk" Collapsed="true">
+    <Position X="6" Y="3.25" Width="2.25" />
+    <NestedTypes>
+      <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk.JvcHeader" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IO\Disk\JvcDisk.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAIAAEAAIAAACAAAAAAEAAQAAAAAAIAAA=</HashCode>
+      <FileName>IO\Disk\JvcDisk.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.MemoryDisk" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAIAAA=</HashCode>
+      <FileName>IO\Disk\MemoryDisk.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.IDisk">
+    <Position X="0.75" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAEAwAAAAACAAFAADAAAAAAAAIAAEAEAIAAA=</HashCode>
+      <FileName>IO\Disk\IDisk.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

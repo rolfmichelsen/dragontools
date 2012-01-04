@@ -73,6 +73,22 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
 
 
         /// <summary>
+        /// Write a byte to the virtual streaming medium.
+        /// The most significant bit is written first.
+        /// </summary>
+        /// <param name="value">Byte to write to tape.</param>
+        public void WriteByte(byte value)
+        {
+            byte mask = 0x80;
+            for (int i = 0; i < 8; i++ )
+            {
+                WriteBit((value & mask) != 0);
+                mask >>= 1;
+            }
+        }
+
+
+        /// <summary>
         /// Inserts a gap or blank section on the virtual tape.
         /// </summary>
         /// <remarks>

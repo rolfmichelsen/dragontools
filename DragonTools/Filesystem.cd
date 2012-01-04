@@ -72,39 +72,46 @@
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosDataFile" Collapsed="true">
     <Position X="11.75" Y="10" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IO\Disk\DragonDosFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosBasicFile" Collapsed="true">
     <Position X="11.75" Y="10.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IO\Disk\DragonDosFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosMachineCodeFile" Collapsed="true">
     <Position X="11.75" Y="11.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAACAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAACAAAAAAAAAAEAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IO\Disk\DragonDosFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeFilesystem">
     <Position X="9.25" Y="1.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAQAQAAAICgAQACAAAQABBQAAgEAAEAgAQFACABRCIA=</HashCode>
+      <HashCode>AAAAQAAAACAAQACAEAQAhAAAABAAAEAAAQBACAARAIA=</HashCode>
       <FileName>IO\Tape\DragonTapeFilesystem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeFileParser" Collapsed="true">
-    <Position X="3.75" Y="11" Width="1.75" />
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonFile">
+    <Position X="9.25" Y="13.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAgAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IO\Tape\DragonTapeFileParser.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgAQAAAAAAARAABQAABAAAgAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\DragonFile.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeBlock">
+    <Position X="12.75" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAACAAACEAAAAAgBAggAAABAAAAEAAAAAAIA=</HashCode>
+      <FileName>IO\Tape\DragonTapeBlock.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.IDiskFilesystem">
     <Position X="0.75" Y="1.5" Width="2.25" />
@@ -137,8 +144,22 @@
   <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.ITapeFilesystem">
     <Position X="6.5" Y="1.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAQAAAAAAAQAAAAAQAAAQAAAEAAAAAAAAACAABCAA=</HashCode>
+      <HashCode>AAAAQAAAAAAAQAAAAAQAAAAAABAAAAAAAAAACAABAAA=</HashCode>
       <FileName>IO\Tape\ITapeFilesystem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.ITapeReader">
+    <Position X="6.5" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAABAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\ITapeReader.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.ITapeWriter">
+    <Position X="6.5" Y="7.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAABAAIAAgAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\ITapeWriter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

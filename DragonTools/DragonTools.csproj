@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\Tape\DragonTapeFileParser.cs" />
     <Compile Include="IO\Disk\DragonDosFile.cs" />
     <Compile Include="IO\Disk\DragonDosFileParser.cs" />
     <Compile Include="IO\FileFormatException.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="IO\Tape\CasReader.cs" />
     <Compile Include="IO\Tape\CasWriter.cs" />
     <Compile Include="IO\Tape\DragonTapeBlock.cs" />
+    <Compile Include="IO\Tape\DragonFile.cs" />
     <Compile Include="IO\Tape\DragonTapeFilesystem.cs" />
     <Compile Include="IO\Tape\EndOfTapeException.cs" />
     <Compile Include="IO\Tape\InvalidBlockChecksumException.cs" />
@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Disk.cd" />
+    <None Include="Dragon Tape Filesystem.cd" />
     <None Include="Exceptions.cd" />
     <None Include="Filesystem.cd" />
   </ItemGroup>

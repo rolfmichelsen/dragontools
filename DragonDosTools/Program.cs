@@ -334,6 +334,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         {
             var ai = args.GetEnumerator();
 
+            /* Get the disk image name from the argument list. */
             if (!ai.MoveNext())
             {
                 Console.Error.WriteLine("ERROR: Disk image name missing.");
@@ -341,6 +342,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var diskname = ai.Current;
 
+            /* Get the name of the target DragonDos file from the argument list. */
             if (!ai.MoveNext())
             {
                 Console.Error.WriteLine("ERROR: Missing name of target DragonDos file.");
@@ -348,6 +350,8 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var filename = ai.Current;
 
+            /* Get the (optional) name of the local file to write to the DragonDos filesystem from the argument list.  If no filename
+             * is specified, use the name of the DragonDos file. */
             var localfilename = ai.MoveNext() ? ai.Current : filename;
 
             if (!File.Exists(localfilename))
@@ -356,6 +360,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 return;
             }
 
+            /* Read the local file data and create an IFile object. */
             var data = File.ReadAllBytes(localfilename);
             IFile file;
             if (basic)
@@ -372,6 +377,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             
             
+            /* Write the file to the DragonDos filesystem. */
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
             {
                 if (!CheckFilesystem(dos)) return;
@@ -392,6 +398,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         {
             var ai = args.GetEnumerator();
 
+            /* Get the disk image name from the argument list. */
             if (!ai.MoveNext())
             {
                 Console.Error.WriteLine("ERROR: Disk image name missing.");
@@ -399,6 +406,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var diskname = ai.Current;
 
+            /* Get the name of the DragonDos file to read from the argument list. */
             if (!ai.MoveNext())
             {
                 Console.Error.WriteLine("ERROR: Missing name of file to read from DragonDos filesystem.");
@@ -406,6 +414,8 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var filename = ai.Current;
 
+            /* Get the (optional) name of the local file to write to from the argument list.  If no local file name is given,
+             * use the DragonDos filename. */
             var targetfilename = ai.MoveNext() ? ai.Current : filename;
             if (File.Exists(targetfilename))
             {
@@ -413,6 +423,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 return;
             }
 
+            /* Read the file from the DragonDos filesystem and write it to the local filesystem. */
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
             {
                 if (!CheckFilesystem(dos)) return;

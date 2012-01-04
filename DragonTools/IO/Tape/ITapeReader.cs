@@ -41,7 +41,16 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
         /// Read a single bit from the virtual stream and return it.
         /// </summary>
         /// <returns>Bit read from tape.</returns>
+        /// <exception cref="EndOfTapeException">Trying to read past the end of the tape.</exception>
         bool ReadBit();
+
+
+        /// <summary>
+        /// Read a byte from the virtual stream and return it.
+        /// </summary>
+        /// <returns>Byte read from tape.</returns>
+        /// <exception cref="EndOfTapeException">Trying to read past the end of the tape.</exception>
+        byte ReadByte();
 
 
         /// <summary>

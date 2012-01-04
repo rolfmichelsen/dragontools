@@ -31,342 +31,357 @@ using System;
 namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
 {
     /// <summary>
-    /// A block read from or to be written to a Dragon tape.
+    /// A Dragon tape filesystem block.
     /// </summary>
     /// <seealso cref="DragonTapeFilesystem"/>
-    public sealed class DragonTapeBlock
+    public class DragonTapeBlock
     {
-        /// <summary>
-        /// The maximum size of the data payload for a block.
-        /// </summary>
-        public const int MaxDataLength = 255;
+        public const byte LeaderByte = 0x55;
+        public const byte SyncByte = 0x3c;
+        public const int DefaultLeaderLength = 128;
 
-        /// <summary>
-        /// The normal (minimum) size of the payload for a header block.
-        /// </summary>
-        public const int HeaderLength = 15;
+        public DragonTapeBlockType BlockType { get; protected set; }
 
-        private byte[] data = null;
+        public int Length { get { return Data == null ? 0 : Data.Length; } }
 
-        /// <summary>
-        /// The block type.
-        /// </summary>
-        public DragonTapeBlockType Type { get; private set; }
+        public byte[] Data { get; protected set; }
+
+        public int Checksum { get; protected set; }
 
 
         /// <summary>
-        /// The length of the block payload (number of bytes).
+        /// Validate a block object and throw exception if the block is invalid.
         /// </summary>
-        public int Length { get { return data.Length; } }
+        /// <exception cref="InvalidBlockTypeException">Block type is invalid.</exception>
+        /// <exception cref="InvalidBlockChecksumException">Block checksum is invalid.</exception>
+        /// <exception cref="InvalidHeaderBlockException">Header is invalid.</exception>
+        public virtual void Validate()
+        {
+            if (BlockType != DragonTapeBlockType.Data && BlockType != DragonTapeBlockType.Header && BlockType!= DragonTapeBlockType.EndOfFile)
+                throw new InvalidBlockTypeException(String.Format("Invalid block type {0}", (int) BlockType));
+
+            if (Checksum != ComputeChecksum())
+                throw new InvalidBlockChecksumException();
+        }
 
 
         /// <summary>
-        /// Get a copy of the block payload.
+        /// Compute the block checksum based on the block data.
         /// </summary>
-        public byte[] Data 
-        { 
-            get
+        /// <returns>The computed block checksum.</returns>
+        public int ComputeChecksum()
+        {
+            int checksum = (int) BlockType + Length;
+            if (Data != null)
             {
-                var copy = new byte[data.Length];
-                Array.Copy(data, copy, data.Length);
-                return copy;
-            } 
-        }
-
-
-        /// <summary>
-        /// The block checksum.
-        /// </summary>
-        public byte Checksum { get; private set; }
-
-
-        /// <summary>
-        /// Get the byte at a specific position in the block payload.
-        /// </summary>
-        /// <param name="index">Byte index in the block payload.</param>
-        /// <returns>A byte from the block payload.</returns>
-        /// <exception cref="IndexOutOfRangeException">Index is less than zero or greated than the length of the block payload.</exception>
-        public byte this[int index] { get { return data[index];} }
-
-
-        /// <summary>
-        /// Create a tape block object.
-        /// </summary>
-        /// <param name="type">Block type.</param>
-        /// <param name="data">Array containing the block payload data. Can be <value>null</value> for blocks without payload.</param>
-        /// <param name="offset">Offset into array of first payload byte.</param>
-        /// <param name="length">Length of block payload.</param>
-        public DragonTapeBlock(DragonTapeBlockType type, byte[] data, int offset, int length)
-        {
-            if (data == null && length > 0) throw new ArgumentNullException("data");
-            if (length > MaxDataLength) throw new ArgumentOutOfRangeException("length", length, "Block payload cannot exceed " + MaxDataLength + " bytes");
-            Type = type;
-            this.data = new byte[length];
-            if (data != null)
-                Array.Copy(data, offset, this.data, 0, length);
-            Checksum = ComputeChecksum();
-        }
-
-
-        /// <summary>
-        /// Create a tape block object, allowing manually setting the block checksum.
-        /// </summary>
-        /// <param name="type">Block type.</param>
-        /// <param name="data">Array containing the block payload data. Can be <value>null</value> for blocks without payload.</param>
-        /// <param name="offset">Offset into array of first payload byte.</param>
-        /// <param name="length">Length of block payload.</param>
-        /// <param name="checksum">Block checksum value.</param>
-        public DragonTapeBlock(DragonTapeBlockType type, byte[] data, int offset, int length, byte checksum)
-        {
-            if (data == null && length > 0) throw new ArgumentNullException("data");
-            if (length > MaxDataLength) throw new ArgumentOutOfRangeException("length", length, "Block payload cannot exceed " + MaxDataLength + " bytes");
-            Type = type;
-            this.data = new byte[length];
-            if (data != null)
-                Array.Copy(data, offset, this.data, 0, length);
-            Checksum = checksum;
-        }
-
-
-        /// <summary>
-        /// Create a tape block object.
-        /// </summary>
-        /// <param name="type">Block type.</param>
-        /// <param name="data">Block payload data.</param>
-        public DragonTapeBlock(DragonTapeBlockType type, byte[] data) : this(type, data, 0, data == null ? 0 : data.Length) {}
-
-
-
-        /// <summary>
-        /// Create a header tape block.
-        /// </summary>
-        /// <param name="filename">Filename to encode in the header block.</param>
-        /// <param name="filetype">File type.</param>
-        /// <param name="isascii">File ASCII flag.</param>
-        /// <param name="isgapped">File gap flag.</param>
-        /// <param name="startaddress">Start address for machine code programs.</param>
-        /// <param name="loadaddress">Load address for machine code programs.</param>
-        public DragonTapeBlock(string filename, DragonTapeFileType filetype , bool isascii, bool isgapped, uint startaddress, uint loadaddress)
-        {
-            if (filename == null) throw new ArgumentNullException("filename");
-
-            data = new byte[HeaderLength];
-            Array.Copy(EncodeFilename(filename), 0, data, 0, 8);
-            data[8] = (byte) filetype;
-            data[9] = (byte) (isascii ? 0xff : 0);
-            data[10] = (byte) (isgapped ? 0xff : 0);
-            data[11] = (byte) ((startaddress >> 8) & 0xff);
-            data[12] = (byte) (startaddress & 0xff);
-            data[13] = (byte) ((loadaddress >> 8) & 0xff);
-            data[14] = (byte) (loadaddress & 0xff);
-
-            Type = DragonTapeBlockType.Header;
-            Checksum = ComputeChecksum();
-        }
-
-
-        /// <summary>
-        /// Validate the block.  An exception is thrown if the block is invalid.
-        /// </summary>
-        /// <exception cref="InvalidBlockTypeException">The block type is invalid.</exception>
-        /// <exception cref="InvalidBlockChecksumException">The block checksum is invalid.</exception>
-        public void Validate()
-        {
-            if (!Enum.IsDefined(typeof(DragonTapeBlockType), Type)) throw new InvalidBlockTypeException(String.Format("Invalid block type {0}", (int) Type));
-            if (Checksum != ComputeChecksum()) throw new InvalidBlockChecksumException();
-            if (Type == DragonTapeBlockType.Header && Length < HeaderLength) throw new InvalidHeaderBlockException(String.Format("Header block is only {0} bytes and minimum size is {1} bytes", Length, HeaderLength));
-        }
-
-
-        /// <summary>
-        /// Calculate the block checksum.
-        /// </summary>
-        /// <returns></returns>
-        private byte ComputeChecksum()
-        {
-            int checksum = (byte) Type + (byte) Length;
-            foreach (var b in data)
-            {
-                checksum += b;
+                foreach (var b in Data)
+                {
+                    checksum += b;
+                }
             }
-            return (byte) (checksum & 0xff);
+            return checksum & 0xff;
         }
-
-
-        /// <summary>
-        /// Returns the encoded version of the block as it appears on the tape.  The encoded version does not include leading and trailing leader bytes
-        /// or sync bytes.
-        /// </summary>
-        /// <returns>Array containing the encoded block.</returns>
-        public byte[] Encode()
-        {
-            var encoded = new byte[data.Length + 3];
-            encoded[0] = (byte) Type;
-            encoded[1] = (byte) data.Length;
-            Array.Copy(data, 0, encoded, 2, data.Length);
-            encoded[data.Length + 2] = Checksum;
-            return encoded;
-        }
-
-
-        /// <summary>
-        /// Returns the filename for a header block.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public string Filename
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int) Type));
-                return ParseFilename(data, 0);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the ASCII flag for a header block.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public bool IsAscii
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int)Type));
-                return (data[9] != 0);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the gap flag for a header block.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public bool IsGapped
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int)Type));
-                return (data[10] != 0);                
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the start address for a header block.  The start address is only used for machine code programs.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public uint StartAddress
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int)Type));
-                return (uint) (data[11] << 8 | data[12]);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the load address from a header block.  The load address is only used for machine code programs.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public uint LoadAddress
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int)Type));
-                return (uint) (data[13] << 8 | data[14]);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the file type from a header block.
-        /// </summary>
-        /// <exception cref="NotSupportedException">If this method is called for a block that is not a header block.</exception>
-        public DragonTapeFileType FileType
-        {
-            get
-            {
-                if (Type != DragonTapeBlockType.Header) throw new NotSupportedException(String.Format("Operation not permitted for block of type {0}", (int)Type));
-                return (DragonTapeFileType) data[8];
-            }
-        }
-
 
 
         public override string ToString()
         {
-            switch (Type)
-            {
-                case DragonTapeBlockType.Header:
-                    return String.Format("Header: Length={0} Checksum={1} Filename={2} Type={3}", Length, Checksum, Filename, FileType);
-                case DragonTapeBlockType.Data:
-                    return string.Format("Data: Length={0} Checksum={1}", Length, Checksum);
-                case DragonTapeBlockType.EndOfFile:
-                    return string.Format("EOF: Length={0} Checksum={1}", Length, Checksum);
-                default:
-                    return string.Format("Type {0}: Length={1} Checksum={2}", (int) Type, Length, Checksum);
-            }
+            return String.Format("Dragon tape block (Type={0} Length={1})", (int) BlockType, Length);
         }
 
 
-        private static string ParseFilename(byte[] raw, int offset)
+        public DragonTapeBlock()
+        {
+            BlockType = DragonTapeBlockType.Data;
+            Checksum = ComputeChecksum();
+        }
+
+
+        public DragonTapeBlock(byte[] data)
+        {
+            BlockType = DragonTapeBlockType.Data;
+            Data = data;
+            Checksum = ComputeChecksum();
+        }
+
+
+
+        public DragonTapeBlock(byte[] data, int offset, int length)
+        {
+            BlockType = DragonTapeBlockType.Data;
+            Data = new byte[length];
+            Array.Copy(data, offset, Data, 0, length);
+            Checksum = ComputeChecksum();
+        }
+
+
+        /// <summary>
+        /// Synchronize tape.
+        /// Reads the tape until a sufficiently long sequence of leader bytes and a single sync byte has been read.
+        /// </summary>
+        /// <param name="reader">Object for reading bits from tape.</param>
+        /// <param name="minLeaderLength">The minimum required number of leader bits before the sync byte.  Can be 0.</param>
+        /// <returns>The number of leader bits actually read.</returns>
+        public static int Sync(ITapeReader reader, int minLeaderLength)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+            if (minLeaderLength < 0) throw new ArgumentOutOfRangeException("minLeaderLength", minLeaderLength, "minLeaderLength cannot be negative");
+
+            int leaderlength = 0;           
+            int leaderpos = 0;
+            int synclength = 0;
+            int syncpos = 0;
+            bool bit;
+
+            // TODO Document this algorithm in comments
+            // TODO Fix bug with incorrect calculation of leader length
+            while (synclength < 8)
+            {
+                bit = reader.ReadBit();
+
+                if (leaderlength >= minLeaderLength && bit == ((SyncByte & (0x80 >> syncpos)) != 0))
+                {
+                    synclength++;
+                    syncpos = (syncpos + 1)%8;
+                    leaderpos = (leaderpos + 1)%8;
+                }
+                else if (bit == ((LeaderByte & (0x80 >> leaderpos)) != 0))
+                {
+                    synclength = 0;
+                    syncpos = 0;
+                    leaderlength++;
+                    leaderpos = (leaderpos + 1)%8;
+                }
+                else
+                {
+                    synclength = leaderlength = 0;
+                    syncpos = leaderpos = 0;
+                }
+            }
+            return leaderlength;
+        }
+
+
+        /// <summary>
+        /// Read the next tape block.
+        /// Assumes that the tape reader is positioned just after the block sync byte.
+        /// This method will not validate the block and may return invalid blocks.  Use <see cref="Validate"/> to 
+        /// verify the validity of a block.
+        /// </summary>
+        /// <param name="reader">Tape reader.</param>
+        /// <returns>Tape block object.</returns>
+        public static DragonTapeBlock ReadBlock(ITapeReader reader)
+        {
+            int blocktype = reader.ReadByte();
+            int blocklength = reader.ReadByte();
+            var data = new byte[blocklength];
+            for (int i = 0; i < blocklength; i++)
+                data[i] = reader.ReadByte();
+            int checksum = reader.ReadByte();
+
+            DragonTapeBlock block = null;
+            switch (blocktype)
+            {
+                case (int) DragonTapeBlockType.Header:
+                    block = new DragonTapeHeaderBlock(data, checksum);
+                    break;
+                case (int) DragonTapeBlockType.EndOfFile:
+                    block = new DragonTapeEofBlock {Data = data, Checksum = checksum};
+                    break;
+                default:
+                    block = new DragonTapeBlock {BlockType  = (DragonTapeBlockType) blocktype, Data = data, Checksum = checksum};
+                    break;
+            }
+            return block;
+        }
+
+
+        /// <summary>
+        /// Write a block to tape.
+        /// This will write the block to tape, including leader, sync byte and trailing leader.
+        /// </summary>
+        /// <param name="writer">Tape writer.</param>
+        /// <param name="sync">When set, the tape is assumed to be synchronized and only a short leader is output.</param>
+        public void WriteBlock(ITapeWriter writer, bool sync)
+        {
+            /* Write leader and sync byte. */
+            var leaderlength = sync ? 1 : DefaultLeaderLength;
+            while (leaderlength-- > 0)
+            {
+                writer.WriteByte(LeaderByte);
+            }
+            writer.WriteByte(SyncByte);
+
+            /* Write the block header, payload and checksum. */
+            writer.WriteByte((byte) BlockType);
+            writer.WriteByte((byte) Length);
+            for (var i = 0; i < Length; i++ )
+                writer.WriteByte(Data[i]);
+            writer.WriteByte((byte) Checksum);
+
+            /* Write the trailing leader byte. */
+            writer.WriteByte(LeaderByte);
+        }
+    }
+
+
+    /// <summary>
+    /// A Dragon tape header block.
+    /// </summary>
+    public sealed class DragonTapeHeaderBlock : DragonTapeBlock
+    {
+        public string Filename { get; private set; }
+
+        public DragonTapeFileType FileType { get; private set; }
+
+        public bool IsAscii { get; private set; }
+
+        public bool IsGapped { get; private set; }
+
+        public int LoadAddress { get; private set; }
+
+        public int ExecAddress { get; private set; }
+
+
+        /// <summary>
+        /// Create a header block by parsing the block payload.
+        /// </summary>
+        /// <param name="data">Block payload.</param>
+        /// <param name="checksum">Block checksum.</param>
+        public DragonTapeHeaderBlock(byte[] data, int checksum)
+        {
+            BlockType = DragonTapeBlockType.Header;
+            Data = data;
+            Checksum = checksum;
+
+            Filename = ParseFilename(data, 0);
+            FileType = (DragonTapeFileType) data[8];
+            IsAscii = (data[9] != 0);
+            IsGapped = (data[10] != 0);
+            ExecAddress = ((data[11] << 8) | data[12]);
+            LoadAddress = ((data[13] << 8) | data[14]);
+        }
+
+
+        /// <summary>
+        /// Create a header block by specifying the individual header fields.
+        /// The block checksum will be computed based on the header fields.
+        /// </summary>
+        /// <param name="filename">File name.</param>
+        /// <param name="filetype">File type.</param>
+        /// <param name="isascii">Set for an ASCII encoded file.</param>
+        /// <param name="isgapped">Set for a file recorded with gaps between each block.</param>
+        /// <param name="loadaddress">Load address for machine code programs.</param>
+        /// <param name="execaddress">Exec address for machine code programs.</param>
+        public DragonTapeHeaderBlock(string filename, DragonTapeFileType filetype, bool isascii, bool isgapped, int loadaddress = 0, int execaddress = 0)
+        {
+            BlockType = DragonTapeBlockType.Header;
+            Filename = filename;
+            FileType = filetype;
+            IsAscii = isascii;
+            IsGapped = isgapped;
+            LoadAddress = loadaddress;
+            ExecAddress = execaddress;
+            Data = Encode();
+            Checksum = ComputeChecksum();
+        }
+
+
+
+        /// <summary>
+        /// Validate a block object and throw exception if the block is invalid.
+        /// </summary>
+        /// <exception cref="InvalidBlockTypeException">Block type is invalid.</exception>
+        /// <exception cref="InvalidBlockChecksumException">Block checksum is invalid.</exception>
+        /// <exception cref="InvalidHeaderBlockException">Header is invalid.</exception>
+        public override void Validate()
+        {
+            base.Validate();
+
+            if (FileType != DragonTapeFileType.Basic && FileType != DragonTapeFileType.MachineCode && FileType != DragonTapeFileType.Data)
+                throw new InvalidHeaderBlockException(String.Format("Invalid file type {0}", (int) FileType));
+        }
+
+
+
+        /// <summary>
+        /// Encode the fields of the header block and returns the encoded block payload.
+        /// </summary>
+        /// <returns>Encoded block payload.</returns>
+        private byte[] Encode()
+        {
+            var data = new byte[15];
+            EncodeFilename(Filename, data, 0);
+            data[8] = (byte) FileType;
+            data[9] = (byte) (IsAscii ? 0xff : 0);
+            data[10] = (byte) (IsGapped ? 0xff : 0);
+            data[11] = (byte) ((ExecAddress >> 8) & 0xff);
+            data[12] = (byte) (ExecAddress & 0xff);
+            data[13] = (byte) ((LoadAddress >> 8) & 0xff);
+            data[14] = (byte) (LoadAddress & 0xff);
+            return data;
+        }
+
+
+        /// <summary>
+        /// Encode a filename.
+        /// </summary>
+        /// <param name="filename">Filename to encode.</param>
+        /// <param name="data">Byte array to receive the encoded filename.</param>
+        /// <param name="offset">Offset into the data array for storing the filename.</param>
+        private void EncodeFilename(string filename, byte[] data, int offset)
+        {
+            for (int i = 0; i < 8; i++)
+                data[offset + i] = (byte) (i < filename.Length ? filename[i] : 0x20);
+        }
+
+
+        /// <summary>
+        /// Decode a filename.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        private string ParseFilename(byte[] data, int offset)
         {
             var filename = new char[8];
-            for (int i = 0; i < 8; i++) filename[i] = (char) raw[offset + i];
-            return new string(filename).TrimEnd();
+            for (int i = 0; i < 8; i++)
+                filename[i] = (char) data[i + offset];
+            return new string(filename).Trim();
         }
+    }
 
 
-        private static byte[] EncodeFilename(string filename)
+    /// <summary>
+    /// A Dragon tape end of file block.
+    /// </summary>
+    public sealed class DragonTapeEofBlock : DragonTapeBlock
+    {
+        public DragonTapeEofBlock()
         {
-            var encoded = new byte[8];
-            int i = 0;
-            while (i<Math.Min(8, filename.Length))
-            {
-                encoded[i] = (byte) filename[i++];
-            }
-            while (i<8)
-            {
-                encoded[i] = 0x20;
-            }
-            return encoded;
+            BlockType = DragonTapeBlockType.EndOfFile;
+            Checksum = ComputeChecksum();
         }
-
-    }
-
-
-
-    /// <summary>
-    /// Valid block types for a Dragon tape filesystem.  The values can be cast to a byte to get the encoded value used on tape.
-    /// </summary>
-    /// <seealso cref="DragonTapeBlock"/>
-    public enum DragonTapeBlockType : byte
-    {
-        /// <summary>
-        /// Header block
-        /// </summary>
-        Header = 0x00,
-
-        /// <summary>
-        /// Data block.
-        /// </summary>
-        Data = 0x01,
-
-        /// <summary>
-        /// End of file block.
-        /// </summary>
-        EndOfFile = 0xff,
     }
 
 
     /// <summary>
-    /// Valid file types for a Dragon tape filesystem.  The values can be cast to a byte to get the encoded value used on tape.
+    /// Valid Dragon tape block types.
     /// </summary>
-    public enum DragonTapeFileType : byte
+    public enum DragonTapeBlockType
     {
-        BasicProgram = 0x00,
-        DataFile = 0x01,
-        NativeProgram = 0x02
+        Header = 0,
+        Data = 1,
+        EndOfFile = 0xff
+    }
+
+
+    /// <summary>
+    /// Valid Dragon tape file types.
+    /// </summary>
+    public enum DragonTapeFileType
+    {
+        Basic = 0,
+        Data = 1,
+        MachineCode = 2
     }
 }

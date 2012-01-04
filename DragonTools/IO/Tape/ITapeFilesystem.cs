@@ -63,42 +63,27 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
         /// <exception cref="FileFormatException">The file format is invalid.</exception>
         IFile ReadFile(string filename);
 
+
+        /// <summary>
+        /// Read and parse the next file from tape.
+        /// The returned object contains the file data and any meta-information related to the file.
+        /// </summary>
+        /// <returns>File object.</returns>
+        IFile ReadFile();
+
+
         /// <summary>
         /// Write a file to the filesystem.
         /// The provided filename will override any filename specified in the file object.
         /// </summary>
-        /// <param name="filename">Name of file to write.</param>
         /// <param name="file">File object to write.</param>
         /// <exception cref="FilesystemNotWriteableException">This filesystem does not support write operations.</exception>
         /// <exception cref="InvalidFilenameException">The file name is invalid for this filesystem.</exception>
-        void WriteFile(string filename, IFile file);
+        void WriteFile(IFile file);
 
         /// <summary>
-        /// Returns a class for parsing and encoding files for this filesystem.
-        /// Applications will normally use the <see cref="ReadFile">ReadFile</see> and <see cref="WriteFile">WriteFile</see> functions instead of directly using
-        /// the file parser class.
+        /// Rewind the tape.
         /// </summary>
-        /// <returns>File parser class.</returns>
-        IFileParser GetFileParser();
-
-        /// <summary>
-        /// Read a raw file and return it as a byte array.
-        /// The file is not parsed in any way and all filesystem headers and meta-data are included
-        /// in the returned byte array.
-        /// </summary>
-        /// <param name="filename">Name of file to read, or <value>null</value> to read the next file from the stream.</param>
-        /// <returns>Raw file contents.</returns>
-        /// <exception cref="FileNotFoundException">The file does not exist.</exception>
-        byte[] ReadFileRaw(string filename);
-
-        /// <summary>
-        /// Write a raw file to the filesystem.  
-        /// The data must include any filesystem headers and meta-data required by the filesystem.
-        /// </summary>
-        /// <param name="filename">Name of file to write.</param>
-        /// <param name="data">Raw file data.</param>
-        /// <exception cref="FilesystemNotWriteableException">This filesystem does not support write operations.</exception>
-        /// <exception cref="InvalidFilenameException">The file name is invalid for this filesystem.</exception>
-        void WriteFileRaw(string filename, byte[] data);
+        void Rewind();
     }
 }

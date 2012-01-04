@@ -26,7 +26,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.IO
 {

@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Include="Disk.cs" />
     <Compile Include="DiskFilesystem.cs" />
+    <Compile Include="DragonTapeBlockTest.cs" />
+    <Compile Include="DragonTapeFilesystemTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +87,9 @@
     <None Include="Testdata\80t_18spt_256bps_2s.vdk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Testdata\Dancer.cas">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Testdata\dragondos-empty.vdk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -113,6 +118,10 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="DiskFilesystem.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="DragonTapeBlockTest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>

@@ -45,6 +45,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
 
 
         /// <summary>
+        /// Write a byte to the virtual streaming medium.
+        /// </summary>
+        /// <param name="value">Byte to write to tape.</param>
+        void WriteByte(byte value);
+
+
+        /// <summary>
         /// Inserts a gap or blank section on the virtual streaming medium.
         /// </summary>
         /// <param name="length">Approximate length of gap (in milliseconds).</param>

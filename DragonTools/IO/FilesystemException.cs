@@ -28,7 +28,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 
-namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
+namespace RolfMichelsen.Dragon.DragonTools.IO
 {
     /// <summary>
     /// Base exception class for exceptions relating to filesystems.

@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using RolfMichelsen.Dragon.DragonTools.IO.Tape;
 using RolfMichelsen.Dragon.DragonTools.IO;
 using System.IO;
 using FileNotFoundException = RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException;
@@ -415,12 +416,32 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             var filename = ai.Current;
 
             /* Get the (optional) name of the local file to write to from the argument list.  If no local file name is given,
-             * use the DragonDos filename. */
-            var targetfilename = ai.MoveNext() ? ai.Current : filename;
-            if (File.Exists(targetfilename))
+             * use the DragonDos filename.  If the local filename ends with ".cas", then the file will be written to a CAS
+             * filesystem with an optional fourth parameter specifying the filename within the CAS filesystem. */
+
+            string casfilename = null;
+            string targetfilename;
+
+            var arg1 = ai.MoveNext() ? ai.Current : null;
+            var arg2 = ai.MoveNext() ? ai.Current : null;
+            if (arg1 != null && arg1.EndsWith(".cas", StringComparison.InvariantCultureIgnoreCase))
             {
-                Console.Error.WriteLine("ERROR: Local filesystem file {0} already exists.", targetfilename);
-                return;
+                casfilename = arg1;
+                targetfilename = arg2 ?? filename;
+                if (File.Exists(casfilename))
+                {
+                    Console.Error.WriteLine("ERROR: Local filesystem file {0} already exists.", casfilename);
+                    return;
+                }
+            }
+            else
+            {
+                targetfilename = arg1 ?? filename;
+                if (File.Exists(targetfilename))
+                {
+                    Console.Error.WriteLine("ERROR: Local filesystem file {0} already exists.", targetfilename);
+                    return;
+                }
             }
 
             /* Read the file from the DragonDos filesystem and write it to the local filesystem. */
@@ -428,11 +449,37 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             {
                 if (!CheckFilesystem(dos)) return;
                 var file = (DragonDosFile) dos.ReadFile(filename);
-                File.WriteAllBytes(targetfilename, file.GetData());
+                if (casfilename == null)
+                {
+                    File.WriteAllBytes(targetfilename, file.GetData());                    
+                }
+                else
+                {
+                    WriteCassetteFile(casfilename, targetfilename, file);
+                }
                 if (!quiet)
                 {
                     Console.WriteLine("Read file {0} -- {1}",filename,file); 
                 }
+            }
+        }
+
+
+
+        private void WriteCassetteFile(string casfilename, string targetfilename, DragonDosFile file)
+        {
+            IFile tapefile;
+            if (file is DragonDosBasicFile)
+                tapefile = new DragonBasicFile(targetfilename, file.GetData(), false, false);
+            else if (file is DragonDosMachineCodeFile)
+                tapefile = new DragonMachineCodeFile(targetfilename, file.GetData(), false, false, ((DragonDosMachineCodeFile)file).LoadAddress, ((DragonDosMachineCodeFile)file).ExecAddress);
+                
+            else
+                tapefile = new DragonDataFile(targetfilename, file.GetData(), false, false);
+
+            using (var tape = new DragonTapeFilesystem(new CasWriter(new System.IO.FileStream(casfilename, FileMode.CreateNew))))
+            {
+                tape.WriteFile(tapefile);
             }
         }
 

@@ -128,12 +128,11 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
         /// Reads the tape until a sufficiently long sequence of leader bytes and a single sync byte has been read.
         /// </summary>
         /// <param name="minLeaderLength">The minimum required number of leader bits before the sync byte.  Can be 0.</param>
-        /// <returns>The number of leader bits read.</returns>
-        public int Sync(int minLeaderLength)
+        public void Sync(int minLeaderLength)
         {
             if (isdisposed) throw new ObjectDisposedException(GetType().FullName);
             if (reader == null) throw new InvalidOperationException("Instance does not support reading");
-            return DragonTapeBlock.Sync(reader, minLeaderLength);
+            DragonTapeBlock.Sync(reader, minLeaderLength);
         }
 
 

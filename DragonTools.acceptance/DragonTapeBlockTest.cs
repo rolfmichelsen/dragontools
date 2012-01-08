@@ -89,7 +89,6 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         {
             var tapedataraw = Convert.ToString(TestContext.DataRow["TapeData"]).Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var minLeaderLength = Convert.ToInt32(TestContext.DataRow["MinLeaderLength"]);
-            var expectedLeaderLength = Convert.ToInt32(TestContext.DataRow["LeaderLength"]);
             var nextbyte = (byte) StringToInt(Convert.ToString(TestContext.DataRow["NextByte"]));
             var exception = Convert.ToString(TestContext.DataRow["Exception"]);
 
@@ -101,10 +100,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
             try
             {
-                var leaderLength = DragonTapeBlock.Sync(reader, minLeaderLength);
+                DragonTapeBlock.Sync(reader, minLeaderLength);
                 Assert.IsTrue(String.IsNullOrWhiteSpace(exception), "Expected exception " + exception);
-                // Assert.AreEqual(expectedLeaderLength, leaderLength);
-                // TODO Enable test for expected leader length
                 Assert.AreEqual(nextbyte, reader.ReadByte());
             }
             catch (Exception e)

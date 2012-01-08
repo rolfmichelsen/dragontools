@@ -120,8 +120,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
         /// </summary>
         /// <param name="reader">Object for reading bits from tape.</param>
         /// <param name="minLeaderLength">The minimum required number of leader bits before the sync byte.  Can be 0.</param>
-        /// <returns>The number of leader bits actually read.</returns>
-        public static int Sync(ITapeReader reader, int minLeaderLength)
+        public static void Sync(ITapeReader reader, int minLeaderLength)
         {
             if (reader == null) throw new ArgumentNullException("reader");
             if (minLeaderLength < 0) throw new ArgumentOutOfRangeException("minLeaderLength", minLeaderLength, "minLeaderLength cannot be negative");
@@ -132,8 +131,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
             int syncpos = 0;
             bool bit;
 
-            // TODO Document this algorithm in comments
-            // TODO Fix bug with incorrect calculation of leader length
             while (synclength < 8)
             {
                 bit = reader.ReadBit();
@@ -157,7 +154,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
                     syncpos = leaderpos = 0;
                 }
             }
-            return leaderlength;
         }
 
 

@@ -7,7 +7,6 @@
     <!-- Test vectors for the DragonTapeBlock.Sync method.  Each test vector must contain the following elements: 
            TapeData:        A string representing a stream of bytes that will be read from tape.
            MinLeaderLength: The minimum leader length (in bits) required before reading a sync byte.
-           LeaderLength:    The expected number of leader bits read as reported by the Sync function.
            NextByte:        The expected next byte to read from the tape stream after Sync.
            Exception:       Full name of expected exception to be thrown by the Sync function, or empty if no exception is expected. 
     -->
@@ -15,7 +14,6 @@
     <Sync description="Sunny day scenario">
       <TapeData>0x55 0x55 0x3c 0x77</TapeData>
       <MinLeaderLength>0</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception></Exception>
     </Sync>
@@ -23,7 +21,6 @@
     <Sync description="No sync byte in stream. Should throw an EnfOfTapeException.">
       <TapeData>0x55 0x55 0x77</TapeData>
       <MinLeaderLength>0</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.EndOfTapeException</Exception>
     </Sync>
@@ -31,7 +28,6 @@
     <Sync description="Requires a leader that is longer than the leader present in the tape data stream.  Should throw an EndOfTapeException.">
       <TapeData>0x55 0x55 0x3c 0x77</TapeData>
       <MinLeaderLength>17</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.EndOfTapeException</Exception>
     </Sync>
@@ -39,7 +35,6 @@
     <Sync description="Leader and sync byte not aligned to byte boundaries.">
       <TapeData>0xaa 0xaa 0xaa 0x78 0xef</TapeData>
       <MinLeaderLength>0</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception></Exception>
     </Sync>
@@ -47,7 +42,6 @@
     <Sync description="Leader and sync byte not aligned to byte boundaries.  One bit of noise in the leader.">
       <TapeData>0xa8 0xaa 0xaa 0x78 0xef</TapeData>
       <MinLeaderLength>0</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception></Exception>
     </Sync>
@@ -55,7 +49,6 @@
     <Sync description="Leader and sync byte not aligned to byte boundaries.  One bit of noise in the leader.  All leader bits are required by MinLeaderLength.">
       <TapeData>0xa8 0xaa 0xaa 0x78 0xef</TapeData>
       <MinLeaderLength>16</MinLeaderLength>
-      <LeaderLength>16</LeaderLength>
       <NextByte>0x77</NextByte>
       <Exception></Exception>
     </Sync>

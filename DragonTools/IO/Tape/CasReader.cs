@@ -32,7 +32,7 @@ using System.IO;
 namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
 {
     /// <summary>
-    /// Reads data from a CAS virtual tape.
+    /// Read data from a CAS virtual tape.
     /// </summary>
     public sealed class CasReader : ITapeReader
     {
@@ -80,6 +80,23 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Tape
 
             return ret;
         }
+
+
+        /// <summary>
+        /// Read a byte from the virtual stream and return it.
+        /// </summary>
+        /// <returns>Byte read from tape.</returns>
+        /// <exception cref="EndOfTapeException">Trying to read past the end of the tape.</exception>
+        public byte ReadByte()
+        {
+            int value = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                value = (value << 1) | (ReadBit() ? 1 : 0);
+            }
+            return (byte)value;
+        }
+
 
         /// <summary>
         /// Rewinds the tape to its beginning.

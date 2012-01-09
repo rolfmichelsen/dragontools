@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<TestVectors>
+
+  <SyncTests>
+
+    <!-- Test vectors for the DragonTapeBlock.Sync method.  Each test vector must contain the following elements: 
+           TapeData:        A string representing a stream of bytes that will be read from tape.
+           MinLeaderLength: The minimum leader length (in bits) required before reading a sync byte.
+           NextByte:        The expected next byte to read from the tape stream after Sync.
+           Exception:       Full name of expected exception to be thrown by the Sync function, or empty if no exception is expected. 
+    -->
+
+    <Sync description="Sunny day scenario">
+      <TapeData>0x55 0x55 0x3c 0x77</TapeData>
+      <MinLeaderLength>0</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception></Exception>
+    </Sync>
+
+    <Sync description="No sync byte in stream. Should throw an EnfOfTapeException.">
+      <TapeData>0x55 0x55 0x77</TapeData>
+      <MinLeaderLength>0</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.EndOfTapeException</Exception>
+    </Sync>
+
+    <Sync description="Requires a leader that is longer than the leader present in the tape data stream.  Should throw an EndOfTapeException.">
+      <TapeData>0x55 0x55 0x3c 0x77</TapeData>
+      <MinLeaderLength>17</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.EndOfTapeException</Exception>
+    </Sync>
+
+    <Sync description="Leader and sync byte not aligned to byte boundaries.">
+      <TapeData>0xaa 0xaa 0xaa 0x78 0xef</TapeData>
+      <MinLeaderLength>0</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception></Exception>
+    </Sync>
+
+    <Sync description="Leader and sync byte not aligned to byte boundaries.  One bit of noise in the leader.">
+      <TapeData>0xa8 0xaa 0xaa 0x78 0xef</TapeData>
+      <MinLeaderLength>0</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception></Exception>
+    </Sync>
+
+    <Sync description="Leader and sync byte not aligned to byte boundaries.  One bit of noise in the leader.  All leader bits are required by MinLeaderLength.">
+      <TapeData>0xa8 0xaa 0xaa 0x78 0xef</TapeData>
+      <MinLeaderLength>16</MinLeaderLength>
+      <NextByte>0x77</NextByte>
+      <Exception></Exception>
+    </Sync>
+
+  </SyncTests>
+
+
+  <ReadBlockTests>
+
+    <!-- Test vectors for the DragonTapeBlock.ReadBlock and DragonTapeBlock.Validate methos.  Each test vector must contain the following elements:
+           TapeData:      A string representing a stream of bytes that will be read from tape during the test.
+           BlockClass:    Full class name of the object returned by ReadBlock.
+           BlockType:     Expected block type of returned block object.
+           DataLength:    Expected data length for returned block object.
+           Checksum:      Expected checksum of returned object.
+           Exception:     Full name of expected exception to be thrown by the Validate function, or empty if no exception is expected.
+           
+         The tape data must start at the first byte following the block sync byte, and it must include the trailing leader byte.
+    -->
+    
+    <ReadBlock description="Data block with no payload.">
+      <TapeData>0x01 0x00 0x01 0x55</TapeData>
+      <BlockClass>RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeBlock</BlockClass>
+      <BlockType>1</BlockType>
+      <DataLength>0</DataLength>
+      <Checksum>0x01</Checksum>
+      <Exception></Exception>
+    </ReadBlock>
+
+    <ReadBlock description="EOF block with no payload.">
+      <TapeData>0xff 0x00 0xff 0x55</TapeData>
+      <BlockClass>RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeEofBlock</BlockClass>
+      <BlockType>0xff</BlockType>
+      <DataLength>0</DataLength>
+      <Checksum>0xff</Checksum>
+      <Exception></Exception>
+    </ReadBlock>
+
+    <ReadBlock description="Header block for machine code program named FOOBAR with load address 0x5678 and exec address 0x1234.">
+      <TapeData>0x00 0x0f 0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78 0x1e 0x55</TapeData>
+      <BlockClass>RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeHeaderBlock</BlockClass>
+      <BlockType>0</BlockType>
+      <DataLength>15</DataLength>
+      <Checksum>0x1e</Checksum>
+      <Exception></Exception>
+    </ReadBlock>
+
+    <ReadBlock description="Invalid block type.  Expect exception RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockTypeException.">
+      <TapeData>0x04 0x0f 0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78 0x1e 0x55</TapeData>
+      <BlockClass>RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeBlock</BlockClass>
+      <BlockType>4</BlockType>
+      <DataLength>15</DataLength>
+      <Checksum>0x1e</Checksum>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockTypeException</Exception>
+    </ReadBlock>
+
+    <ReadBlock description="Invalid block checksum.  Expect exception RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockChecksumException.">
+      <TapeData>0x00 0x0f 0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78 0x22 0x55</TapeData>
+      <BlockClass>RolfMichelsen.Dragon.DragonTools.IO.Tape.DragonTapeHeaderBlock</BlockClass>
+      <BlockType>0</BlockType>
+      <DataLength>15</DataLength>
+      <Checksum>0x22</Checksum>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockChecksumException</Exception>
+    </ReadBlock>
+
+  </ReadBlockTests>
+
+
+  <HeaderBlockTests>
+
+    <!-- Test vectors for the DragonTapeHeaderBlock constructor.  Each test vector must contain the following elements:
+           BlockData:       The block data payload.
+           BlockChecksum:   The block checksum value.
+           FileName:        The expected filename.
+           FileType:        The expected file type.
+           AsciiFlag:       The expected value of the ascii flag.
+           GapFlag:         The expected value of the gap flag.
+           LoadAddress:     The expected load address.
+           ExecAddress:     The expected execution address.
+           Exception:       Full name of expected exception to be thrown by the Validate function, or empty of no exception is expected.
+    -->
+    
+    <HeaderBlock description="Header block for machine code program named FOOBAR with load address 0x5678 and exec address 0x1234.">
+      <BlockData>0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78</BlockData>
+      <BlockChecksum>0x1e</BlockChecksum>
+      <FileName>FOOBAR</FileName>
+      <FileType>2</FileType>
+      <AsciiFlag>false</AsciiFlag>
+      <GapFlag>false</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <Exception/>
+    </HeaderBlock>
+
+    <HeaderBlock description="Header block for ASCII encoded BASIC program named FOOBAR. (Load address 0x5678 and exec address 0x1234.)">
+      <BlockData>0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x00 0xff 0x00 0x12 0x34 0x56 0x78</BlockData>
+      <BlockChecksum>0x1b</BlockChecksum>
+      <FileName>FOOBAR</FileName>
+      <FileType>0</FileType>
+      <AsciiFlag>true</AsciiFlag>
+      <GapFlag>false</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <Exception/>
+    </HeaderBlock>
+
+    <HeaderBlock description="Header block for ASCII encoded and gapped data file named DATA1234. (Load address 0x5678 and exec address 0x1234.)">
+      <BlockData>0x44 0x41 0x54 0x41 0x31 0x32 0x33 0x34 0x01 0xff 0xff 0x12 0x34 0x56 0x78</BlockData>
+      <BlockChecksum>0x06</BlockChecksum>
+      <FileName>DATA1234</FileName>
+      <FileType>1</FileType>
+      <AsciiFlag>true</AsciiFlag>
+      <GapFlag>true</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <Exception/>
+    </HeaderBlock>
+
+    <HeaderBlock description="Header block with invalid file type.  Expecting exception RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidHeaderBlockException.">
+      <BlockData>0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x03 0x00 0x00 0x12 0x34 0x56 0x78</BlockData>
+      <BlockChecksum>0x1f</BlockChecksum>
+      <FileName>FOOBAR</FileName>
+      <FileType>3</FileType>
+      <AsciiFlag>false</AsciiFlag>
+      <GapFlag>false</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidHeaderBlockException</Exception>
+    </HeaderBlock>
+
+    <HeaderBlock description="Invalid block checksum.  Expecting exception RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockChecksumException.">
+      <BlockData>0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78</BlockData>
+      <BlockChecksum>0</BlockChecksum>
+      <FileName>FOOBAR</FileName>
+      <FileType>2</FileType>
+      <AsciiFlag>false</AsciiFlag>
+      <GapFlag>false</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <Exception>RolfMichelsen.Dragon.DragonTools.IO.Tape.InvalidBlockChecksumException</Exception>
+    </HeaderBlock>
+
+  </HeaderBlockTests>
+
+
+  <WriteHeaderBlockTests>
+    
+    <!-- Test vectors for the DragonTapeHeaderBlock.WriteBlock method.  Each test vector must contain the following elements:
+           FileName:       Name of file.
+           FileType:       Type of file.
+           AsciiFlag:      True for files encoded as ASCII.
+           GapFlag:        True for files encoded with gaps between each block.
+           LoadAddress:    Load address for machine code programs.
+           ExecAddress:    Exec address for machine code programs.
+           IsSynchronized: When true, assumes that the tape is synchronized and a short leader will be generated.
+           BlockData:      The resulting encoded block, including initial leader, sync byte and trailing leader.
+    -->
+    
+    <WriteHeaderBlock description="Machine code program FOOBAR with load address 0x5678 and exec address 0x1234.  Synchronized tape.">
+      <FileName>FOOBAR</FileName>
+      <FileType>2</FileType>
+      <AsciiFlag>false</AsciiFlag>
+      <GapFlag>false</GapFlag>
+      <LoadAddress>0x5678</LoadAddress>
+      <ExecAddress>0x1234</ExecAddress>
+      <IsSynchronized>true</IsSynchronized>
+      <BlockData>0x55 0x3c 0x00 0x0f 0x46 0x4f 0x4f 0x42 0x41 0x52 0x20 0x20 0x02 0x00 0x00 0x12 0x34 0x56 0x78 0x1e 0x55</BlockData>
+    </WriteHeaderBlock>
+    
+  </WriteHeaderBlockTests>
+  
+</TestVectors>

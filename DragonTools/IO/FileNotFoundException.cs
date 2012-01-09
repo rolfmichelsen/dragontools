@@ -27,7 +27,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 
 namespace RolfMichelsen.Dragon.DragonTools.IO
 {

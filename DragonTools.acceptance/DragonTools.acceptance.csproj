@@ -90,6 +90,9 @@
     <None Include="Testdata\Dancer.cas">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Testdata\dragondos-empty-2s-80t.vdk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Testdata\dragondos-empty.vdk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

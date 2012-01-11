@@ -17,6 +17,12 @@
       <freespace>10752</freespace>
     </Free>
 
+    <Free>
+      <diskimage>dragondos-empty-2s-80t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>728064</freespace>
+    </Free>
+
     <!-- OS9 -->
     <Free>
       <diskimage>os9-empty.vdk</diskimage>
@@ -519,7 +525,17 @@
       <sectorsize>256</sectorsize>
       <freespace>175104</freespace>
     </Initialize>
-    
-    
+
+    <Initialize description="Duble sided, 80 tracks per side">
+      <filesystem>dragondos</filesystem>
+      <heads>2</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+      <freespace>728064</freespace>
+    </Initialize>
+
+
+
   </InitializeTests>
 </TestVectors>

@@ -18,6 +18,24 @@
     </Free>
 
     <Free>
+      <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>175104</freespace>
+    </Free>
+    
+    <Free>
+      <diskimage>dragondos-empty-1s-80t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>359424</freespace>
+    </Free>
+
+    <Free>
+      <diskimage>dragondos-empty-2s-40t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>359424</freespace>
+    </Free>
+
+    <Free>
       <diskimage>dragondos-empty-2s-80t.vdk</diskimage>
       <filesystem>dragondos</filesystem>
       <freespace>728064</freespace>
@@ -50,7 +68,6 @@
     </Free>
 
   </FreeTests>
-
 
   
   <ListFilesTests>
@@ -104,7 +121,6 @@
     </ListFiles>
 
   </ListFilesTests>
-
 
 
   <FileExistsTests>
@@ -196,7 +212,6 @@
   </FileExistsTests>
 
 
-
   <IsValidFilenameTests>
     
     <!-- DragonDos -->
@@ -267,7 +282,6 @@
     </DeleteFile>
 
   </DeleteFileTests>
-
 
 
   <RenameFileTests>
@@ -484,6 +498,24 @@
     </Check>
 
     <Check>
+      <diskimage>dragondos-empty-1s-80t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
+      <diskimage>dragondos-empty-2s-40t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
+      <diskimage>dragondos-empty-2s-80t.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
       <diskimage>dragondos-tunes.vdk</diskimage>
       <filesystem>dragondos</filesystem>
       <valid>true</valid>
@@ -526,6 +558,24 @@
       <freespace>175104</freespace>
     </Initialize>
 
+    <Initialize description="Duble sided, 40 tracks per side">
+      <filesystem>dragondos</filesystem>
+      <heads>2</heads>
+      <tracks>40</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+      <freespace>359424</freespace>
+    </Initialize>
+
+    <Initialize description="Single sided, 80 tracks per side">
+      <filesystem>dragondos</filesystem>
+      <heads>1</heads>
+      <tracks>80</tracks>
+      <sectors>18</sectors>
+      <sectorsize>256</sectorsize>
+      <freespace>359424</freespace>
+    </Initialize>
+
     <Initialize description="Duble sided, 80 tracks per side">
       <filesystem>dragondos</filesystem>
       <heads>2</heads>
@@ -535,7 +585,6 @@
       <freespace>728064</freespace>
     </Initialize>
 
-
-
   </InitializeTests>
+  
 </TestVectors>

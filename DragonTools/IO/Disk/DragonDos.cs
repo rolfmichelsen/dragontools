@@ -54,8 +54,19 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// </summary>
         private bool directoryIsDirty = true;
 
+        /// <summary>
+        /// Number of disk tracks.  This is 40 or 80 for DragonDos disks.
+        /// </summary>
         private int Tracks;
+
+        /// <summary>
+        /// Number of sectors per track.  This is 18 or 36 for double-sided disks.
+        /// </summary>
         private int Sectors;
+
+        /// <summary>
+        /// Size (in bytes) of a single sector.
+        /// </summary>
         private const int SectorSize = 256;
 
         /// <summary>
@@ -480,7 +491,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             /* Mark primary and secondary directory track sectors as allocated. */
             int lsn1 = TrackToLsn(DirectoryTrackPrimary);
             int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i=0; i<Sectors; i++)
+            for (int i=0; i<Disk.Sectors; i++)
             {
                 allocatedSectors[lsn1++] = true;
                 allocatedSectors[lsn2++] = true;
@@ -533,7 +544,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// </summary>
         public void Initialize()
         {
-            //TODO Incorrect creation of double-sided 80-track disks
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (!IsWriteable) throw new FilesystemNotWriteableException();
 
@@ -545,7 +555,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             }
 
             /* Allocate data for the directory track cache. */
-            for (int i = 0; i < Sectors; i++)
+            for (int i = 0; i < Disk.Sectors; i++)
             {
                 directoryTrack[i] = new byte[SectorSize];
             }
@@ -554,7 +564,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             var emptyDirEntry = DragonDosDirectoryEntry.GetEmptyEntry();
             var emptyEncodedEntry = new byte[DirectoryEntrySize];
             emptyDirEntry.Encode(emptyEncodedEntry, 0);
-            for (int i = DirectoryEntryOffset; i < Sectors; i++)
+            for (int i = DirectoryEntryOffset; i < Disk.Sectors; i++)
             {
                 for (int j = 0; j < DirectoryEntryCount; j++)
                 {
@@ -577,7 +587,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             /* Mark the primary and secondary directory track as allocated. */
             int lsn1 = TrackToLsn(DirectoryTrackPrimary);
             int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i = 0; i < Sectors; i++)
+            for (int i = 0; i < Disk.Sectors; i++)
             {
                 SetSectorAllocated(lsn1++, true);
                 SetSectorAllocated(lsn2++, true);
@@ -596,7 +606,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             int lsn1 = TrackToLsn(DirectoryTrackPrimary);
             int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i = 0; i < Sectors; i++ )
+            for (int i = 0; i < Disk.Sectors; i++ )
             {
                 var sector1 = ReadSector(lsn1++);
                 var sector2 = ReadSector(lsn2++);
@@ -716,7 +726,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (!directoryIsDirty) return;
             int lsn = TrackToLsn(DirectoryTrackPrimary);
-            int sectors = Sectors;
+            int sectors = Disk.Sectors;
             for (int i = 0; i < sectors; i++ )
             {
                 directoryTrack[i] = ReadSector(lsn++);
@@ -733,7 +743,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (directoryIsDirty) throw new FilesystemConsistencyException();
 
             int lsn = TrackToLsn(track);
-            int sectors = Sectors;
+            int sectors = Disk.Sectors;
             for (int i = 0; i < sectors; i++ )
             {
                 WriteSector(lsn++, directoryTrack[i], 0, SectorSize);
@@ -756,10 +766,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// The number of sectors that can be represented by the allocation map in the first sector of the directory track.  4 bytes of the first sector
-        /// is used for storing format information.
+        /// The number of sectors that can be represented by the allocation map in the first sector of the directory track.  Up to 180 bytes are
+        /// reserved for the sector allocation map.
         /// </summary>
-        private const int EntriesInFirstAllocSector = 2016;
+        private const int EntriesInFirstAllocSector = 180*8;
 
 
         /// <summary>
@@ -825,7 +835,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <summary>
         /// Total number of directory entries in the directory track.
         /// </summary>
-        private int DirectoryEntries { get { return (Sectors - DirectoryEntryOffset)*DirectoryEntryCount; } }
+        private int DirectoryEntries { get { return (Disk.Sectors - DirectoryEntryOffset)*DirectoryEntryCount; } }
 
         /// <summary>
         /// Returns the directory entry at a given index.

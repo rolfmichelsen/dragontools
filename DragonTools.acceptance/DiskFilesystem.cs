@@ -179,7 +179,7 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
                 }
                 catch (FilesystemConsistencyException e)
                 {
-                    Assert.IsFalse(isvalid);
+                    if (isvalid) throw e;
                 }
             }
         }

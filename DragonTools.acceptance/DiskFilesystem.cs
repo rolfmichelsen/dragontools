@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -29,6 +29,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 
 namespace RolfMichelsen.Dragon.DragonTools.acceptance
 {
@@ -269,41 +270,13 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
 
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "ReadFileRaw", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
-        [TestMethod()]
-        public void ReadFileRaw()
-        {
-            var diskimage = Convert.ToString(TestContext.DataRow["diskimage"]);
-            var filesystem = Convert.ToString(TestContext.DataRow["filesystem"]);
-            var filename = Convert.ToString(TestContext.DataRow["filename"]);
-            var length = Convert.ToInt32(TestContext.DataRow["length"]);
-            var exception = Convert.ToString(TestContext.DataRow["exception"]);
-
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), diskimage, false))
-            {
-                try
-                {
-                    var filedata = dos.ReadFileRaw(filename);
-                    Assert.IsTrue(String.IsNullOrWhiteSpace(exception), "Expected exception " + exception);
-                    Assert.AreEqual(length, filedata.Length);
-                }
-                catch (Exception e)
-                {
-                    if (!String.Equals(exception, e.GetType().FullName))
-                        throw e;
-                }
-            }
-        }
-
-
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "ReadFile", DataAccessMethod.Sequential)]
         [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
         [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
         [TestMethod()]
         public void ReadFile()
         {
+            //TODO Rewrite test to properly test for file type.
             var diskimage = Convert.ToString(TestContext.DataRow["diskimage"]);
             var filesystem = Convert.ToString(TestContext.DataRow["filesystem"]);
             var filename = Convert.ToString(TestContext.DataRow["filename"]);
@@ -330,64 +303,11 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         }
 
 
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "WriteFileRaw", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
-        [TestMethod()]
-        public void WriteFileRaw()
-        {
-            var diskimage = Convert.ToString(TestContext.DataRow["diskimage"]);
-            var filesystem = Convert.ToString(TestContext.DataRow["filesystem"]);
-            var filename = Convert.ToString(TestContext.DataRow["filename"]);
-            var length = Convert.ToInt32(TestContext.DataRow["length"]);
-            var exception = Convert.ToString(TestContext.DataRow["exception"]);
-            var readwrite = !Convert.ToBoolean(TestContext.DataRow["writeprotected"]);
-
-            var filedata = new byte[length];
-
-            using (var srcdisk = DiskFactory.OpenDisk(diskimage, false))
-            {
-                using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), new MemoryDisk(srcdisk), readwrite))
-                {
-                    try
-                    {
-                        dos.WriteFileRaw(filename, filedata);
-                        Assert.IsTrue(String.IsNullOrWhiteSpace(exception), "Expected exception " + exception);
-                        dos.Check();
-                        Assert.IsTrue(dos.FileExists(filename), "File " + filename + " does not exist");
-                    }
-                    catch (Exception e)
-                    {
-                        if (!String.Equals(exception, e.GetType().FullName))
-                            throw e;
-                    }
-                }
-            }
-        }
-
 
         [TestMethod()]
         public void WriteFile()
         {
-            Assert.Inconclusive();
-        }
-
-
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "GetFileParser", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
-        [TestMethod()]
-        public void GetFileParser()
-        {
-            var diskimage = Convert.ToString(TestContext.DataRow["diskimage"]);
-            var filesystem = Convert.ToString(TestContext.DataRow["filesystem"]);
-            var parserclass = Convert.ToString(TestContext.DataRow["parserclass"]);
-
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), diskimage, false))
-            {
-                var parser = dos.GetFileParser();
-                Assert.AreEqual(parserclass, parser.GetType().FullName);
-            }
+            //TODO Implement tests for WriteFile
         }
 
 

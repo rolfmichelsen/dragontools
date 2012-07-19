@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonTape">
+    <Position X="4.75" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAACIAQAAAAAQgoBAAABAAAAEAAAEACgABAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonTape.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Tape" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonTapeBlock">
+    <Position X="9.25" Y="5.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>ACQAYACBAACAAADEAAAAAgBAgAAAABAEAAEACABAAIA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonTapeBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonFile">
+    <Position X="1.25" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAEAAAgAQAAAAAAARAEJQCgAAAAgAQAAAgAAQ=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonTapeEofBlock">
+    <Position X="12.25" Y="11.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonTapeEofBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonTapeHeaderBlock">
+    <Position X="9.5" Y="11.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQgAAQACAQAQEBAAAAAAAEAAKAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonTapeHeaderBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonTapeDataBlock">
+    <Position X="7" Y="11.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonTapeDataBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonFileName">
+    <Position X="1.25" Y="7.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAIEAAgAAAQAAAAAAQAAAAAAgAAAQAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonFileName.cs</FileName>
+      <NewMemberFileName>IO\Filesystem\DragonTape\DragonFilename.cs</NewMemberFileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Tape.ITape">
+    <Position X="9.25" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAARAAAAAAAgAAAAAQAAAAAABAAIEAgAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Tape\ITape.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape.DragonFileType">
+    <Position X="1.25" Y="11" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAAAAAAAAAAAAAAAAABAAAAAAAACAAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonTape\DragonFile.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -270,7 +270,7 @@
       <filesystem>dragondos</filesystem>
       <writeprotected>false</writeprotected>
       <filename>FOO.BAS</filename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
     </DeleteFile>
 
     <DeleteFile>      <!-- Filesystem is write protected -->
@@ -278,7 +278,7 @@
       <filesystem>dragondos</filesystem>
       <writeprotected>true</writeprotected>
       <filename>DRYBONES.BIN</filename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException</exception>
     </DeleteFile>
 
   </DeleteFileTests>
@@ -302,7 +302,7 @@
       <writeprotected>false</writeprotected>
       <oldfilename>FOO.BAS</oldfilename>
       <newfilename>FOOBAR.BAS</newfilename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
     </RenameFile>
 
     <RenameFile> 
@@ -312,7 +312,7 @@
       <writeprotected>true</writeprotected>
       <oldfilename>DRYBONES.BIN</oldfilename>
       <newfilename>FOO.BAR</newfilename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException</exception>
     </RenameFile>
 
     <RenameFile> 
@@ -322,7 +322,7 @@
       <writeprotected>false</writeprotected>
       <oldfilename>DRYBONES.BIN</oldfilename>
       <newfilename>DANCER.BIN</newfilename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.Disk.FileExistsException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileExistsException</exception>
     </RenameFile>
 
     <RenameFile> 
@@ -332,76 +332,10 @@
       <writeprotected>false</writeprotected>
       <oldfilename>DRYBONES.BIN</oldfilename>
       <newfilename>FOOBARFOOBAR.FOO</newfilename>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.InvalidFilenameException</exception>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.InvalidFilenameException</exception>
     </RenameFile>
 
   </RenameFileTests>
-
-
-  <ReadFileRawTests>
-    
-    <!-- DragonDos -->
-    <ReadFileRaw>
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <filename>DRYBONES.BIN</filename>
-      <length>28490</length>
-      <exception/>
-    </ReadFileRaw>
-
-    <ReadFileRaw>  <!-- File does not exist -->
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <filename>FOO.BAR</filename>
-      <length>0</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
-    </ReadFileRaw>
-
-    
-    <!-- OS9 -->
-    <ReadFileRaw>
-      <diskimage>os9-system.vdk</diskimage>
-      <filesystem>os9</filesystem>
-      <filename>OS9Boot</filename>
-      <length>12172</length>
-      <exception/>
-    </ReadFileRaw>
-
-    <ReadFileRaw>
-      <diskimage>os9-system.vdk</diskimage>
-      <filesystem>os9</filesystem>
-      <filename>SYS/motd</filename>
-      <length>34</length>
-      <exception/>
-    </ReadFileRaw>
-
-    <ReadFileRaw> <!-- File does not exist -->
-      <diskimage>os9-system.vdk</diskimage>
-      <filesystem>os9</filesystem>
-      <filename>FooBar</filename>
-      <length>12172</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
-    </ReadFileRaw>
-
-    
-    <!-- RS-DOS -->
-    <ReadFileRaw>
-      <diskimage>rsdos-demos01.dsk</diskimage>
-      <filesystem>rsdos</filesystem>
-      <filename>MPATDEMO.BIN</filename>
-      <length>10752</length>
-      <exception/>
-    </ReadFileRaw>
-
-    <ReadFileRaw> <!-- File does not exist -->
-      <diskimage>rsdos-demos01.dsk</diskimage>
-      <filesystem>rsdos</filesystem>
-      <filename>FOO.BAR</filename>
-      <length>0</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
-    </ReadFileRaw>
-
-  </ReadFileRawTests>
 
 
   <ReadFileTests>
@@ -413,7 +347,7 @@
       <filename>DRYBONES.BIN</filename>
       <length>28490</length>
       <payloadlength>28481</payloadlength>
-      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosMachineCodeFile</filetype>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile</filetype>
       <exception/>
       </ReadFile>
 
@@ -425,67 +359,10 @@
         <length>0</length>
         <payloadlength>0</payloadlength>
         <filetype/>
-        <exception>RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException</exception>
+        <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
       </ReadFile>
     
   </ReadFileTests>
-  
-  
-  <WriteFileRawTests>
-    
-    <!-- DragonDos -->
-    <WriteFileRaw>
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <writeprotected>false</writeprotected>
-      <filename>FOO.BAR</filename>
-      <length>5000</length>
-      <exception/>
-    </WriteFileRaw>
-
-    <WriteFileRaw>
-      <description>Filesystem is write protected</description>
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <writeprotected>true</writeprotected>
-      <filename>FOO.BAR</filename>
-      <length>5000</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.FilesystemNotWriteableException</exception>
-    </WriteFileRaw>
-
-    <WriteFileRaw>
-      <description>Invalid (too long) target filename</description>
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <writeprotected>false</writeprotected>
-      <filename>FOOBARFOO.BAR</filename>
-      <length>5000</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.InvalidFilenameException</exception>
-    </WriteFileRaw>
-
-    <WriteFileRaw>
-      <description>Target filename already in use</description>
-      <diskimage>dragondos-tunes.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <writeprotected>false</writeprotected>
-      <filename>DANCER.BIN</filename>
-      <length>5000</length>
-      <exception>RolfMichelsen.Dragon.DragonTools.IO.Disk.FileExistsException</exception>
-    </WriteFileRaw>
-
-  </WriteFileRawTests>
-
-
-  <GetFileParserTests>
-
-    <!-- DragonDos -->
-    <GetFileParser>
-      <diskimage>dragondos-empty.vdk</diskimage>
-      <filesystem>dragondos</filesystem>
-      <parserclass>RolfMichelsen.Dragon.DragonTools.IO.Disk.DragonDosFileParser</parserclass>
-    </GetFileParser>
-    
-  </GetFileParserTests>
   
   
   <CheckTests>

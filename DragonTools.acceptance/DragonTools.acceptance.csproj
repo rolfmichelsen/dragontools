@@ -52,8 +52,7 @@
   <ItemGroup>
     <Compile Include="Disk.cs" />
     <Compile Include="DiskFilesystem.cs" />
-    <Compile Include="DragonTapeBlockTest.cs" />
-    <Compile Include="DragonTapeFilesystemTest.cs" />
+    <Compile Include="FileName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +129,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="DragonTapeBlockTest.xml">
+    <Content Include="FileName.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
     </Content>
     <Content Include="Testdata\Index.txt" />
   </ItemGroup>

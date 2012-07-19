@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDos">
+    <Position X="6" Y="1.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>UAAUUAiEBGAkQYIMBAiAHBcAQCmCAIVIIAEEiEAFIII=</HashCode>
+      <FileName>IO\Filesystem\DragonDos\DragonDos.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Disk" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile">
+    <Position X="1.5" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAQAgAAUAAAgAAUAEAAAARAEJQqgAAAAAAQAAAgAAQ=</HashCode>
+      <FileName>IO\Filesystem\DragonDos\DragonDosFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFileInfo">
+    <Position X="1.5" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAgAAAAAAAAAQAAJAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\DragonDos\DragonDosFileInfo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFileName">
+    <Position X="1.5" Y="11" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAIEAAgAAAQAAAAEAQAAAAAAgAAAQAA=</HashCode>
+      <FileName>IO\Filesystem\DragonDos\DragonDosFileName.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.IDisk">
+    <Position X="11" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAEAwAAAAACAAFAADAAAAAAAAIAAEAEAIAAA=</HashCode>
+      <FileName>IO\Disk\IDisk.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

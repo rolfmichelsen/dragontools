@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DiskFilesystemFactory">
+    <Position X="9.75" Y="6.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\DiskFilesystemFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IDiskFilesystem">
+    <Position X="5.5" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAAEQAgAAAAAQQAABACAAAAAAAAAAAAAAAEECEABAAI=</HashCode>
+      <FileName>IO\Filesystem\IDiskFilesystem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Disk" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IDiskHierarchicalFilesystem">
+    <Position X="5.5" Y="6.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>IO\Filesystem\IDiskHierarchicalFilesystem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.IDisk">
+    <Position X="9.75" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAEAwAAAAACAAFAADAAAAAAAAIAAEAEAIAAA=</HashCode>
+      <FileName>IO\Disk\IDisk.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IFile">
+    <Position X="1.25" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\IFile.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IFileInfo">
+    <Position X="1.25" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAQAAJAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\FileInfo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IFileName">
+    <Position X="1.25" Y="6.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAIAAAAAAAQAAAAAAQAAAAAAgAAAQAA=</HashCode>
+      <FileName>IO\Filesystem\IFileName.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

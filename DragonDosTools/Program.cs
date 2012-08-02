@@ -30,10 +30,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
 using RolfMichelsen.Dragon.DragonTools.IO;
 using System.IO;
-using FileNotFoundException = RolfMichelsen.Dragon.DragonTools.IO.FileNotFoundException;
+using FileNotFoundException = RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
@@ -366,15 +369,15 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             IFile file;
             if (basic)
             {
-                file = new DragonDosBasicFile(data);
+                file = DragonDosFile.CreateBasicFile(filename, data);
             }
             else if (loadAddress != 0 || execAddress != 0)
             {
-                file = new DragonDosMachineCodeFile(data, loadAddress, execAddress);
+                file = DragonDosFile.CreateMachineCodeFile(filename, data, loadAddress, execAddress);
             }
             else
             {
-                file = new DragonDosDataFile(data);                
+                file = DragonDosFile.CreateDataFile(filename, data);
             }
             
             
@@ -382,7 +385,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
             {
                 if (!CheckFilesystem(dos)) return;
-                dos.WriteFile(filename, file);
+                dos.WriteFile(file);
                 if (!quiet)
                 {
                     Console.WriteLine("Wrote file {0} -- {1}", filename, file);
@@ -469,15 +472,21 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         private void WriteCassetteFile(string casfilename, string targetfilename, DragonDosFile file)
         {
             IFile tapefile;
-            if (file is DragonDosBasicFile)
-                tapefile = new DragonBasicFile(targetfilename, file.GetData(), false, false);
-            else if (file is DragonDosMachineCodeFile)
-                tapefile = new DragonMachineCodeFile(targetfilename, file.GetData(), false, false, ((DragonDosMachineCodeFile)file).LoadAddress, ((DragonDosMachineCodeFile)file).ExecAddress);
-                
-            else
-                tapefile = new DragonDataFile(targetfilename, file.GetData(), false, false);
+            switch (file.FileType)
+            {
+                case DragonDosFileType.Basic:
+                    tapefile = DragonFile.CreateBasicFile(targetfilename, file.GetData(), false, false);
+                    break;
+                case DragonDosFileType.MachineCode:
+                    tapefile = DragonFile.CreateMachineCodeFile(targetfilename, file.GetData(), file.LoadAddress,
+                                                                file.StartAddress, false, false);
+                    break;
+                default:
+                    tapefile = DragonFile.CreateDataFile(targetfilename, file.GetData(), false, false);
+                    break;
+            }
 
-            using (var tape = new DragonTapeFilesystem(new CasWriter(new System.IO.FileStream(casfilename, FileMode.CreateNew))))
+            using (var tape = new DragonTape(new CasTape(new System.IO.FileStream(casfilename, FileMode.CreateNew))))
             {
                 tape.WriteFile(tapefile);
             }

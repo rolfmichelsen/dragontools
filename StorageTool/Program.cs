@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using RolfMichelsen.Dragon.DragonTools.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 
 namespace RolfMichelsen.Dragon.StorageTool
 {
@@ -214,53 +215,13 @@ namespace RolfMichelsen.Dragon.StorageTool
 
         private void GetFile(List<string> args)
         {
-            if (args.Count != 3)
-            {
-                Console.Error.WriteLine("ERROR: Incorrect number of arguments to command.");
-                return;
-            }
-
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(fsid, args[0], false))
-            {
-                if (dos == null)
-                {
-                    Console.Error.WriteLine("ERROR: Unable to create filesystem of type {0}", fsid);
-                    return;
-                }
-                var data = dos.ReadFileRaw(args[1]);
-                System.IO.File.WriteAllBytes(args[2], data); 
-            }
+            throw new NotImplementedException();
         }
 
 
         private void PutFile(List<string> args)
         {
-            if (args.Count != 3)
-            {
-                Console.Error.WriteLine("ERROR: Incorrect number of arguments to command.");
-                return;
-            }
-
-            byte[] data;
-            try
-            {
-                data = System.IO.File.ReadAllBytes(args[1]);
-            }
-            catch (System.IO.IOException e)
-            {
-                Console.Error.WriteLine("ERROR: Unable to read file \"{0}\".", args[1]);
-                return;
-            }
-
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(fsid, args[0], true))
-            {
-                if (dos == null)
-                {
-                    Console.Error.WriteLine("ERROR: Unable to create filesystem of type {0}", fsid);
-                    return;
-                }
-                dos.WriteFileRaw(args[2], data);
-            }
+            throw new NotImplementedException();
         }
 
 

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<TestVectors>
+
+  <FileNameTests>
+
+    <!-- DragonDos -->
+    
+    <FileNameAccess>
+      <filesystem>dragondos</filesystem>
+      <pathname>FOO.BAR</pathname>
+      <name>FOO.BAR</name>
+      <base>FOO</base>
+      <extension>BAR</extension>
+    </FileNameAccess>
+  
+    
+    <!-- FLEX -->
+
+    <FileNameAccess>
+      <filesystem>flex</filesystem>
+      <pathname>FOO.BAR</pathname>
+      <name>FOO.BAR</name>
+      <base>FOO</base>
+      <extension>BAR</extension>
+    </FileNameAccess>
+    
+    
+    <!-- RSDOS-->
+
+    <FileNameAccess>
+      <filesystem>rsdos</filesystem>
+      <pathname>FOO.BAR</pathname>
+      <name>FOO.BAR</name>
+      <base>FOO</base>
+      <extension>BAR</extension>
+    </FileNameAccess>
+
+    
+    <!-- OS9 -->
+
+
+  </FileNameTests>
+  
+  
+  
+  
+</TestVectors>

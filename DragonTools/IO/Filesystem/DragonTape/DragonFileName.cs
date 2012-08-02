@@ -36,7 +36,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
     /// In this filesystem a filename is simply a sequence of up to 8 characters.  There is no concept
     /// of filename extensions, paths, etc.
     /// </summary>
-    public sealed class DragonFileName : IFileName
+    public sealed class DragonFileName : IFileName, ICloneable, IEquatable<DragonFileName>
     {
         /// <summary>
         /// The name of a file, omitting any directory information for hierarchical filesystems.
@@ -107,10 +107,70 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         }
 
 
-
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return Name;
+        }
+
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj)
+        {
+            if (!(obj is DragonFileName)) return false;
+            return Equals((DragonFileName) obj);
+        }
+
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(DragonFileName obj)
+        {
+            if (obj == null) return false;
+            return Name.Equals(obj.Name);
+        }
+
+
+        /// <summary>
+        /// Serves as a hash function for a particular type. 
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"/>.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public object Clone()
+        {
+            return new DragonFileName(Name);
         }
     }
 }

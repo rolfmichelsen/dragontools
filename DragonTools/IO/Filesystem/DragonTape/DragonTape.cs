@@ -120,14 +120,16 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         /// <exception cref="InvalidFileException">The file format is invalid.</exception>
         public IFile ReadFile(string filename)
         {
-            if (filename == null) return ReadFile();
-
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (!IsReadable) throw new InvalidOperationException("Instance does not support reading");
 
+            if (filename == null) return ReadFile();
 
-
-            throw new NotImplementedException();
+            while (true)
+            {
+                var file = (DragonFile) ReadFile();
+                if (filename.Equals(file.Name)) return file;
+            }
         }
 
 
@@ -222,7 +224,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         public void WriteFile(IFile file)
         {
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
-            if (Tape == null) throw new InvalidOperationException("Instance does not support writing");
             if (file == null) throw new ArgumentNullException("file");
             if (!(file is DragonFile)) throw new ArgumentException("Unexpected type of file parameter : " + file.GetType().FullName);
 
@@ -241,7 +242,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
             for (int i = 0; i < blocks; i++ )
             {
                 var block = new DragonTapeDataBlock(file.GetData(), offset, Math.Min(255, file.Length - offset));
-                block.WriteBlock(Tape, firstblock || !file.IsGapped);
+                block.WriteBlock(Tape, !(firstblock || file.IsGapped));
                 offset += 255;
                 firstblock = false;
             }

@@ -34,7 +34,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
     /// <summary>
     /// Class for working with DragonDos filenames.
     /// </summary>
-    public class DragonDosFileName : IFileName
+    public class DragonDosFileName : IFileName, IEquatable<DragonDosFileName>, ICloneable
     {
         /// <summary>
         /// Character used to separate the base and the extension in a DragonDos file name.
@@ -113,9 +113,49 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         }
 
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(DragonDosFileName other)
+        {
+            return Name.Equals(other.Name);
+        }
+
+
         public override string ToString()
         {
             return Name;
+        }
+
+
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is DragonDosFileName)) return false;
+            return Equals((DragonDosFileName) obj);
+        }
+
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public object Clone()
+        {
+            return new DragonDosFileName(Name);
         }
     }
 }

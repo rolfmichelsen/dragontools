@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CasTapeTest.cs" />
+    <Compile Include="DragonDosFileNameTest.cs" />
     <Compile Include="DragonDosFileTest.cs" />
     <Compile Include="DragonFileNameTest.cs" />
     <Compile Include="DragonTapeBlockTest.cs" />

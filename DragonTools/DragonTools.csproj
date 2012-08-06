@@ -81,6 +81,7 @@
     <Compile Include="IO\Filesystem\OS9\OS9AllocationMap.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9DirectoryEntry.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9DiskInfo.cs" />
+    <Compile Include="IO\Filesystem\OS9\OS9File.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileAttributes.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileInfo.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileName.cs" />

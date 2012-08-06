@@ -26,24 +26,73 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem
+using System;
+
+
+namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 {
     /// <summary>
-    /// Abstract representation of a file.
+    /// Represents a file in an OS9 filesystem.
     /// </summary>
-    public interface IFile : IFileInfo
+    public sealed class OS9File : IFile
     {
+        private byte[] data;
+
+
+        /// <summary>
+        /// Filename.
+        /// </summary>
+        public string Name { get; private set; }
+
+
+        /// <summary>
+        /// Size of file, in bytes
+        /// </summary>
+        public int Size { get; private set; }
+
+
+        /// <summary>
+        /// Indicates that this file is actually a directory.
+        /// </summary>
+        public bool IsDirectory
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        /// <summary>
+        /// Returns a brief string representation of any file attributes supported by the filesystem.  Subclasses will typically
+        /// override this method to provide a summary of filesystem specific file attributes not represented by the base class.
+        /// </summary>
+        /// <returns>String representation of file attributes.</returns>
+        public string GetAttributes()
+        {
+            throw new NotImplementedException();
+        }
+
+
         /// <summary>
         /// True if this file is an executable file.
         /// </summary>
-        bool IsExecutable { get; }
+        public bool IsExecutable
+        {
+            get { throw new NotImplementedException(); }
+        }
+
 
         /// <summary>
         /// Return the file payload data.
-        /// Some filesystems may support multiple data "segments" or "forks".  For those filesystems, this method will
-        /// return the default data segment or fork.
         /// </summary>
-        byte[] GetData();
+        public byte[] GetData()
+        {
+            return (byte[])data.Clone();
+        }
 
+
+        internal OS9File(string filename, byte[] data)
+        {
+            Name = filename;
+            this.data = data;
+        }
     }
 }

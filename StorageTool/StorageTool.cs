@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -28,13 +28,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Collections.Generic;
-using RolfMichelsen.Dragon.DragonTools.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 
 namespace RolfMichelsen.Dragon.StorageTool
 {
-    class Program
+    class StorageTool
     {
         private bool verbose = false;
         private bool longformat = false;
@@ -45,12 +44,13 @@ namespace RolfMichelsen.Dragon.StorageTool
         {
             try
             {
-                var p = new Program();
+                var p = new StorageTool();
                 p.Run(args);                
             }
             catch (NotImplementedException e)
             {
                 Console.Error.WriteLine("OOPS: The function you are trying to use has not yet been implemented.");
+                Console.Error.WriteLine(e);
             }
             catch (FileNotFoundException e)
             {
@@ -146,7 +146,7 @@ namespace RolfMichelsen.Dragon.StorageTool
         private void ShowBanner()
         {
             Console.WriteLine("Dragon Storage Tools 0.0");
-            Console.WriteLine("(C) Rolf Michelsen, 2011");
+            Console.WriteLine("(C) Rolf Michelsen, 2011-2012");
             Console.WriteLine("www.rolfmichelsen.com");
         }
 
@@ -215,7 +215,35 @@ namespace RolfMichelsen.Dragon.StorageTool
 
         private void GetFile(List<string> args)
         {
-            throw new NotImplementedException();
+            if (args.Count != 3)
+            {
+                Console.Error.WriteLine("ERROR: Incorrect number of arguments to command.");
+                return;
+            }
+
+            var sourcefile = args[1];
+            var destfile = args[2];
+
+            var disk = DiskFactory.OpenDisk(args[0], false);
+            if (disk == null)
+            {
+                Console.Error.WriteLine("ERROR: Unknown disk format.");
+                return;
+            }
+
+            var fs = DiskFilesystemFactory.OpenFilesystem(fsid, disk, false);
+            if (fs == null)
+            {
+                Console.Error.WriteLine("ERROR: Unsupported filesystem {0}", fsid);
+                return;
+            }
+
+            var file = fs.ReadFile(sourcefile);
+            var data = file.GetData();
+            
+            System.IO.File.WriteAllBytes(destfile, data);
+
+            if (verbose) Console.WriteLine("{0} bytes written to file {1}", data.Length, destfile);
         }
 
 

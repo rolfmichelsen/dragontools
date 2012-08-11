@@ -32,43 +32,32 @@ using System;
 namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 {
     /// <summary>
-    /// Represents a file in an OS9 filesystem.
+    /// Represents a OS-9 data file.
     /// </summary>
-    public abstract class OS9File : IFile
+    public sealed class OS9DataFile : OS9File
     {
-        /// <summary>
-        /// Return the file payload data.
-        /// </summary>
-        public abstract byte[] GetData();
-
-        /// <summary>
-        /// Return file information from the disk directory.
-        /// This property will be <value>null</value> if the file is not associated with a directory entry.
-        /// </summary>
-        public IFileInfo FileInfo { get; private set; }
+        private byte[] data = null;
 
 
-        internal OS9File(OS9FileInfo fileinfo)
+        internal OS9DataFile(OS9FileInfo fileinfo, byte[] data) : base(fileinfo)
         {
-            FileInfo = fileinfo;
+            this.data = data;
+        }
+
+
+        public override string ToString()
+        {
+            return String.Format("OS-9 Data File");
         }
 
 
 
         /// <summary>
-        /// Create an OS-9 file by parsing raw file data.
+        /// Return the file payload data.
         /// </summary>
-        /// <param name="fileinfo">File directory information.</param>
-        /// <param name="data">Raw file data.</param>
-        /// <returns></returns>
-        internal static OS9File CreateFile(OS9FileInfo fileinfo, byte[] data)
+        public override byte[] GetData()
         {
-            if (OS9ModuleFile.IsModuleFile(data))
-            {
-                return new OS9ModuleFile(fileinfo, data);
-            }
-
-            return new OS9DataFile(fileinfo, data);
+            return (byte[]) data.Clone();
         }
     }
 }

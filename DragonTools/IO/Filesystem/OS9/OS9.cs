@@ -160,9 +160,15 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         /// <param name="filename">Name of file to read.</param>
         /// <returns>File object.</returns>
         /// <exception cref="InvalidFileException">The file format is invalid.</exception>
+        /// <exception cref="FileNotFoundException">The file does not exist.</exception>
         public IFile ReadFile(string filename)
         {
-            throw new NotImplementedException();
+            if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
+            if (filename == null) throw new ArgumentNullException("filename");
+
+            var fileinfo = (OS9FileInfo) GetFileInfo(filename);
+            var data = ReadFile(fileinfo);
+            return OS9File.CreateFile(fileinfo, data);
         }
 
 

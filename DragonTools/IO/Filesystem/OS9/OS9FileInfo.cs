@@ -33,10 +33,12 @@ using System.Collections.Generic;
 namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 {
     /// <summary>
-    /// This class contains meta-information about a file in an OS9 filesystem.
+    /// This class contains meta-information from the filesystem directory for a file in an OS-9 filesystem.
     /// </summary>
     public sealed class OS9FileInfo : IFileInfo
     {
+        //TODO Make class immutable
+
         public OS9FileAttributes Attributes;
 
         public int OwnerId;

@@ -346,7 +346,6 @@
       <filesystem>dragondos</filesystem>
       <filename>DRYBONES.BIN</filename>
       <length>28490</length>
-      <payloadlength>28481</payloadlength>
       <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile</filetype>
       <exception/>
       </ReadFile>
@@ -357,10 +356,53 @@
         <filesystem>dragondos</filesystem>
         <filename>FOO.BAR</filename>
         <length>0</length>
-        <payloadlength>0</payloadlength>
         <filetype/>
         <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
       </ReadFile>
+    
+    
+    
+    <!-- OS-9 -->
+
+    <ReadFile>
+      <description>Normal data file</description>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>startup</filename>
+      <length>38</length>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9DataFile</filetype>
+      <exception/>
+    </ReadFile>
+
+    <ReadFile>
+      <description>Module file</description>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>os9boot</filename>
+      <length>12172</length>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9ModuleFile</filetype>
+      <exception/>
+    </ReadFile>
+
+    <ReadFile>
+      <description>File does not exist</description>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>foobar</filename>
+      <length>0</length>
+      <filetype></filetype>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
+    </ReadFile>
+
+    <ReadFile>
+      <description>File in subdirectory</description>
+      <diskimage>os9-system.vdk</diskimage>
+      <filesystem>os9</filesystem>
+      <filename>sys/errmsg</filename>
+      <length>3172</length>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9DataFile</filetype>
+      <exception/>
+    </ReadFile>
     
   </ReadFileTests>
   

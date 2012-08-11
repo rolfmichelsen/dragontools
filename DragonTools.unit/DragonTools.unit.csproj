@@ -57,6 +57,8 @@
     <Compile Include="DragonTapeBlockTest.cs" />
     <Compile Include="DragonTapeDataBlockTest.cs" />
     <Compile Include="DragonTapeHeaderBlockTest.cs" />
+    <Compile Include="OS9FileTest.cs" />
+    <Compile Include="OS9ModuleFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

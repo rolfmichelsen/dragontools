@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9DataFile">
+    <Position X="1" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAEAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\OS9\OS9DataFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9ModuleFile">
+    <Position X="4" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAgUAAAECAAAAAIgCAIAAEACAAAAAAEAAAA=</HashCode>
+      <FileName>IO\Filesystem\OS9\OS9ModuleFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9">
+    <Position X="7.25" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAQEQAgAAGAgUYEEBAiAExQAQAQAQIAgIAEMiEABAYI=</HashCode>
+      <FileName>IO\Filesystem\OS9\OS9.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9FileInfo">
+    <Position X="4" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAIAAAQgAAEAAAABAQQALEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\OS9\OS9FileInfo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9Utils">
+    <Position X="11" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\OS9\OS9Utils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9File">
+    <Position X="1" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <NewMemberFileName>IO\Filesystem\OS9\OS9File.cs</NewMemberFileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.IFile">
+    <Position X="11" Y="4.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>IO\Filesystem\IFile.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

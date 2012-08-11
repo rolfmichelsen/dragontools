@@ -79,12 +79,14 @@
     <Compile Include="IO\Disk\MemoryDisk.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9AllocationMap.cs" />
+    <Compile Include="IO\Filesystem\OS9\OS9DataFile.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9DirectoryEntry.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9DiskInfo.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9File.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileAttributes.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileInfo.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9FileName.cs" />
+    <Compile Include="IO\Filesystem\OS9\OS9ModuleFile.cs" />
     <Compile Include="IO\Filesystem\OS9\OS9Utils.cs" />
     <Compile Include="IO\Filesystem\RsDos\RsDos.cs" />
     <Compile Include="IO\Filesystem\RsDos\RsDosDirectoryEntry.cs" />
@@ -114,6 +116,7 @@
     <None Include="DiskFilesystem.cd" />
     <None Include="IO\Filesystem\DragonDos\DragonDos.cd" />
     <None Include="IO\Filesystem\DragonTape\DragonTape.cd" />
+    <None Include="IO\OS9.cd" />
     <None Include="TapeFilesystem.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

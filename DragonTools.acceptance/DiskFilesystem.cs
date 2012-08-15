@@ -289,10 +289,11 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
                 try
                 {
                     var file = dos.ReadFile(filename);
+                    var fileinfo = file.FileInfo;
                     Assert.IsTrue(String.IsNullOrWhiteSpace(exception), "Expected exception " + exception);
                     Assert.AreEqual(filetype, file.GetType().FullName);
-                    Assert.AreEqual(filename, file.Name);
-                    Assert.AreEqual(length, file.Size);
+                    Assert.AreEqual(filename, fileinfo.Name);
+                    Assert.AreEqual(length, fileinfo.Size);
                 }
                 catch (Exception e)
                 {

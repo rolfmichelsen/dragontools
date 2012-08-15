@@ -50,10 +50,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// </summary>
         private byte[] data;
 
+
         /// <summary>
-        /// The name of the file.
+        /// Directory information for this file, or <value>null</value> if the file isn't associated
+        /// with a directory entry.
         /// </summary>
-        public string Name { get; private set; }
+        private DragonDosFileInfo fileinfo = null;
 
 
         /// <summary>
@@ -63,39 +65,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
 
         /// <summary>
-        /// The size of this file in the filesystem.  
-        /// This length includes any filesystem
-        /// headers and meta-information.  The exact defintiion of this property is left to
-        /// each concrete filesystem, but it should correspond to the file size shown with
-        /// directory listings.
-        /// </summary>
-        public int Size { get; private set; }
-
-
-        /// <summary>
-        /// Indicates that this file is actually a directory.
-        /// </summary>
-        public bool IsDirectory { get { return false; }}
-
-
-        /// <summary>
         /// Returns the size of the file payload data.
-        /// This length is less than the value returned by <see cref="Size">Size</see> for files with file headers.  
         /// It is equivalent to <c>GetData().Length</c>.
         /// </summary>
         public int Length { get { return data.Length; } }
-
-
-        /// <summary>
-        /// True if this file is an executable file.
-        /// </summary>
-        public bool IsExecutable { get; private set; }
-
-
-        /// <summary>
-        /// True if this file is marked as protected by the filesystem.
-        /// </summary>
-        public bool IsProtected { get; private set; }
 
 
         /// <summary>
@@ -111,17 +84,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
 
         /// <summary>
-        /// Return a concise one-line representation of relevant filesystem specific file attributes, suitable for
-        /// showing in a directory listing.
-        /// </summary>
-        /// <returns>String representation of file attributes.</returns>
-        public string GetAttributes()
-        {
-            return IsProtected ? "P" : "";
-        }
-
-
-        /// <summary>
         /// Return the file payload data.
         /// </summary>
         public byte[] GetData()
@@ -131,73 +93,90 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
 
         /// <summary>
+        /// Return file information from the disk directory.
+        /// This property will be <value>null</value> if the file is not associated with a directory entry.
+        /// </summary>
+        public IFileInfo FileInfo { get { return fileinfo; } }
+
+
+        /// <summary>
         /// Create a DragonDos file object.
         /// </summary>
-        /// <param name="name">File name.</param>
         /// <param name="type">File type.</param>
         /// <param name="data">File payload data.</param>
-        /// <param name="isProtected">True if the file has the protected flag set.</param>
         /// <param name="loadAddress">Load address for machine code programs.</param>
         /// <param name="startAddress">Execution start address for machine code programs.</param>
         /// <remarks>
         /// This class assumes ownership of the data parameter and assumes that the caller will not make changes to the contents of this
         /// array.
         /// </remarks>
-        internal DragonDosFile(string name, DragonDosFileType type, byte[] data, bool isProtected, int loadAddress, int startAddress)
+        private DragonDosFile(DragonDosFileType type, byte[] data, int loadAddress = 0, int startAddress = 0)
         {
-            Name = name;
             FileType = type;
             this.data = data;
-            IsProtected = isProtected;
             LoadAddress = loadAddress;
             StartAddress = startAddress;
         }
 
 
         /// <summary>
+        /// Create a DragonDos file object that is associated with a filesystem directory entry.
+        /// </summary>
+        /// <param name="info">File directory information.</param>
+        /// <param name="type">File type.</param>
+        /// <param name="data">File payload data.</param>
+        /// <param name="loadaddress">Load address for machine code programs.</param>
+        /// <param name="startaddress">Execution start address for machine code programs.</param>
+        /// <remarks>
+        /// This class assumes ownership of the data parameter and assumes that the caller will not make changes to the contents of this
+        /// array.
+        /// </remarks>
+        private DragonDosFile(DragonDosFileInfo info, DragonDosFileType type, byte[] data, int loadaddress = 0, int startaddress = 0)
+            : this(type, data, loadaddress, startaddress)
+        {
+            fileinfo = info;
+        }
+
+
+
+        /// <summary>
         /// Creates a file object for a DragonDos data file.
         /// </summary>
-        /// <param name="name">Name of file.</param>
         /// <param name="data">File payload data.</param>
         /// <returns>The DragonDos file object,</returns>
-        public static DragonDosFile CreateDataFile(string name, byte[] data)
+        public static DragonDosFile CreateDataFile(byte[] data)
         {
-            if (name == null) throw new ArgumentNullException("name");
             if (data == null) throw new ArgumentNullException("data");
             
-            return new DragonDosFile(name, DragonDosFileType.Data, (byte[]) data.Clone(), false, 0, 0) { Size = data.Length};
+            return new DragonDosFile(DragonDosFileType.Data, (byte[]) data.Clone());
         }
 
 
         /// <summary>
         /// Creates a file object for a DragonDos BASIC file.
         /// </summary>
-        /// <param name="name">Name of file.</param>
         /// <param name="data">File payload data.</param>
         /// <returns>The DragonDos file object.</returns>
-        public static DragonDosFile CreateBasicFile(string name, byte[] data)
+        public static DragonDosFile CreateBasicFile(byte[] data)
         {
-            if (name == null) throw new ArgumentNullException("name");
             if (data == null) throw new ArgumentNullException("data");
 
-            return new DragonDosFile(name, DragonDosFileType.Basic, (byte[]) data.Clone(), false, 0, 0) { Size = data.Length + FileHeaderSize};
+            return new DragonDosFile(DragonDosFileType.Basic, (byte[]) data.Clone());
         }
 
 
         /// <summary>
         /// Create a file object for a DragonDos machine code program.
         /// </summary>
-        /// <param name="name">Name of file.</param>
         /// <param name="data">File payload data.</param>
         /// <param name="loadAddress">Program load address in memory.</param>
         /// <param name="startAddress">Program execution start address in memory.</param>
         /// <returns>The DragonDos file object.</returns>
-        public static DragonDosFile CreateMachineCodeFile(string name, byte[] data, int loadAddress, int startAddress)
+        public static DragonDosFile CreateMachineCodeFile(byte[] data, int loadAddress, int startAddress)
         {
-            if (name == null) throw new ArgumentNullException("name");
             if (data == null) throw new ArgumentNullException("data");
 
-            return new DragonDosFile(name, DragonDosFileType.MachineCode, (byte[]) data.Clone(), false, loadAddress, startAddress) { Size = data.Length + FileHeaderSize };
+            return new DragonDosFile(DragonDosFileType.MachineCode, (byte[]) data.Clone(), loadAddress, startAddress);
         }
 
 
@@ -241,7 +220,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         {
             /* If the file does not contain a valid file header it must be a data file. */
             if (raw.Length < FileHeaderSize || raw[0] != FileHeaderFirstByte || raw[8] != FileHeaderLastByte)
-                return CreateDataFile(fileinfo.Name, raw);
+                return new DragonDosFile(fileinfo, DragonDosFileType.Data, raw);
 
             /* Extract the file payload data. */
             var data = new byte[raw.Length - FileHeaderSize];
@@ -251,11 +230,11 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
             switch ((DragonDosFileType) raw[1])
             {
                 case DragonDosFileType.Basic:
-                    return CreateBasicFile(fileinfo.Name, data);
+                    return new DragonDosFile(fileinfo, DragonDosFileType.Basic, data);
                 case DragonDosFileType.MachineCode:
                     int loadAddress = (raw[2] << 8) | raw[3];
                     int startAddress = (raw[6] << 8) | raw[7];
-                    return CreateMachineCodeFile(fileinfo.Name, data, loadAddress, startAddress);
+                    return new DragonDosFile(fileinfo, DragonDosFileType.MachineCode, data, loadAddress, startAddress);
                 default:
                     throw new InvalidFileException(fileinfo.Name, String.Format("Unknown file type identifier {0}", raw[1]));
             }
@@ -268,7 +247,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("DragonDos file: name={0} type={1} size={2}", Name, FileType, Size);
+            return String.Format("DragonDos file: name={0} type={1}", (fileinfo == null ? "n/a" : fileinfo.Name), FileType);
         }
     }
 

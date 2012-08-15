@@ -14,7 +14,7 @@
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile">
     <Position X="1.5" Y="4.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAQAgAAUAAAgAAUAEAAAARAEJQqgAAAAAAQAAAgAAQ=</HashCode>
+      <HashCode>AAAAAgAAUAAAAAAUAEAAAABAEAAqgAAAAEAQAAAgAAQ=</HashCode>
       <FileName>IO\Filesystem\DragonDos\DragonDosFile.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -30,7 +30,7 @@
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFileName">
     <Position X="1.5" Y="11" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAAIEAAgAAAQAAAAEAQAAAAAAgAAAQAA=</HashCode>
+      <HashCode>AAAAAIAAAAAAAAIEgAgAAAQAAAAEAYAAAAAAgAAAQBA=</HashCode>
       <FileName>IO\Filesystem\DragonDos\DragonDosFileName.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

@@ -185,20 +185,20 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <summary>
         /// Write a file to the filesystem.
         /// </summary>
+        /// <param name="filename">Filename.</param>
         /// <param name="file">File object to write.</param>
         /// <exception cref="FileExistsException">A file with the specified name already exists.</exception>
         /// <exception cref="FilesystemFullException">The filesystem does not have remaining capacity to store the file.</exception>
         /// <exception cref="FilesystemNotWriteableException">This filesystem does not support write operations.</exception>
         /// <exception cref="InvalidFilenameException">The file name is invalid for this filesystem.</exception>
-        public void WriteFile(IFile file)
+        public void WriteFile(string filename, IFile file)
         {
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (!IsWriteable) throw new FilesystemNotWriteableException();
             if (file == null) throw new ArgumentNullException("file");
             if (!(file is DragonDosFile)) throw new ArgumentException("file is of unexpected type " + file.GetType().FullName);
             var dragonfile = (DragonDosFile) file;
-            WriteFileRaw(file.Name, dragonfile.EncodeFile());
-            SetProtected(file.Name, dragonfile.IsProtected);
+            WriteFileRaw(filename, dragonfile.EncodeFile());
         }
 
 

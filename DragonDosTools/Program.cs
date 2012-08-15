@@ -369,15 +369,15 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             IFile file;
             if (basic)
             {
-                file = DragonDosFile.CreateBasicFile(filename, data);
+                file = DragonDosFile.CreateBasicFile(data);
             }
             else if (loadAddress != 0 || execAddress != 0)
             {
-                file = DragonDosFile.CreateMachineCodeFile(filename, data, loadAddress, execAddress);
+                file = DragonDosFile.CreateMachineCodeFile(data, loadAddress, execAddress);
             }
             else
             {
-                file = DragonDosFile.CreateDataFile(filename, data);
+                file = DragonDosFile.CreateDataFile(data);
             }
             
             
@@ -385,7 +385,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
             {
                 if (!CheckFilesystem(dos)) return;
-                dos.WriteFile(file);
+                dos.WriteFile(filename, file);
                 if (!quiet)
                 {
                     Console.WriteLine("Wrote file {0} -- {1}", filename, file);

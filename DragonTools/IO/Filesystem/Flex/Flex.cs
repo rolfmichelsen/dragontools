@@ -103,12 +103,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex
         /// <summary>
         /// Write a file to the filesystem.
         /// </summary>
+        /// <param name="filename">Filename.</param>
         /// <param name="file">File object to write.</param>
         /// <exception cref="FilesystemFullException">A file with the specified name already exists.</exception>
         /// <exception cref="FilesystemNotWriteableException">The filesystem does not have remaining capacity to store the file.</exception>
         /// <exception cref="InvalidFilenameException">This filesystem does not support write operations.</exception>
         /// <exception cref="FileExistsException">The file name is invalid for this filesystem.</exception>
-        public void WriteFile(IFile file)
+        public void WriteFile(string filename, IFile file)
         {
             throw new NotImplementedException();
         }

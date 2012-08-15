@@ -69,12 +69,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
 
 
         /// <summary>
-        /// True if this file is an executable file.
-        /// </summary>
-        public bool IsExecutable { get; private set; }
-
-
-        /// <summary>
         /// Return a concise one-line representation of relevant filesystem specific file attributes, suitable for
         /// showing in a directory listing.
         /// </summary>
@@ -102,6 +96,16 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         public byte[] GetData()
         {
             return (byte[]) data.Clone();
+        }
+
+
+        /// <summary>
+        /// Return file information from the disk directory.
+        /// This property will be <value>null</value> if the file is not associated with a directory entry.
+        /// </summary>
+        public IFileInfo FileInfo
+        {
+            get { throw new NotImplementedException(); }
         }
 
 

@@ -72,20 +72,21 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 
 
         /// <summary>
-        /// True if this file is an executable file.
-        /// </summary>
-        public bool IsExecutable
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-
-        /// <summary>
         /// Return the file payload data.
         /// </summary>
         public byte[] GetData()
         {
             return (byte[])data.Clone();
+        }
+
+
+        /// <summary>
+        /// Return file information from the disk directory.
+        /// This property will be <value>null</value> if the file is not associated with a directory entry.
+        /// </summary>
+        public IFileInfo FileInfo
+        {
+            get { throw new NotImplementedException(); }
         }
 
 

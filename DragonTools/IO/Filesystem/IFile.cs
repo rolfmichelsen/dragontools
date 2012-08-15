@@ -31,13 +31,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem
     /// <summary>
     /// Abstract representation of a file.
     /// </summary>
-    public interface IFile : IFileInfo
+    public interface IFile
     {
-        /// <summary>
-        /// True if this file is an executable file.
-        /// </summary>
-        bool IsExecutable { get; }
-
         /// <summary>
         /// Return the file payload data.
         /// Some filesystems may support multiple data "segments" or "forks".  For those filesystems, this method will
@@ -45,5 +40,11 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem
         /// </summary>
         byte[] GetData();
 
+
+        /// <summary>
+        /// Return file information from the disk directory.
+        /// This property will be <value>null</value> if the file is not associated with a directory entry.
+        /// </summary>
+        IFileInfo FileInfo { get; }
     }
 }

@@ -106,7 +106,7 @@ namespace DragonTools.unit
             
             var module = (OS9ModuleFile) file;
             Assert.AreEqual("List", module.ModuleName);
-            Assert.AreEqual(OS9ModuleType.Program, module.OS9ModuleType);
+            Assert.AreEqual(OS9ModuleType.Program, module.ModuleType);
             Assert.AreEqual(1, module.ModuleLanguage);
             Assert.AreEqual(8, module.ModuleAttributes);
             Assert.AreEqual(1, module.ModuleRevision);

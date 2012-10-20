@@ -1,4 +1,4 @@
-﻿Copyright (c) 2011, Rolf Michelsen
+﻿Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 

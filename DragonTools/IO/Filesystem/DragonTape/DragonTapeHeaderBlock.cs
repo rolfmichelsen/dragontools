@@ -189,7 +189,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
 
         public override string ToString()
         {
-            return String.Format("Block: Type={0} (Header) Length={1} Name={2} Filetype={3} Load={4} Start={5}", (int)BlockType, Length, Filename, (int) FileType, LoadAddress, StartAddress);
+            return String.Format("Block: Type={0} (Header) Length={1} Name={2} Filetype={3} Load={4} Start={5} Checksum={6} ({7})", 
+                (int)BlockType, Length, Filename, (int) FileType, LoadAddress, StartAddress, Checksum, (IsChecksumValid() ? "Valid" : "Invalid"));
         }
 
     }

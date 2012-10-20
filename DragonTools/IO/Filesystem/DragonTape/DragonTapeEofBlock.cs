@@ -41,6 +41,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         /// </summary>
         public DragonTapeEofBlock() : base(DragonTapeBlockType.EndOfFile)
         {
+            Checksum = ComputeChecksum();
         }
 
 
@@ -54,7 +55,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
 
         public override string ToString()
         {
-            return String.Format("Block: Type={0} (EOF) Length={1}", (int)BlockType, Length);
+            return String.Format("Block: Type={0} (EOF) Length={1} Checksum={2} ({3})", (int)BlockType, Length, Checksum, (IsChecksumValid() ? "Valid" : "Invalid"));
         }
 
     }

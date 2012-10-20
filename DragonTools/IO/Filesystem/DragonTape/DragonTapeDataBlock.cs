@@ -77,7 +77,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
 
         public override string ToString()
         {
-            return String.Format("Block: Type={0} (Data) Length={1}", (int)BlockType, Length);
+            return String.Format("Block: Type={0} (Data) Length={1} Checksum={2} ({3})", (int)BlockType, Length, Checksum, (IsChecksumValid() ? "Valid" : "Invalid"));
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -26,31 +26,25 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using RolfMichelsen.Dragon.DragonTools.IO.Disk;
-using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
+using System.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
-using RolfMichelsen.Dragon.DragonTools.IO;
-using System.IO;
 using FileNotFoundException = RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 {
     /// <summary>
-    /// Program for manipulation of virtual DragonDos filesystems.
+    /// Program for accessing and manipulation of virtual DragonDos filesystems.
     /// </summary>
     class Program
     {
-        /// <summary>
-        /// The default number of disk heads when creating a DragonDos filesystem.
-        /// </summary>
-        private const int DefaultHeads = 1;
-
         /// <summary>
         /// The default number of disk tracks  when creating a DragonDos filesystem.
         /// </summary>
@@ -72,35 +66,13 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// </summary>
         private bool verbose = false;
 
-        /// <summary>
-        /// Set for quiet program operation.
-        /// This flag is controlled by the -q command line option.
-        /// </summary>
-        private bool quiet = false;
 
         /// <summary>
-        /// Set to force command execution even for inconsistent filesystems.
-        /// This flag is controlled by the -f command line option.
+        /// Set for program debug output.
+        /// This flag is controlled by the -d command line option.
         /// </summary>
-        private bool force = false;
+        private bool debug = false;
 
-        /// <summary>
-        /// Set for the PUT command to write a BASIC program file.
-        /// This flag is controlled by the -basic command line option.
-        /// </summary>
-        private bool basic = false;
-
-        /// <summary>
-        /// Set for the PUT command to specify the loading address of machine code programs.
-        /// This value is controlled by the -load command line option
-        /// </summary>
-        private int loadAddress = 0;
-
-        /// <summary>
-        /// Set for the PUT command to specify the execution address of machine code programs.
-        /// This value is controlled by the -exec command line option.
-        /// </summary>
-        private int execAddress = 0;
 
 
         static void Main(string[] args)
@@ -126,6 +98,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 commands.RemoveAt(0);
                 switch (command)
                 {
+                    case "check":
+                        CheckFilesystem(commands);
+                        break;
                     case "create":
                         CreateFilesystem(commands);
                         break;
@@ -135,11 +110,14 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     case "dir":
                         ListDirectory(commands);
                         break;
-                    case "get":
-                        GetFile(commands);
+                    case "freemap":
+                        Freemap(commands);
                         break;
-                    case "put":
-                        PutFile(commands);
+                    case "read":
+                        ReadFile(commands);
+                        break;
+                    case "write":
+                        WriteFile(commands);
                         break;
                     default:
                         Console.Error.WriteLine("ERROR: Unknown command {0}.", commands[0]);
@@ -150,66 +128,92 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             catch (FileNotFoundException e)
             {
                 Console.Error.WriteLine("ERROR: The file does not exist.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (DirectoryFullException e)
             {
                 Console.Error.WriteLine("ERROR: Cannot write file to filesystem.  The directory is full.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (FileExistsException e)
             {
                 Console.Error.WriteLine("ERROR: Cannot write the file as a file with the same name already exists.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (FilesystemConsistencyException e)
             {
                 Console.Error.WriteLine("ERROR: Cannot complete operation as the filesystem is corrupt.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (FilesystemFullException e)
             {
                 Console.Error.WriteLine("ERROR: Cannot write file as the filesystem is full.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (InvalidFileException e)
             {
                 Console.Error.WriteLine("ERROR: The file is invalid.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (InvalidFileTypeException e)
             {
                 Console.Error.WriteLine("ERROR: The file type is invalid.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (FilesystemNotWriteableException e)
             {
                 Console.Error.WriteLine("ERROR: The filesystem is write protected or does not support write operations.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (InvalidFilenameException e)
             {
                 Console.Error.WriteLine("ERROR: The filename {0} is invalid.", e.Filename);
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (DiskImageFormatException e)
             {
                 Console.Error.WriteLine("ERROR: Virtual disk image format error.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (DiskNotWriteableException e)
             {
                 Console.Error.WriteLine("ERROR: The disk is write protected or does not support write operations.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (UnsupportedGeometryException e)
             {
                 Console.Error.WriteLine("ERROR: The disk geometry is not valid or supported for this filesystem.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
             catch (System.IO.IOException e)
             {
                 Console.Error.WriteLine("ERROR: Local filesystem I/O error.");
+                if (debug)
+                    Console.Error.WriteLine(e);
                 return;
             }
         }
@@ -232,29 +236,27 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// </summary>
         private void ShowUsage()
         {
-            Console.WriteLine("ddos {0} - DragonDos Tools", GetVersionInfo());
-            Console.WriteLine("(C) Rolf Michelsen, 2011");
+            Console.WriteLine("DragonDos {0} - Tools for accessing DragonDos virtual filesystems", GetVersionInfo());
+            Console.WriteLine("(C) Rolf Michelsen, 2011-2012");
             Console.WriteLine();
-            Console.WriteLine("Usage: ddos COMMAND COMMAND-ARGS [OPTIONS]");
+            Console.WriteLine("Usage: DragonDos COMMAND COMMAND-ARGS [OPTIONS]");
             Console.WriteLine();
             Console.WriteLine("Commands:");
-            Console.WriteLine("  create <diskimage>");
+            Console.WriteLine("  check <diskimage>");
+            Console.WriteLine("  create <diskimage> [<tracks> [<sectors>]]");
             Console.WriteLine("  delete <diskimage> {<filename>}");
             Console.WriteLine("  dir <diskimage>");
-            Console.WriteLine("  get <diskimage> <filename> [<local filename>]");
-            Console.WriteLine("  put <diskimage> <filename> [<local filename>]");
+            Console.WriteLine("  freemap <diskimage>");
+            Console.WriteLine("  read <diskimage> <filename> [<local filename>]");
+            Console.WriteLine("  read <diskimage> <filename> <tape image>.CAS [<local filename>]");
+            Console.WriteLine("  write <diskimage> <filename> [<local filename>]");
+            Console.WriteLine("  write <diskimage> <filename> <tape image>.CAS [<localfilename>]");
             Console.WriteLine();
             Console.WriteLine("Options:");
-            Console.WriteLine("  -v           Enable more verbose operation.");
-            Console.WriteLine("  -q           Enable really quiet operation.");
-            Console.WriteLine("  -f           Force command even when filesystem is damaged.");
-            Console.WriteLine("  -basic       PUT command will write a BASIC program file.");
-            Console.WriteLine("  -load <addr> PUT command will write a machine code program file with given");
-            Console.WriteLine("               load address.");
-            Console.WriteLine("  -exec <addr> PUT command will write a machine code program file with given");
-            Console.WriteLine("               exec address.");
+            Console.WriteLine("  -d   Enable debug output.");
+            Console.WriteLine("  -v   Enable more verbose operation.");
             Console.WriteLine();
-            Console.WriteLine("Visit www.rolfmichelsen.com for more information.");
+            Console.WriteLine("Visit www.rolfmichelsen.com/dragontools for more information.");
             Console.WriteLine();
         }
 
@@ -277,22 +279,8 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                         case "-v":
                             verbose = true;
                             break;
-                        case "-q":
-                            quiet = true;
-                            break;
-                        case "-f":
-                            force = true;
-                            break;
-                        case "-basic":
-                            basic = true;
-                            break;
-                        case "-load":
-                            if (!r.MoveNext()) throw new ApplicationException("Missing argument to -load");
-                            loadAddress = Convert.ToInt32(r.Current);
-                            break;
-                        case "-exec":
-                            if (!r.MoveNext()) throw new ApplicationException("Missing argument to -exec");
-                            execAddress = Convert.ToInt32(r.Current);
+                        case "-d":
+                            verbose = debug = true;
                             break;
                         default:
                             newargs.Add(r.Current);
@@ -304,199 +292,50 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         }
 
 
-        /// <summary>
-        /// Check the filesystem consistency.
-        /// Outputs a suitable error or warning if the consistency check fails, depending on the value of the <see cref="force">force</see> flag.
-        /// </summary>
-        /// <param name="dos">Filesystem to check.</param>
-        /// <returns>True if the filesystem passes the consistency checks or command execution is forced.</returns>
-        private bool CheckFilesystem(IDiskFilesystem dos)
-        {
-            try
-            {
-                dos.Check();
-                return true;
-            }
-            catch (FilesystemConsistencyException e)
-            {
-                if (force)
-                {
-                    Console.WriteLine("WARNING: Filesystem is inconsistent but command execution is forced to continue.");
-                    return true;
-                }
-                Console.Error.WriteLine("ERROR: Filesystem is inconsistent and command execution is aborted.");
-                return false;
-            }
-        }
-
 
         /// <summary>
-        /// Write a file from the local filesystem to the DragonDos filesystem.
+        /// Check the consistency of the filesystem and output a summary to the console.
         /// </summary>
-        /// <param name="args">Command arguments.</param>
-        private void PutFile(IEnumerable<string> args)
+        /// <param name="args">Command arguments: &lt;disk image name&gt;</param>
+        private void CheckFilesystem(IEnumerable<string> args)
         {
             var ai = args.GetEnumerator();
 
-            /* Get the disk image name from the argument list. */
             if (!ai.MoveNext())
             {
-                Console.Error.WriteLine("ERROR: Disk image name missing.");
+                Console.Error.WriteLine("ERROR: Disk image name missing");
                 return;
             }
             var diskname = ai.Current;
 
-            /* Get the name of the target DragonDos file from the argument list. */
-            if (!ai.MoveNext())
-            {
-                Console.Error.WriteLine("ERROR: Missing name of target DragonDos file.");
-                return;
-            }
-            var filename = ai.Current;
-
-            /* Get the (optional) name of the local file to write to the DragonDos filesystem from the argument list.  If no filename
-             * is specified, use the name of the DragonDos file. */
-            var localfilename = ai.MoveNext() ? ai.Current : filename;
-
-            if (!File.Exists(localfilename))
-            {
-                Console.Error.WriteLine("ERROR: Local file {0} does not exist.", localfilename);
-                return;
-            }
-
-            /* Read the local file data and create an IFile object. */
-            var data = File.ReadAllBytes(localfilename);
-            IFile file;
-            if (basic)
-            {
-                file = DragonDosFile.CreateBasicFile(data);
-            }
-            else if (loadAddress != 0 || execAddress != 0)
-            {
-                file = DragonDosFile.CreateMachineCodeFile(data, loadAddress, execAddress);
-            }
-            else
-            {
-                file = DragonDosFile.CreateDataFile(data);
-            }
-            
-            
-            /* Write the file to the DragonDos filesystem. */
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
-            {
-                if (!CheckFilesystem(dos)) return;
-                dos.WriteFile(filename, file);
-                if (!quiet)
-                {
-                    Console.WriteLine("Wrote file {0} -- {1}", filename, file);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Read file from DragonDos filesystem and write to local filesystem.
-        /// </summary>
-        /// <param name="args">Command arguments.</param>
-        private void GetFile(IEnumerable<string> args)
-        {
-            var ai = args.GetEnumerator();
-
-            /* Get the disk image name from the argument list. */
-            if (!ai.MoveNext())
-            {
-                Console.Error.WriteLine("ERROR: Disk image name missing.");
-                return;
-            }
-            var diskname = ai.Current;
-
-            /* Get the name of the DragonDos file to read from the argument list. */
-            if (!ai.MoveNext())
-            {
-                Console.Error.WriteLine("ERROR: Missing name of file to read from DragonDos filesystem.");
-                return;
-            }
-            var filename = ai.Current;
-
-            /* Get the (optional) name of the local file to write to from the argument list.  If no local file name is given,
-             * use the DragonDos filename.  If the local filename ends with ".cas", then the file will be written to a CAS
-             * filesystem with an optional fourth parameter specifying the filename within the CAS filesystem. */
-
-            string casfilename = null;
-            string targetfilename;
-
-            var arg1 = ai.MoveNext() ? ai.Current : null;
-            var arg2 = ai.MoveNext() ? ai.Current : null;
-            if (arg1 != null && arg1.EndsWith(".cas", StringComparison.InvariantCultureIgnoreCase))
-            {
-                casfilename = arg1;
-                targetfilename = arg2 ?? filename;
-                if (File.Exists(casfilename))
-                {
-                    Console.Error.WriteLine("ERROR: Local filesystem file {0} already exists.", casfilename);
-                    return;
-                }
-            }
-            else
-            {
-                targetfilename = arg1 ?? filename;
-                if (File.Exists(targetfilename))
-                {
-                    Console.Error.WriteLine("ERROR: Local filesystem file {0} already exists.", targetfilename);
-                    return;
-                }
-            }
-
-            /* Read the file from the DragonDos filesystem and write it to the local filesystem. */
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
             {
-                if (!CheckFilesystem(dos)) return;
-                var file = (DragonDosFile) dos.ReadFile(filename);
-                if (casfilename == null)
+                if (dos == null)
                 {
-                    File.WriteAllBytes(targetfilename, file.GetData());                    
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
                 }
-                else
+                try
                 {
-                    WriteCassetteFile(casfilename, targetfilename, file);
+                    dos.Check();
+                    Console.WriteLine("The filesystem in {0} is healthy.", diskname);
                 }
-                if (!quiet)
+                catch (FilesystemConsistencyException e)
                 {
-                    Console.WriteLine("Read file {0} -- {1}",filename,file); 
+                    Console.WriteLine("The filesystem in {0} is inconsistent.", diskname);
                 }
             }
         }
 
 
 
-        private void WriteCassetteFile(string casfilename, string targetfilename, DragonDosFile file)
-        {
-            IFile tapefile;
-            switch (file.FileType)
-            {
-                case DragonDosFileType.Basic:
-                    tapefile = DragonFile.CreateBasicFile(targetfilename, file.GetData(), false, false);
-                    break;
-                case DragonDosFileType.MachineCode:
-                    tapefile = DragonFile.CreateMachineCodeFile(targetfilename, file.GetData(), file.LoadAddress,
-                                                                file.StartAddress, false, false);
-                    break;
-                default:
-                    tapefile = DragonFile.CreateDataFile(targetfilename, file.GetData(), false, false);
-                    break;
-            }
 
-            using (var tape = new DragonTape(new CasTape(new System.IO.FileStream(casfilename, FileMode.CreateNew))))
-            {
-                tape.WriteFile(tapefile);
-            }
-        }
 
 
         /// <summary>
         /// Output directory listing to console.
         /// </summary>
-        /// <param name="args">Command arugments.</param>
+        /// <param name="args">Command arugments: &lt;disk image name&gt;.</param>
         private void ListDirectory(IEnumerable<string> args)
         {
             var ai = args.GetEnumerator();
@@ -510,7 +349,11 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
             {
-                if (!CheckFilesystem(dos)) return;
+                if (dos == null)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
+                }
                 var filecount = 0;
                 var files = dos.ListFiles();
                 foreach (var file in files)
@@ -519,16 +362,18 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     Console.WriteLine("{0,-15} {1,6} {2}", file, fileinfo.Size, fileinfo.GetAttributes());
                     filecount++;
                 }
-                Console.WriteLine();
+                if (filecount > 0)
+                    Console.WriteLine();
                 Console.WriteLine("{1} files, {0} bytes free.", dos.Free(), filecount);
             }
         }
 
 
+
         /// <summary>
         /// Delete one or more files.
         /// </summary>
-        /// <param name="args">Command arguments.</param>
+        /// <param name="args">Command arguments: &lt;disk image name&gt; {&lt;file name&gt;}.</param>
         private void DeleteFile(IEnumerable<string> args)
         {
             var ai = args.GetEnumerator();
@@ -542,28 +387,34 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
             using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
             {
-                if (!CheckFilesystem(dos)) return;
+                if (dos == null)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
+                }
                 var deleteCount = 0;
                 while (ai.MoveNext())
                 {
                     var filename = ai.Current;
-                    dos.DeleteFile(filename);
+                    try
+                    {
+                        dos.DeleteFile(filename);                        
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        Console.Error.WriteLine("WARNING: File {0} not found", filename);
+                        continue;
+                    }
                     deleteCount++;
-                    if (!quiet)
-                    {
-                        Console.WriteLine("Deleted file {0}", filename);
-                    }
+                    Console.WriteLine("Deleted file {0}", filename);
                 }
-                if (!quiet)
+                if (deleteCount == 0)
                 {
-                    if (deleteCount == 0)
-                    {
-                        Console.WriteLine("No files to delete.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Deleted {0} files.", deleteCount);
-                    }
+                    Console.WriteLine("No files to delete.");
+                }
+                else
+                {
+                    Console.WriteLine("Deleted {0} files.", deleteCount);
                 }
             }
         }
@@ -573,9 +424,12 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// <summary>
         /// Create empty DragonDos filesystem.
         /// </summary>
-        /// <param name="args">Command arguments.</param>
+        /// <param name="args">Command arguments: &lt;disk image name&gt; [&lt;tracks&gt; [&lt;sectors&gt;]].</param>
         private void CreateFilesystem(IEnumerable<string> args)
         {
+            int tracks = DefaultTracks;
+            int sectors = DefaultSectors;
+
             var ai = args.GetEnumerator();
 
             if (!ai.MoveNext())
@@ -585,24 +439,313 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var diskname = ai.Current;
 
+            if (ai.MoveNext())
+            {
+                tracks = Convert.ToInt32(ai.Current);
+                if (tracks != 40 && tracks != 80)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos only supports 40 and 80 track diskettes.");
+                    return;
+                }
+            }
+
+            if (ai.MoveNext())
+            {
+                sectors = Convert.ToInt32(ai.Current);
+                if (sectors != 18 && sectors != 36)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos only supports 18 or 36 sectors per track.");
+                    return;
+                }
+            }
+
+            int heads = sectors/18;
+            sectors -= (heads-1)*18;
+
             if (File.Exists(diskname))
             {
                 Console.Error.WriteLine("ERROR: Target file {0} already exists.", diskname);
                 return;
             }
 
-            using (var disk = DiskFactory.CreateDisk(diskname, DefaultHeads, DefaultTracks, DefaultSectors, DefaultSectorSize))
+            using (var disk = DiskFactory.CreateDisk(diskname, heads, tracks, sectors, DefaultSectorSize))
             {
                 using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, disk, true))
                 {
-                    if (!CheckFilesystem(dos)) return;
                     dos.Initialize();
-                    if (!quiet)
-                    {
-                        Console.WriteLine("Created empty filesystem in {0}. Capacity {1} bytes.", diskname, dos.Free());
-                    }
+                    Console.WriteLine("Created empty filesystem in {0}. Capacity {1} bytes.", diskname, dos.Free());
                 }
             }
         }
+
+
+
+
+        /// <summary>
+        /// Read a file from the virtual DragonDos filesystem and write it to the host filesystem.
+        /// </summary>
+        /// <param name="args">Command arguments: &lt;disk image&gt; &lt;DragonDos filename&gt; [&lt;local filename&gt;]</param>
+        private void ReadFile(IEnumerable<string> args)
+        {
+            var ai = args.GetEnumerator();
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Disk image name missing.");
+                return;
+            }
+            var diskname = ai.Current;
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: DragonDos filename missing.");
+                return;
+            }
+            var dragonFilename = ai.Current;
+            var localFilename = ai.MoveNext() ? ai.Current : dragonFilename;
+            
+            using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
+            {
+                if (dos == null)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
+                }
+                var file = dos.ReadFile(dragonFilename);
+                PrintFileInformation((DragonDosFile) file);
+                SaveLocalFile((DragonDosFile) file, localFilename, ai);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Write a DragonDos file to a file container.
+        /// </summary>
+        /// <param name="file">DragonDos file to write to a new container.</param>
+        /// <param name="localFilename">Filename of new container.</param>
+        /// <param name="ai">Enumerator for accessing any container-specific arguments.</param>
+        private void SaveLocalFile(DragonDosFile file, string localFilename, IEnumerator<string> ai)
+        {
+            if (localFilename.EndsWith(".CAS", StringComparison.InvariantCultureIgnoreCase))
+            {
+                SaveToCasFile(file, localFilename, ai);
+            }
+            else
+            {
+                SaveToPlainFile(file, localFilename);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Write a DragonDos file to a plain data file in the local file system.
+        /// </summary>
+        /// <param name="file">DragonDos file.</param>
+        /// <param name="localFilename">Local filename.</param>
+        private static void SaveToPlainFile(DragonDosFile file, string localFilename)
+        {
+            File.WriteAllBytes(localFilename, file.GetData());
+        }
+
+
+
+        /// <summary>
+        /// Write a DragonDos file to a Dragon virtual tape in the CAS format.  If the CAS file already exists, write the
+        /// file to the end of the virtual tape.
+        /// </summary>
+        /// <param name="file">DragonDos file.</param>
+        /// <param name="tapeFilename">Name of the CAS file.</param>
+        /// <param name="ai">Additional arguments: Optional name of file within virtual tape container.</param>
+        private static void SaveToCasFile(DragonDosFile file, string tapeFilename, IEnumerator<string> ai)
+        {
+            var localFilename = ai.MoveNext() ? ai.Current : file.FileInfo.Name;
+
+            IFile dragonFile;
+            switch (file.FileType)
+            {
+                case DragonDosFileType.MachineCode:
+                    dragonFile = DragonFile.CreateMachineCodeFile(localFilename, file.GetData(), file.LoadAddress, file.StartAddress, false, false);
+                    break;
+                case DragonDosFileType.Basic:
+                    dragonFile = DragonFile.CreateBasicFile(localFilename, file.GetData(), false, false);
+                    break;
+                default:
+                    dragonFile = DragonFile.CreateDataFile(localFilename, file.GetData(), false, false);
+                    break;
+            }
+            
+            using (var tape = new DragonTape(new CasTape(new FileStream(tapeFilename, FileMode.Append))))
+            {
+                tape.WriteFile(dragonFile);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Output information about a DragonDos file to the console.
+        /// </summary>
+        /// <param name="file">File to output information about.</param>
+        private static void PrintFileInformation(DragonDosFile file)
+        {
+            switch (file.FileType)
+            {
+                case DragonDosFileType.MachineCode:
+                    Console.WriteLine("DragonDos machine code program: Load address={0} Length={1} Start address={2}", file.LoadAddress, file.Length, file.StartAddress);
+                    break;
+                case DragonDosFileType.Basic:
+                    Console.WriteLine("DragonDos BASIC program: Length={0}", file.Length);
+                    break;
+                default:
+                    Console.WriteLine("DragonDos data file: Length={0}", file.Length);
+                    break;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Read a file from the host filesystem and write it to the virtual DragonDos filesystem.
+        /// </summary>
+        /// <param name="args">Command arguments: DiskImage DragonDosFilename LocalFilename.</param>
+        private void WriteFile(IEnumerable<string> args)
+        {
+            var ai = args.GetEnumerator();
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Disk image name missing.");
+                return;
+            }
+            var diskname = ai.Current;
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: DragonDos filename missing.");
+                return;
+            }
+            var dragonFilename = ai.Current;
+            var localFilename = ai.MoveNext() ? ai.Current : dragonFilename;
+
+            using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, true))
+            {
+                if (dos == null)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
+                }
+                var file = ReadLocalFile(localFilename, ai);
+                PrintFileInformation(file);
+                dos.WriteFile(dragonFilename, file);
+            }            
+        }
+
+
+
+        private DragonDosFile ReadLocalFile(string localFilename, IEnumerator<string> ai)
+        {
+            if (localFilename.EndsWith(".CAS", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ReadLocalCasFile(localFilename, ai);
+            }
+            else
+            {
+                var data = File.ReadAllBytes(localFilename);
+                var file = DragonDosFile.CreateDataFile(data);
+                return file;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Read a file from a virtual Dragon cassette and return the corresponding DragonDosFile
+        /// object.
+        /// </summary>
+        /// <param name="tapeFilename">Name of the virtual Dragon tape.</param>
+        /// <param name="ai">Additional parameters: Filename</param>
+        /// <returns></returns>
+        private DragonDosFile ReadLocalCasFile(string tapeFilename, IEnumerator<string> ai)
+        {
+            var filename = ai.MoveNext() ? ai.Current : null;
+
+            using (var tape = new DragonTape(new CasTape(new FileStream(tapeFilename, FileMode.Open))))
+            {
+                var file = (DragonFile) tape.ReadFile(filename);
+                switch (file.FileType)
+                {
+                    case DragonFileType.Basic:
+                        return DragonDosFile.CreateBasicFile(file.GetData());
+                        break;
+                    case DragonFileType.MachineCode:
+                        return DragonDosFile.CreateMachineCodeFile(file.GetData(), file.LoadAddress, file.StartAddress);
+                        break;
+                    case DragonFileType.Data:
+                        return DragonDosFile.CreateDataFile(file.GetData());
+                        break;
+                    default:
+                        throw new InvalidFileTypeException();
+                }
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Display a map of the free disk sectors.
+        /// </summary>
+        /// <param name="args">Command arguments: &lt;disk image name&gt;.</param>
+        private void Freemap(IEnumerable<string> args)
+        {
+            var ai = args.GetEnumerator();
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Disk image name missing");
+                return;
+            }
+            var diskname = ai.Current;
+
+            using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
+            {
+                if (dos == null)
+                {
+                    Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
+                    return;
+                }
+
+                int freeSectors = 0;
+                int allocatedSectors = 0;
+
+                for (int track = 0; track < dos.Disk.Tracks; track++)
+                {
+                    Console.Write("{0,2} : ", track+1);
+                    for (int head=0; head<dos.Disk.Heads; head++)
+                    {
+                        for (int sector=0; sector<dos.Disk.Sectors; sector++)
+                        {
+                            if (dos.IsSectorAllocated(head, track, sector))
+                            {
+                                Console.Write('*');
+                                allocatedSectors++;
+                            }
+                            else
+                            {
+                                Console.Write('.');
+                                freeSectors++;
+                            }
+                        }
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+                Console.WriteLine("{0} allocated sectors.", allocatedSectors);
+                Console.WriteLine("{0} free sectors.", freeSectors);
+            }
+        }
+
     }
 }

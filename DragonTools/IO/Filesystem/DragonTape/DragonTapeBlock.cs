@@ -191,9 +191,20 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape
         }
 
 
+
+        /// <summary>
+        /// Return <value>true</value> if the block checksum is valid.
+        /// </summary>
+        public bool IsChecksumValid()
+        {
+            return (Checksum == ComputeChecksum());
+        }
+
+
+
         public override string ToString()
         {
-            return String.Format("Block: Type={0} (Unknown) Length={1}", (int) BlockType, Length);
+            return String.Format("Block: Type={0} (Unknown) Length={1} Checksum={2} ({3})", (int) BlockType, Length, Checksum, (IsChecksumValid() ? "Valid" : "Invalid"));
         }
 
 

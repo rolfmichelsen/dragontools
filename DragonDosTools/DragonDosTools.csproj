@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dragon32.ico" />
-    <Content Include="DragonDosTools.html">
+    <Content Include="DragonDos.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

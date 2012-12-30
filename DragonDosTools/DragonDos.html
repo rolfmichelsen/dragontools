@@ -28,7 +28,7 @@ dl.commands dt+dt  {
 
 <body>
 
-<h1>DragonDos 0.2</h1>
+<h1>DragonDos 0.3</h1>
 &copy; Copyright 2011-2012 by Rolf Michelsen.<br />
 All rights reserved.
 
@@ -98,11 +98,13 @@ DragonDos BASIC program will be repsented as a Dragon BASIC program in the virtu
 <var>tapefile</var>.CAS exists, the new file will be appended to the virtual tape filesystem.</dd>
 
 
-<dt>WRITE <var>filesystem</var> <var>file</var> <var>[localfile]</var></dt>
+<dt>WRITE <var>filesystem</var> <var>file</var> <var>[localfile]</var> [-basic] [-native <var>load start</var>]</dt>
 <dt>WRITE <var>filesystem</var> <var>file</var> <var>tapefile</var>.CAS <var>localfile</var></dt>
 
 <dd>The first form of this command copies file <var>localfile</var> from the host Windows filesystem to a file named <var>file</var> in
-the virtual DragonDos filesystem in <var>filesystem</var>.  The file will be stored as a DragonDos data file.</dd>
+the virtual DragonDos filesystem in <var>filesystem</var>.  By default, the file will be stored as a DragonDos data file.  If the option
+<code>-basic</code> is given the file is stored as a BASIC program file.  If the option <code>-native</code> is used the file is stored
+as a machine code program with <var>load</var> and <var>start</var> as the loading address and execution start address, respectively.</dd>
 
 <dd>The second form copies the file <var>localfile</var> from a virtual Dragon tape filesystem in <var>tapefile</var>.CAS and writes
 the file to the virtual DragonDos filesystem in <var>filesystem</var> using the name <var>file</var>.  The file will retain its type

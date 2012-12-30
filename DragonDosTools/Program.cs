@@ -75,6 +75,26 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
 
 
+        /// <summary>
+        /// Manually specified file type when writing files to a DragonDos filesystem.
+        /// Holds the file type when writing files using the WRITE command.
+        /// </summary>
+        private FileType filetype = FileType.Data;
+
+
+        /// <summary>
+        /// Manually specified load address for machine code programs.
+        /// </summary>
+        private int LoadAddress = 0;
+
+
+        /// <summary>
+        /// Manually specified execution start address for machine code programs.
+        /// </summary>
+        private int StartAddress = 0;
+
+
+
         static void Main(string[] args)
         {
             var p = new Program();
@@ -84,16 +104,17 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
         private void Run(string[] args)
         {
-            var commands = ParseOptions(args);
-
-            if (commands.Count == 0)
-            {
-                ShowUsage();
-                return;
-            }
 
             try
             {
+                var commands = ParseOptions(args);
+
+                if (commands.Count == 0)
+                {
+                    ShowUsage();
+                    return;
+                }
+                
                 var command = commands[0].ToLowerInvariant();
                 commands.RemoveAt(0);
                 switch (command)
@@ -124,6 +145,13 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                         break;
                 }        
                 
+            }
+            catch (CommandArgumentsException e)
+            {
+                Console.Error.WriteLine("ERROR: Command line argument error.");
+                if (debug)
+                    Console.WriteLine(e);
+                return;
             }
             catch (FileNotFoundException e)
             {
@@ -249,7 +277,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             Console.WriteLine("  freemap <diskimage>");
             Console.WriteLine("  read <diskimage> <filename> [<local filename>]");
             Console.WriteLine("  read <diskimage> <filename> <tape image>.CAS [<local filename>]");
-            Console.WriteLine("  write <diskimage> <filename> [<local filename>]");
+            Console.WriteLine("  write <diskimage> <filename> [<local filename>] [-basic] [-native load start]");
             Console.WriteLine("  write <diskimage> <filename> <tape image>.CAS [<localfilename>]");
             Console.WriteLine();
             Console.WriteLine("Options:");
@@ -266,6 +294,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
+        /// <exception cref="CommandArgumentsException">A command line option cannot be parsed as expected.</exception>
         private IList<string> ParseOptions(IEnumerable<string> args)
         {
             var newargs = new List<string>();
@@ -282,6 +311,41 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                         case "-d":
                             verbose = debug = true;
                             break;
+                        case "-basic":
+                            filetype = FileType.Basic;
+                            break;
+                        case "-native":
+                            //TODO Refactor to improve readability, too much error handling clutter here...
+                            filetype = FileType.Native;
+                            if (!r.MoveNext())
+                                throw new CommandArgumentsException("Missing argument to -native option");
+                            try
+                            {
+                                LoadAddress = Convert.ToInt32(r.Current);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new CommandArgumentsException("Invalid format of argument to -native option");
+                            }
+                            catch (OverflowException)
+                            {
+                                throw new CommandArgumentsException("Invalid format of argument to -native option");
+                            }
+                            if (!r.MoveNext())
+                                throw new CommandArgumentsException("Missing argument to -native option");
+                            try
+                            {
+                                StartAddress = Convert.ToInt32(r.Current);
+                            }
+                            catch (FormatException)
+                            {
+                                throw new CommandArgumentsException("Invalid format of argument to -native option");
+                            }
+                            catch (OverflowException)
+                            {
+                                throw new CommandArgumentsException("Invalid format of argument to -native option");
+                            }
+                            break;
                         default:
                             newargs.Add(r.Current);
                             break;
@@ -290,6 +354,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             return newargs;
         }
+
 
 
 
@@ -652,7 +717,21 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             else
             {
                 var data = File.ReadAllBytes(localFilename);
-                var file = DragonDosFile.CreateDataFile(data);
+                DragonDosFile file = null;
+                switch (filetype)
+                {
+                    case FileType.Data:
+                        file = DragonDosFile.CreateDataFile(data);
+                        break;
+                    case FileType.Basic:
+                        file = DragonDosFile.CreateBasicFile(data);
+                        break;
+                    case FileType.Native:
+                        file = DragonDosFile.CreateMachineCodeFile(data, LoadAddress, StartAddress);
+                        break;
+                    default:
+                        throw new Exception("Invalid file type specified");
+                }
                 return file;
             }
         }
@@ -748,4 +827,13 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         }
 
     }
+
+
+
+    internal enum FileType
+    {
+        Data,
+        Basic,
+        Native
+    } 
 }

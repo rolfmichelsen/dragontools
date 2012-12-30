@@ -1,4 +1,4 @@
-DRAGON TOOLS 0.2
+DRAGON TOOLS 0.3
 ================
 
 &copy; Rolf Michelsen, 2011-2012  
@@ -26,7 +26,7 @@ Visit the [Dragon Tools home](http://www.rolfmichelsen.com/dragontools/) for mor
 Contents
 --------
 
-### DragonDos 0.2
+### DragonDos 0.3
 
 A command line utility for accessing virtual DragonDos filesystems in VDK or DSK floppy disk images from a Windows environment.  The
 utility supports functionality to list files, rename files, delete files, create an empty filesystem and copying files between the

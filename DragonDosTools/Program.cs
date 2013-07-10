@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -130,6 +130,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                         break;
                     case "dir":
                         ListDirectory(commands);
+                        break;
+                    case "dump":
+                        DumpSector(commands);
                         break;
                     case "freemap":
                         Freemap(commands);
@@ -265,13 +268,14 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         private void ShowUsage()
         {
             Console.WriteLine("DragonDos {0} - Tools for accessing DragonDos virtual filesystems", GetVersionInfo());
-            Console.WriteLine("(C) Rolf Michelsen, 2011-2012");
+            Console.WriteLine("(C) Rolf Michelsen, 2011-2013");
             Console.WriteLine();
             Console.WriteLine("Usage: DragonDos COMMAND COMMAND-ARGS [OPTIONS]");
             Console.WriteLine();
             Console.WriteLine("Commands:");
             Console.WriteLine("  check <diskimage>");
             Console.WriteLine("  create <diskimage> [<tracks> [<sectors>]]");
+            Console.WriteLine("  dump <diskimage> <track> <sector>");
             Console.WriteLine("  delete <diskimage> {<filename>}");
             Console.WriteLine("  dir <diskimage>");
             Console.WriteLine("  freemap <diskimage>");
@@ -394,6 +398,58 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
 
 
+
+        /// <summary>
+        /// Dump content of a sector to console.
+        /// </summary>
+        /// <param name="args">Command arguments; disk image name, track, sector</param>
+        private void DumpSector(IEnumerable<string> args)
+        {
+            var ai = args.GetEnumerator();
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Disk image name missing");
+                return;
+            }
+            var diskname = ai.Current;
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Track number missing");
+                return;
+            }
+            var track = Convert.ToInt32(ai.Current); 
+
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Sector number missing");
+                return;
+            }
+            var sector = Convert.ToInt32(ai.Current); 
+
+            using (var disk = DiskFactory.OpenDisk(diskname, false))
+            {
+                if (disk == null)
+                {
+                    Console.Error.WriteLine("ERROR: Disk image file {0} is not in a supported format.", diskname);
+                    return;
+                }
+                var head = (sector-1)/disk.Sectors;
+                sector -= head*disk.Sectors;
+                if (verbose)
+                    Console.Error.WriteLine("Reading sector data at head={0} track={1} sector={2}", head, track-1, sector-1);
+                var data = disk.ReadSector(head, track-1, sector-1);
+                int offset = 0;
+                while (offset < data.Length)
+                {
+                    Console.Write("{0:x4} : ",offset);
+                    for (int i=0; i<16 && offset < data.Length; i++)
+                        Console.Write("{0:x2} ",data[offset++]);
+                    Console.WriteLine();
+                }
+            }
+        }
 
 
 

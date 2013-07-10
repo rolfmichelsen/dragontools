@@ -4,8 +4,9 @@
 <head>
 <title>DragonDos Tools</title>
 <meta name="author" content="Rolf Michelsen" />
-<meta name="copyright" content="&copy; Rolf Michelsen 2011-2012" />
+<meta name="copyright" content="&copy; Rolf Michelsen 2011-2013" />
 <meta name="description" content="DragonDos is a command line too for accessing and manipulating DragonDos filesystems hosted in virtual diskette images." />
+
 <style type="text/css">
 
 .example {
@@ -23,13 +24,15 @@ dl.commands dt {
 dl.commands dt+dt  {
     padding-top: 0px;
 }
+
 </style>
+
 </head>
 
 <body>
 
-<h1>DragonDos 0.3</h1>
-&copy; Copyright 2011-2012 by Rolf Michelsen.<br />
+<h1>DragonDos 0.4</h1>
+&copy; Copyright 2011-2013 by Rolf Michelsen.<br />
 All rights reserved.
 
 
@@ -78,7 +81,9 @@ default configuration is 40 tracks and 18 sectors per track.</dd>
 
 <dt>DIR <var>filesystem</var></dt>
 <dd>Output a directory listing for the virtual filesystem in the file named <var>filesystem</var>.</dd>
-
+    
+<dt>DUMP <var>filesystem</var> <var>track</var> <var>sector</var></dt>
+<dd>Output raw data from a given disk sector to the console.</dd>
 
 <dt>FREEMAP <var>filesystem</var></dt>
 <dd>Output a visual "map" of the disk sectors showing which sectors have been allocated and marked as used by the

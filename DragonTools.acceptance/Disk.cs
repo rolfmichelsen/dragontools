@@ -107,5 +107,34 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
             }
 
         }
+
+
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "ReadSector", DataAccessMethod.Sequential)]
+        [DeploymentItem("DragonLib.AcceptanceTest\\Disk.xml")]
+        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [TestMethod()]
+        public void ReadSector()
+        {
+            var filename = Convert.ToString(TestContext.DataRow["file"]);
+            var head = Convert.ToInt32(TestContext.DataRow["head"]);
+            var track = Convert.ToInt32(TestContext.DataRow["track"]);
+            var sector = Convert.ToInt32(TestContext.DataRow["sector"]);
+            var expectedSectorDataRaw =
+                Convert.ToString(TestContext.DataRow["data"])
+                       .Split(new char[] {' ', '\t', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+
+            var expectedSectorData = new byte[expectedSectorDataRaw.Length];
+            for (int i = 0; i < expectedSectorDataRaw.Length; i++)
+            {
+                expectedSectorData[i] = Convert.ToByte(expectedSectorDataRaw[i], 16);
+            }
+
+            using (var disk = DiskFactory.OpenDisk(filename, false))
+            {
+                var sectorData = disk.ReadSector(head, track, sector);
+                for (int i = 0; i < expectedSectorData.Length; i++)
+                    Assert.AreEqual(expectedSectorData[i], sectorData[i]);
+            }
+        }
     }
 }

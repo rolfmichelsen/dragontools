@@ -54,6 +54,7 @@
     <Compile Include="DiskFilesystem.cs" />
     <Compile Include="FileName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Basic.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DragonTools\DragonTools.csproj">

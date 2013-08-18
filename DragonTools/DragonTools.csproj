@@ -40,6 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Basic\BasicTokenizer.cs" />
+    <Compile Include="Basic\BasicTokenizerException.cs" />
+    <Compile Include="Basic\DragonBasicTokens.cs" />
+    <Compile Include="Basic\DragonDosTokens.cs" />
+    <Compile Include="Basic\IBasicTokens.cs" />
     <Compile Include="IO\Filesystem\DragonDos\DragonDosFile.cs" />
     <Compile Include="IO\Filesystem\DragonDos\DragonDosFileName.cs" />
     <Compile Include="IO\Filesystem\DragonTape\DragonFileName.cs" />
@@ -119,6 +124,7 @@
     <None Include="IO\OS9.cd" />
     <None Include="TapeFilesystem.cd" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

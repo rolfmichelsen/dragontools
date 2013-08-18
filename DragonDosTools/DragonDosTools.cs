@@ -26,9 +26,11 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using RolfMichelsen.Dragon.DragonTools.Basic;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
@@ -43,7 +45,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
     /// <summary>
     /// Program for accessing and manipulation of virtual DragonDos filesystems.
     /// </summary>
-    class Program
+    public sealed class DragonDosTools
     {
         /// <summary>
         /// The default number of disk tracks  when creating a DragonDos filesystem.
@@ -74,6 +76,11 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         private bool debug = false;
 
 
+        /// <summary>
+        /// Set when certain operations should produce ASCII output.
+        /// This flag is controlled by the -ascii command line option.
+        /// </summary>
+        private bool ascii = false;
 
         /// <summary>
         /// Manually specified file type when writing files to a DragonDos filesystem.
@@ -97,7 +104,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
         static void Main(string[] args)
         {
-            var p = new Program();
+            var p = new DragonDosTools();
             p.Run(args);
         }
 
@@ -144,7 +151,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                         WriteFile(commands);
                         break;
                     default:
-                        Console.Error.WriteLine("ERROR: Unknown command {0}.", commands[0]);
+                        Console.Error.WriteLine("ERROR: Unknown command {0}.", command);
                         break;
                 }        
                 
@@ -279,8 +286,8 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             Console.WriteLine("  delete <diskimage> {<filename>}");
             Console.WriteLine("  dir <diskimage>");
             Console.WriteLine("  freemap <diskimage>");
-            Console.WriteLine("  read <diskimage> <filename> [<local filename>]");
-            Console.WriteLine("  read <diskimage> <filename> <tape image>.CAS [<local filename>]");
+            Console.WriteLine("  read <diskimage> <filename> [<local filename>] [-ascii]");
+            Console.WriteLine("  read <diskimage> <filename> <tape image>.CAS [<local filename>] [-ascii}");
             Console.WriteLine("  write <diskimage> <filename> [<local filename>] [-basic] [-native load start]");
             Console.WriteLine("  write <diskimage> <filename> <tape image>.CAS [<localfilename>]");
             Console.WriteLine();
@@ -314,6 +321,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                             break;
                         case "-d":
                             verbose = debug = true;
+                            break;
+                        case "-ascii":
+                            ascii = true;
                             break;
                         case "-basic":
                             filetype = FileType.Basic;
@@ -389,7 +399,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     dos.Check();
                     Console.WriteLine("The filesystem in {0} is healthy.", diskname);
                 }
-                catch (FilesystemConsistencyException e)
+                catch (FilesystemConsistencyException)
                 {
                     Console.WriteLine("The filesystem in {0} is inconsistent.", diskname);
                 }
@@ -521,7 +531,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     {
                         dos.DeleteFile(filename);                        
                     }
-                    catch (FileNotFoundException e)
+                    catch (FileNotFoundException)
                     {
                         Console.Error.WriteLine("WARNING: File {0} not found", filename);
                         continue;
@@ -664,9 +674,22 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// </summary>
         /// <param name="file">DragonDos file.</param>
         /// <param name="localFilename">Local filename.</param>
-        private static void SaveToPlainFile(DragonDosFile file, string localFilename)
+        private void SaveToPlainFile(DragonDosFile file, string localFilename)
         {
-            File.WriteAllBytes(localFilename, file.GetData());
+            if (file.FileType == DragonDosFileType.Basic && ascii)
+            {
+                var basicTokenizer = new BasicTokenizer();
+                basicTokenizer.Add(new DragonBasicTokens());
+                basicTokenizer.Add(new DragonDosTokens());
+                var basicText = basicTokenizer.Decode(file.GetData());
+                var output = new StreamWriter(new FileStream(localFilename, FileMode.Create), Encoding.ASCII);
+                output.Write(basicText);
+                output.Close();
+            }
+            else
+            {
+                File.WriteAllBytes(localFilename, file.GetData());
+            }
         }
 
 
@@ -678,7 +701,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// <param name="file">DragonDos file.</param>
         /// <param name="tapeFilename">Name of the CAS file.</param>
         /// <param name="ai">Additional arguments: Optional name of file within virtual tape container.</param>
-        private static void SaveToCasFile(DragonDosFile file, string tapeFilename, IEnumerator<string> ai)
+        private void SaveToCasFile(DragonDosFile file, string tapeFilename, IEnumerator<string> ai)
         {
             var localFilename = ai.MoveNext() ? ai.Current : file.FileInfo.Name;
 
@@ -689,7 +712,16 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     dragonFile = DragonFile.CreateMachineCodeFile(localFilename, file.GetData(), file.LoadAddress, file.StartAddress, false, false);
                     break;
                 case DragonDosFileType.Basic:
-                    dragonFile = DragonFile.CreateBasicFile(localFilename, file.GetData(), false, false);
+                    if (ascii)
+                    {
+                        var basicTokenizer = new BasicTokenizer();
+                        basicTokenizer.Add(new DragonBasicTokens());
+                        basicTokenizer.Add(new DragonDosTokens());
+                        var basicText = basicTokenizer.DecodeToBytes(file.GetData());
+                        dragonFile = DragonFile.CreateBasicFile(localFilename, basicText, true, true);
+                    }
+                    else
+                        dragonFile = DragonFile.CreateBasicFile(localFilename, file.GetData(), false, false);
                     break;
                 default:
                     dragonFile = DragonFile.CreateDataFile(localFilename, file.GetData(), false, false);
@@ -813,13 +845,10 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 {
                     case DragonFileType.Basic:
                         return DragonDosFile.CreateBasicFile(file.GetData());
-                        break;
                     case DragonFileType.MachineCode:
                         return DragonDosFile.CreateMachineCodeFile(file.GetData(), file.LoadAddress, file.StartAddress);
-                        break;
                     case DragonFileType.Data:
                         return DragonDosFile.CreateDataFile(file.GetData());
-                        break;
                     default:
                         throw new InvalidFileTypeException();
                 }

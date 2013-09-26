@@ -8,6 +8,28 @@
 # Requires an external program "zip" to be available for creating zip files.
 # I'm using the InfoZIP utilities from http://info-zip.org/.
 
+<#
+.SYNOPSIS
+Create a DragonTools binary distribution package.
+
+.DESCRIPTION
+Create-Distribution creates a DragonTools binary distribution as a ZIP archive.
+The command must be run from the DragonTools solution root, and the binary
+distribution file will also be written to this directory.
+
+The script will first build the release version of the DragonTools solution
+and then package a set of predefined files in the distribution archive.
+
+.EXAMPLE
+Create-Distribution
+
+Build the Dragon Tools solution and create a binary release package.
+
+.NOTES
+Create-Distribution depends on an external program for creating the ZIP archive.
+It has been tested with the Info-ZIP distribution.  See http://info-zip.org/.
+#>
+
 $targetPackageName = "DragonTools.zip"
 $msbuildProjectFile = "Dragon Tools.sln"
 

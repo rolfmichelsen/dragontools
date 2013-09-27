@@ -30,7 +30,6 @@ Create-Distribution depends on an external program for creating the ZIP archive.
 It has been tested with the Info-ZIP distribution.  See http://info-zip.org/.
 #>
 
-$targetPackageName = "DragonTools.zip"
 $msbuildProjectFile = "Dragon Tools.sln"
 
 $packageFiles = @{
@@ -40,29 +39,80 @@ $packageFiles = @{
     "DragonDosTools\bin\Release\DragonTools.dll" = "DragonTools.dll"
 }
 
-if (!(Test-Path $msbuildProjectFile))
+
+
+<#
+    Test the script prerequisites.
+#>
+function Test-Prerequisites
 {
-    Write-Output("Cannot find " + $msbuildProjectFile + " in current directory.")
-    Write-Output("This scrips can only be run from the solution root.")
-    return; 
+    if (!(Test-Path $msbuildProjectFile))
+    {
+        Write-Output("Cannot find " + $msbuildProjectFile + " in current directory.")
+        Write-Output("This scrips can only be run from the solution root.")
+        exit 1
+    }
 }
 
-msbuild $msbuildProjectFile /p:Configuration=Release  /t:Rebuild /verbosity:quiet
 
-Write-Output ""
 
-$tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
-$out = New-Item -Path $tmpDir -ItemType Directory
-Write-Output ("Using temporary directory " + $tmpDir)
-
-foreach ($sourceFile in $packageFiles.keys) 
+<#
+    Build a release version of the solution.
+#>
+function Build-Release
 {
-    $destinationFile = Join-Path $tmpDir ($packageFiles[$sourceFile])
-    Copy-Item $sourceFile -Destination $destinationFile
+    msbuild $msbuildProjectFile /p:Configuration=Release  /t:Rebuild /verbosity:quiet
 }
 
-Write-Output ("Creating binary distribution package " + $targetPackageName)
-remove-item $targetPackageName -ErrorAction SilentlyContinue
-zip -j $targetPackageName ($tmpDir + "\*.*")
 
-Remove-Item -Recurse $tmpDir
+
+<#
+    Return the distribution version identifier.  For a tagged commit, this
+    corresponds to the tag name.  For an untagget commit, this corresponds to the
+    commit identifier.
+#>
+function Get-VersionId
+{
+    $description = git describe --dirty
+    if ($description -match "-dirty$") {
+        Write-Output("Repository is dirty, cannot create distribution.")
+        exit 1
+    }
+    if ($description -match "-([a-z0-9]{8})$") {
+        return "snapshot-" + $Matches[1]
+    }
+    return $description
+}
+
+
+
+<#
+    Create a ZIP archive containing the binary distribution.  The $packageFiles
+    array lists the files to include in the distribution.
+#>
+function Package-Release($version)
+{
+    $targetPackageName = "DragonTools-" + $version + ".zip"
+
+    $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+    $out = New-Item -Path $tmpDir -ItemType Directory
+    Write-Output ("Using temporary directory " + $tmpDir)
+
+    foreach ($sourceFile in $packageFiles.keys) 
+    {
+        $destinationFile = Join-Path $tmpDir ($packageFiles[$sourceFile])
+        Copy-Item $sourceFile -Destination $destinationFile
+    }
+
+    Write-Output ("Creating binary distribution package " + $targetPackageName)
+    remove-item $targetPackageName -ErrorAction SilentlyContinue
+    zip -j $targetPackageName ($tmpDir + "\*.*")
+
+    Remove-Item -Recurse $tmpDir
+}
+
+
+Test-Prerequisites
+$version = Get-VersionId
+Build-Release
+Package-Release $version

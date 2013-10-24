@@ -678,9 +678,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         {
             if (file.FileType == DragonDosFileType.Basic && ascii)
             {
-                var basicTokenizer = new BasicTokenizer();
-                basicTokenizer.Add(new DragonBasicTokens());
-                basicTokenizer.Add(new DragonDosTokens());
+                var basicTokenizer = new DragonBasicTokenizer(DragonBasicDialect.DragonDos);
                 var basicText = basicTokenizer.Decode(file.GetData());
                 var output = new StreamWriter(new FileStream(localFilename, FileMode.Create), Encoding.ASCII);
                 output.Write(basicText);
@@ -714,9 +712,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 case DragonDosFileType.Basic:
                     if (ascii)
                     {
-                        var basicTokenizer = new BasicTokenizer();
-                        basicTokenizer.Add(new DragonBasicTokens());
-                        basicTokenizer.Add(new DragonDosTokens());
+                        var basicTokenizer = new DragonBasicTokenizer(DragonBasicDialect.DragonDos);
                         var basicText = basicTokenizer.DecodeToBytes(file.GetData());
                         dragonFile = DragonFile.CreateBasicFile(localFilename, basicText, true, true);
                     }

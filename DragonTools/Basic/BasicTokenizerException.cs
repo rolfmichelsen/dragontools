@@ -34,7 +34,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
     /// <summary>
     /// Exception used by the BASIC tokenizer.
     /// </summary>
-    /// <seealso cref="BasicTokenizer">BasicTokenizer</seealso>
+    /// <seealso cref="DragonBasicTokenizer">DragonBasicTokenizer</seealso>
     public sealed class BasicTokenizerException : Exception
     {
         public BasicTokenizerException() : base()  {}

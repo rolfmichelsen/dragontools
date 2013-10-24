@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Basic\BasicTokenizer.cs" />
+    <Compile Include="Basic\DragonBasicTokenizer.cs" />
     <Compile Include="Basic\BasicTokenizerException.cs" />
     <Compile Include="Basic\DragonBasicTokens.cs" />
     <Compile Include="Basic\DragonDosTokens.cs" />

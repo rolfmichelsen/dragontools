@@ -39,7 +39,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
     /// The Dragon BASIC tokens are documented in "Inside the Dragon" by Duncan Smeed and Ian Sommerville
     /// (Addison-Wesley, 1983).  See Appendix 7.2.
     /// </remarks>
-    public sealed class DragonBasicTokens : IBasicTokens
+    internal sealed class DragonBasicTokens : IBasicTokens
     {
         private static readonly BasicToken[] TokenList =
             {

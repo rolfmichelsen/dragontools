@@ -63,7 +63,7 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         [TestMethod]
         public void DecodeTokenizedBasicToString()
         {
-            var basicDecoder = new BasicTokenizer(new DragonBasicTokens());
+            var basicDecoder = new DragonBasicTokenizer();
             var basicProgram = basicDecoder.Decode(BasicProgramTokens).Split(new char[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
             Assert.AreEqual(BasicProgramText.Length, basicProgram.Length);
@@ -76,7 +76,7 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         public void DecodeTokenizedBasicToBytes()
         {
             var basicProgramExpected = ConvertStringsToBytes(BasicProgramText);
-            var basicDecoder = new BasicTokenizer(new DragonBasicTokens());
+            var basicDecoder = new DragonBasicTokenizer();
             var basicProgram = basicDecoder.DecodeToBytes(BasicProgramTokens);
 
             Assert.AreEqual(basicProgramExpected.Length, basicProgram.Length);

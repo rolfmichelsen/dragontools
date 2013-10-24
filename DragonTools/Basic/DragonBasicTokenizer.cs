@@ -27,31 +27,30 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.Basic
 {
     /// <summary>
-    /// Decode a tokenized BASIC program.
-    /// The tokenizer must be initialized with a set of tokens in the constructor or by using the
-    /// <see cref="Add">Add</see> method.
+    /// Decode a tokenized Dragon BASIC program.
     /// </summary>
-    public sealed class BasicTokenizer
+    public sealed class DragonBasicTokenizer
     {
         private Dictionary<int, string> Tokens = new Dictionary<int, string>();
 
         private static readonly byte EOL = 0;
 
 
-        public BasicTokenizer() {}
-
-
-        public BasicTokenizer(IEnumerable<BasicToken> tokens)
+        /// <summary>
+        /// Create a Dragon BASIC tokenizer.
+        /// </summary>
+        /// <param name="dialect">Specify a variation of the standard Dragon BASIC.</param>
+        public DragonBasicTokenizer(DragonBasicDialect dialect = DragonBasicDialect.None) 
         {
-            Add(tokens);
+            Add(new DragonBasicTokens());
+            if ((dialect & DragonBasicDialect.DragonDos) != 0)
+                Add(new DragonDosTokens());
         }
 
 
@@ -59,7 +58,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
         /// Add a set of BASIC tokens to the tokenizer.
         /// </summary>
         /// <param name="tokens">Collection of BASIC tokens.</param>
-        public void Add(IEnumerable<BasicToken> tokens)
+        private void Add(IEnumerable<BasicToken> tokens)
         {
             foreach (var token in tokens)
             {
@@ -68,16 +67,6 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
         }
 
 
-        /// <summary>
-        /// Add a single BASIC token to the tokenizer.
-        /// </summary>
-        /// <param name="token">A BASIC token.</param>
-        public void Add(BasicToken token)
-        {
-            Tokens[token.Id] = token.Token;
-        }
-
-        
         /// <summary>
         /// Decode a tokenized BASIC program and returns its text representation.
         /// </summary>
@@ -224,5 +213,13 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
             return (linkHigh << 8) | linkLow;
         }
 
+    }
+
+
+    [Flags]
+    public enum DragonBasicDialect
+    {
+        None = 0,
+        DragonDos = 1
     }
 }

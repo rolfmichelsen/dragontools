@@ -38,7 +38,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
     /// The DragonDos BASIC tokens are documented in "Inside the Dragon" by Duncan Smeed and Ian Sommerville
     /// (Addison-Wesley, 1983).  See Appendix 8.2.
     /// </remarks>
-    public sealed class DragonDosTokens : IBasicTokens
+    internal sealed class DragonDosTokens : IBasicTokens
     {
         public IEnumerator<BasicToken> GetEnumerator()
         {

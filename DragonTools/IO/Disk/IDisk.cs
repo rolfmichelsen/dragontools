@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -28,18 +28,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 using System;
+using System.Collections.Generic;
 
 namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
     /// <summary>
     /// Abstract representation of a virtual disk.  Subclasses provide support for actual disk representations.
     /// A disk is represented as a number of sectors.  Each sector is addressed by a unique combination of head, track and sector number.
-    /// Head, track and sector numbers are all zero-based.
+    /// Head and track numbers are zero-based.
     /// </summary>
     /// <see cref="JvcDisk"/>
     /// <see cref="VdkDisk"/>
     /// <see cref="MemoryDisk"/>
-    public interface IDisk : IDisposable
+    public interface IDisk : IDisposable, IEnumerable<ISector>
     {
         /// <summary>
         /// <value>true</value> if this disk supports write operations.  All write operations will fail with a <code>DiskNotWriteableException</code> 
@@ -58,32 +59,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         int Tracks { get; }
 
         /// <summary>
-        /// The number of disk sectors per head and track.
-        /// </summary>
-        int Sectors { get; }
-
-        /// <summary>
-        /// The size in bytes of a disk sector.
-        /// </summary>
-        int SectorSize { get; }
-
-        /// <summary>
-        /// The total number of sectors on the disk.
-        /// </summary>
-        int DiskSectors { get; }
-
-        /// <summary>
-        /// Returns the total capacity of the disk, in number of bytes.
-        /// </summary>
-        int Capacity { get; }
-
-        /// <summary>
         /// Read a sector from disk and return its data as an array of bytes.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
         /// <param name="sector">Disk sector.</param>
         /// <returns>The sector data as an array of bytes.  The size of the array will always be SectorSize.</returns>
+        /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         byte[] ReadSector(int head, int track, int sector);
 
         /// <summary>
@@ -95,6 +77,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="data">Array to receive the sector data.</param>
         /// <param name="offset">Offset into the data array of first byte written.</param>
         /// <param name="length">Maximum number of bytes to write to the data array.  This function will never write more than SectorSize bytes.</param>
+        /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         void ReadSector(int head, int track, int sector, byte[] data, int offset, int length);
 
         /// <summary>
@@ -106,6 +89,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="sector">Disk sector.</param>
         /// <param name="data">Data to write to the disk sector.</param>
         /// <exception cref="DiskNotWriteableException">This disk does not support write operations.</exception>
+        /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         void WriteSector(int head, int track, int sector, byte[] data);
 
         /// <summary>
@@ -119,6 +103,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="offset">Offset into the data array of first byte to write to the disk sector.</param>
         /// <param name="length">The number of bytes from the data array to write to the disk sector.</param>
         /// <exception cref="DiskNotWriteableException">This disk does not support write operations.</exception>
+        /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         void WriteSector(int head, int track, int sector, byte[] data, int offset, int length);
 
         /// <summary>
@@ -128,13 +113,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         void Flush();
 
         /// <summary>
-        /// Validates the disk geometry parameters against the actual disk geometry and throws an <see cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException</see> if they are out of range.
+        /// Returns true if the specified sector exists on the disk.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
-        /// <param name="sector">Disk sector</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if any of the geometry parameters is out of range.</exception>
-        void ValidateGeometryParameters(int head, int track, int sector);
+        /// <param name="sector">Disk sector.</param>
+        /// <returns>True if the sector exists, otherwise false.</returns>
+        bool SectorExists(int head, int track, int sector);
 
         /// <summary>
         /// This event is triggered after writing to a disk sector using the <c>WriteSector</c> function.  The sector may not have been written out to

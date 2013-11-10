@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -27,13 +27,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
     /// <summary>
     /// Abstract representation of a disk.  Subclasses provide support for actual disk representations.
     /// A disk is represented as a number of sectors.  Each sector is addressed by a unique combination of head, track and sector number.
-    /// Head, track and sector numbers are all zero-based.
+    /// Head and track are zero-based.  Sector numbering starts at 1.
     /// </summary>
     /// <see cref="JvcDisk"/>
     /// <see cref="VdkDisk"/>
@@ -64,34 +66,18 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// </summary>
         public virtual int Sectors { get; protected set; }
 
+
         /// <summary>
         /// The size in bytes of a disk sector.
         /// </summary>
         public virtual int SectorSize { get; protected set; }
-
-        /// <summary>
-        /// The total number of sectors on the disk.
-        /// </summary>
-        public virtual int DiskSectors
-        {
-            get { return Heads*Tracks*Sectors; }
-        }
-
-
-        /// <summary>
-        /// Returns the total capacity of the disk, in number of bytes.
-        /// </summary>
-        public virtual int Capacity
-        {
-            get { return Heads*Tracks*Sectors*SectorSize; }
-        }
 
 
         /// <summary>
         /// Byte array holding the entire disk image, including any disk image header and meta-data.  Use the <see cref="SectorOffset">SectorOffset</see> method
         /// to compute the offset into this array of a specific sector.
         /// </summary>
-        protected byte[] diskData = null;
+        protected byte[] DiskData = null;
 
 
         /// <summary>
@@ -122,9 +108,9 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (data == null) throw new ArgumentNullException("data");
-            ValidateGeometryParameters(head, track, sector);
+            if (!SectorExists(head, track, sector)) throw new SectorNotFoundException(head, track, sector);
             var sectorOffset = SectorOffset(head, track, sector);
-            Array.Copy(diskData, sectorOffset, data, offset, Math.Min(SectorSize, length));            
+            Array.Copy(DiskData, sectorOffset, data, offset, Math.Min(SectorSize, length));            
             OnSectorRead(new SectorReadEventArgs(head, track, sector));
         }
 
@@ -159,10 +145,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (!IsWriteable) throw new DiskNotWriteableException();
-            ValidateGeometryParameters(head, track, sector);
+            if (!SectorExists(head, track, sector)) throw new SectorNotFoundException(head, track, sector);
             var sectorOffset = SectorOffset(head, track, sector);
             var copySize = Math.Min(SectorSize, length);
-            Array.Copy(data, offset, diskData, sectorOffset, copySize);
+            Array.Copy(data, offset, DiskData, sectorOffset, copySize);
             IsModified = true;
             OnSectorWritten(new SectorWrittenEventArgs(head, track, sector));
         }
@@ -176,7 +162,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// Returns the offset into the <see cref="diskData">diskData</see> array of the first byte of the identified sector.
+        /// Returns the offset into the <see cref="DiskData">diskData</see> array of the first byte of the identified sector.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
@@ -207,20 +193,21 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         }
 
 
-
         /// <summary>
-        /// Validates the disk geometry parameters against the actual disk geometry and throws an <see cref="ArgumentOutOfRangeException">ArgumentOutOfRangeException</see> if they are out of range.
+        /// Returns true if the specified sector exists on the disk.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
-        /// <param name="sector">Disk sector</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if any of the geometry parameters is out of range.</exception>
-        public virtual void ValidateGeometryParameters(int head, int track, int sector)
+        /// <param name="sector">Disk sector.</param>
+        /// <returns>True if the sector exists, otherwise false.</returns>
+        public virtual bool SectorExists(int head, int track, int sector)
         {
-            if (head < 0 || head >= Heads) throw new ArgumentOutOfRangeException("head", head, String.Format("Side must be from 0 to {0}", Heads - 1));
-            if (track < 0 || track >= Tracks) throw new ArgumentOutOfRangeException("track", track, String.Format("Track must be in the range 0 to {0}", Tracks - 1));
-            if (sector < 0 || sector >= Sectors) throw new ArgumentOutOfRangeException("sector", sector, String.Format("Sector must be in the range 0 to {0}", Sectors - 1));
+            if (head < 0 || head >= Heads) return false;
+            if (track < 0 || track >= Tracks) return false;
+            if (sector < 1 || sector > Sectors) return false;
+            return true;
         }
+
 
         public event EventHandler<SectorWrittenEventArgs> SectorWritten;
         public event EventHandler<SectorReadEventArgs> SectorRead;
@@ -234,10 +221,44 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (IsDisposed) return;
             Flush();
-            diskData = null;
+            DiskData = null;
             IsDisposed = true;
         }
 
+
+        /// <summary>
+        /// Return an enumerator of disk sectors.
+        /// Note that accessing the sectors in this manner will not invoke the SectorRead event
+        /// handler.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<ISector> GetEnumerator()
+        {
+            for (int h = 0; h < Heads; h++)
+            {
+                for (int t = 0; t < Tracks; t++)
+                {
+                    for (int s = 1; s <= Sectors; s++)
+                    {
+                        var sectorData = new byte[SectorSize];
+                        Array.Copy(DiskData, SectorOffset(h, t, s), sectorData, 0, SectorSize);
+                        yield return new BasicSector(h, t, s, sectorData);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Return an enumerator of disk sectors.
+        /// Note that accessing the sectors in this manner will not invoke the SectorRead event
+        /// handler.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
 

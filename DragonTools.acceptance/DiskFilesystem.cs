@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -30,6 +30,7 @@ using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 
 namespace RolfMichelsen.Dragon.DragonTools.acceptance
 {
@@ -186,7 +187,6 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         }
 
 
-
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "DeleteFile", DataAccessMethod.Sequential)]
         [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
         [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
@@ -224,8 +224,6 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
                 }
             }
         }
-
-
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "RenameFile", DataAccessMethod.Sequential)]
@@ -267,7 +265,6 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
                 }
             }
         }
-
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "ReadFile", DataAccessMethod.Sequential)]
@@ -325,9 +322,11 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
             var sectorsize = Convert.ToInt32(TestContext.DataRow["sectorsize"]);
             var freespace = Convert.ToInt32(TestContext.DataRow["freespace"]);
 
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), new MemoryDisk(heads, tracks, sectors, sectorsize), true))
+            using (var disk = new MemoryDisk(heads, tracks, sectors, sectorsize))
             {
-                dos.Initialize();
+                var dos = DragonDos.Initialize(disk);
+                Assert.AreEqual(tracks, dos.Tracks);
+                Assert.AreEqual(sectors*heads, dos.Sectors);
                 dos.Check();
                 Assert.AreEqual(freespace, dos.Free());
             }

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -121,12 +121,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem
         /// </summary>
         /// <exception cref="FilesystemConsistencyException">Thrown if the filesystem is not consistent in a manner that makes write operations unsafe.</exception>
         void Check();
-
-        /// <summary>
-        /// Create an empty filesystem.
-        /// </summary>
-        /// <exception cref="FilesystemNotWriteableException">This filesystem does not support write operations.</exception>
-        void Initialize();
 
         /// <summary>
         /// Returns meta-information for a named file.

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -36,18 +36,39 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 {
     /// <summary>
     /// Provides support for a DragonDos filesystem.
+    /// DragonDos is the standard disk filesystem for the Dragon family of computers.
+    /// It supports single or double sided disks, 40 or 80 trakcs, 18 sectors per track
+    /// and a sector size of 256 bytes.  Heads and tracks are numbered from 0.  Sectors are
+    /// numbered from 1.
     /// </summary>
+    /// <remarks>
+    /// This implementation is based primarily on information from "DragonDos: A Programmers Guide"
+    /// (Grosvenor Software, 1985) and "Into the Dragon" by Paul Dagleish (Dragon User, May 1987).
+    /// </remarks>
     public sealed class DragonDos : IDiskFilesystem
     {
+        /// <summary>
+        /// Primary directory track for DragonDos filesystems.
+        /// </summary>
         public const int DirectoryTrackPrimary = 20;
+
+        /// <summary>
+        /// Backup directory track for DragonDos filesystems.
+        /// </summary>
         public const int DirectoryTrackBackup = 16;
+
+        /// <summary>
+        /// Number of sectors per head per track supported by DragonDos.
+        /// </summary>
+        public const int SectorsPerHead = 18;
+
         private const string ValidFilenamePattern = @"^[a-z0-9][a-z0-9-]{1,7}(\.[a-z0-9]{0,3})?$";
 
         /// <summary>
         /// This array containts a copy of the directory track.  The first index is the sector number and the second index
         /// is the byte offset into this sector.
         /// </summary>
-        private byte[][] directoryTrack = null;
+        private byte[][] directoryTrack = new byte[SectorsPerHead][];
 
         /// <summary>
         /// Set to indicate that the directory track cache does not reflect the actual directory on disk.  The cache must be
@@ -58,17 +79,17 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <summary>
         /// Number of disk tracks.  This is 40 or 80 for DragonDos disks.
         /// </summary>
-        private int Tracks;
+        public int Tracks { get; private set; }
 
         /// <summary>
-        /// Number of sectors per track.  This is 18 or 36 for double-sided disks.
+        /// Number of sectors per track.  This is 18 for single-sided or 36 for double-sided disks.
         /// </summary>
-        private int Sectors;
+        public int Sectors { get; private set; }
 
         /// <summary>
         /// Size (in bytes) of a single sector.
         /// </summary>
-        private const int SectorSize = 256;
+        public const int SectorSize = 256;
 
         /// <summary>
         /// If set, all filename comparisons are made to be case sensitive.
@@ -92,23 +113,32 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         public IDisk Disk { get; private set; }
 
 
+        /// <summary>
+        /// Create a DragonDos filesystem interface to a virtual diskette.
+        /// </summary>
+        /// <param name="disk">Virtual diskette holding the filesystem.</param>
+        /// <param name="isWriteable">Set if the filesystem will permit write operations.</param>
+        /// <exception cref="UnsupportedGeometryException">The disk geometry is not supported by DragonDos.</exception>
         public DragonDos(IDisk disk, bool isWriteable)
         {
             if (disk == null) throw new ArgumentNullException("disk");
-
             if (disk.Heads > 2) throw new UnsupportedGeometryException("DragonDos only supports single or double sided disks");
             if (disk.Tracks != 40 && disk.Tracks != 80) throw new UnsupportedGeometryException("DragonDos only supports 40 or 80 track disks");
-            if (disk.Sectors != 18) throw new UnsupportedGeometryException("DragonDos only supports 18 sectors per track");
-            if (disk.SectorSize != SectorSize) throw new UnsupportedGeometryException("DragonDos only supports sector sizes of 256 bytes");
 
             IsCaseSensitive = false;
             Disk = disk;
             Tracks = disk.Tracks;
-            Sectors = disk.Heads*disk.Sectors;
-            directoryTrack = new byte[Sectors][];
+            Sectors = disk.Heads*SectorsPerHead;
             IsWriteable = isWriteable;
             IsDisposed = false;
             Disk.SectorWritten += SectorWrittenHandler;
+
+            ReadDirectoryTrack();
+
+            int tracks = directoryTrack[0][252];
+            int sectors = directoryTrack[0][253];
+            if (tracks != Tracks) throw new FilesystemConsistencyException(String.Format("Unexpected number of tracks {0}", tracks));
+            if (sectors != SectorsPerHead*disk.Heads) throw new FilesystemConsistencyException(String.Format("Unexpected number of sectors per track {0}", sectors));
         }
 
 
@@ -460,7 +490,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
                 FindDirectoryEntry(filename);
                 return true;
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 return false;
             }
@@ -489,7 +519,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
             /* Mark primary and secondary directory track sectors as allocated. */
             int lsn1 = TrackToLsn(DirectoryTrackPrimary);
             int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i=0; i<Disk.Sectors; i++)
+            for (int i=0; i<SectorsPerHead; i++)
             {
                 allocatedSectors[lsn1++] = true;
                 allocatedSectors[lsn2++] = true;
@@ -537,65 +567,81 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
             }
         }
 
+
         /// <summary>
-        /// Create an empty filesystem.
+        /// Initialize an empty DragonDos filesystem on a disk.
         /// </summary>
-        public void Initialize()
+        /// <param name="disk">Disk to initialize filesystem on.</param>
+        /// <returns>DragonDos filesystem.</returns>
+        /// <exception cref="DiskNotWriteableException">The disk does not support write operations.</exception>
+        /// <exception cref="UnsupportedGeometryException">The disk geometry is not supported by DragonDos.</exception>
+        public static DragonDos Initialize(IDisk disk)
         {
-            if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
-            if (!IsWriteable) throw new FilesystemNotWriteableException();
+            if (disk == null) throw new ArgumentNullException("disk");
+            if (!disk.IsWriteable) throw new DiskNotWriteableException();
+
+            if (disk.Tracks != 40 && disk.Tracks != 80)
+                throw new UnsupportedGeometryException(String.Format("DragonDos only supports 40 or 80 tracks while this disk has {0} tracks", disk.Tracks));
+            if (disk.Heads != 1 && disk.Heads != 2)
+                throw new UnsupportedGeometryException(String.Format("DragonDos only supports single or double sided disks while this disk has {0} sides", disk.Heads));
 
             /* Write blank data to all sectors. */
-            var data = new byte[SectorSize];
-            for (int lsn = 0; lsn < Tracks*Sectors; lsn++)
+            var sectorData = new byte[SectorSize];
+            for (int t = 0; t < disk.Tracks; t++)
             {
-                WriteSector(lsn, data, 0, SectorSize);
-            }
-
-            /* Allocate data for the directory track cache. */
-            for (int i = 0; i < Disk.Sectors; i++)
-            {
-                directoryTrack[i] = new byte[SectorSize];
+                for (int h = 0; h < disk.Heads; h++)
+                {
+                    for (int s = 1; s < SectorsPerHead; s++)
+                    {
+                        disk.WriteSector(h, t, s, sectorData);
+                    }
+                }
             }
 
             /* Write empty directory entries to the directory track. */
             var emptyDirEntry = DragonDosDirectoryEntry.GetEmptyEntry();
             var emptyEncodedEntry = new byte[DirectoryEntrySize];
             emptyDirEntry.Encode(emptyEncodedEntry, 0);
-            for (int i = DirectoryEntryOffset; i < Disk.Sectors; i++)
+            for (int i = 0; i < DirectoryEntryCount; i++)
             {
-                for (int j = 0; j < DirectoryEntryCount; j++)
-                {
-                    Array.Copy(emptyEncodedEntry, 0, directoryTrack[i], j * DirectoryEntrySize, DirectoryEntrySize);
-                }
+                Array.Copy(emptyEncodedEntry, 0, sectorData, i*DirectoryEntrySize, DirectoryEntrySize);
+            }
+            for (int s = DirectoryEntryOffset+1; s <= SectorsPerHead; s++)
+            {
+                disk.WriteSector(0, DirectoryTrackPrimary, s, sectorData);
+                disk.WriteSector(0, DirectoryTrackBackup, s, sectorData);
             }
 
             /* Write the sector allocation map. */
-            directoryTrack[0][252] = (byte) Tracks;
-            directoryTrack[0][253] = (byte) Sectors;
-            directoryTrack[0][254] = (byte) ~Tracks;
-            directoryTrack[0][255] = (byte) ~Sectors;
-
-            /* Mark all sectors as free. */
-            for (int lsn = 0; lsn < Sectors * Tracks; lsn++)
+            var allocationmap = new byte[2][];
+            for (int i = 0; i < 2; i++)
             {
-                SetSectorAllocated(lsn, false);
+                allocationmap[i] = new byte[SectorSize];
+                for (int j = 0; j < SectorSize; j++)                 
+                    allocationmap[i][j] = 0xff;
             }
 
-            /* Mark the primary and secondary directory track as allocated. */
-            int lsn1 = TrackToLsn(DirectoryTrackPrimary);
-            int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i = 0; i < Disk.Sectors; i++)
+            int sectors = SectorsPerHead*disk.Heads;
+            allocationmap[0][252] = (byte) disk.Tracks;                         // encode disk geometry
+            allocationmap[0][253] = (byte) sectors;
+            allocationmap[0][254] = (byte) (~disk.Tracks & 0xff);
+            allocationmap[0][255] = (byte) (~sectors & 0xff);
+
+            int lsnPrimaryDirectory = DirectoryTrackPrimary*disk.Heads*SectorsPerHead;
+            int lsnBackupDirectory = DirectoryTrackBackup*disk.Heads*SectorsPerHead;
+            for (int i = 0; i < SectorsPerHead; i++)
             {
-                SetSectorAllocated(lsn1++, true);
-                SetSectorAllocated(lsn2++, true);
+                SetSectorAllocated(lsnPrimaryDirectory++, true, allocationmap);
+                SetSectorAllocated(lsnBackupDirectory++, true, allocationmap);
             }
 
-            /* Write both the primary and secondary directory tracks. */
-            directoryIsDirty = false;
-            WriteDirectoryTrack(DirectoryTrackPrimary);
-            directoryIsDirty = false;
-            WriteDirectoryTrack(DirectoryTrackBackup);
+            for (int i = 0; i < 2; i++)
+            {
+                disk.WriteSector(0, DirectoryTrackPrimary, i+1, allocationmap[i]);
+                disk.WriteSector(0, DirectoryTrackBackup, i+1, allocationmap[i]);        
+            }
+
+            return new DragonDos(disk, true);
         }
 
 
@@ -604,7 +650,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         {
             int lsn1 = TrackToLsn(DirectoryTrackPrimary);
             int lsn2 = TrackToLsn(DirectoryTrackBackup);
-            for (int i = 0; i < Disk.Sectors; i++ )
+            for (int i = 0; i < SectorsPerHead; i++ )
             {
                 var sector1 = ReadSector(lsn1++);
                 var sector2 = ReadSector(lsn2++);
@@ -730,11 +776,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         private void ReadDirectoryTrack()
         {
             if (!directoryIsDirty) return;
-            int lsn = TrackToLsn(DirectoryTrackPrimary);
-            int sectors = Disk.Sectors;
-            for (int i = 0; i < sectors; i++ )
+            for (int sector = 1; sector <= SectorsPerHead; sector++ )
             {
-                directoryTrack[i] = ReadSector(lsn++);
+                var sectorData = Disk.ReadSector(0, DirectoryTrackPrimary, sector);
+                if (sectorData.Length != SectorSize) 
+                    throw new FilesystemConsistencyException(String.Format("Unexpected sector size of {0} bytes", sectorData.Length));
+                directoryTrack[sector-1] = sectorData;
             }
             directoryIsDirty = false;
         }
@@ -743,15 +790,16 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <summary>
         /// Writes the cached directory track back to disk.
         /// </summary>
+        /// <param name="track">Track to write directory to.  This should be DirectoryTrackPrimary or DirectoryTrackBackup</param>
+        /// <seealso cref="DirectoryTrackPrimary"/>
+        /// <seealso cref="DirectoryTrackBackup"/>
         private void WriteDirectoryTrack(int track)
         {
             if (directoryIsDirty) throw new FilesystemConsistencyException();
 
-            int lsn = TrackToLsn(track);
-            int sectors = Disk.Sectors;
-            for (int i = 0; i < sectors; i++ )
+            for (int sector = 1; sector <= SectorsPerHead; sector++ )
             {
-                WriteSector(lsn++, directoryTrack[i], 0, SectorSize);
+                Disk.WriteSector(0, track, sector, directoryTrack[sector-1]);
             }
         }
 
@@ -802,25 +850,41 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// This method will not write the modified directory track back to disk.  This is the responsibility of the caller.
         /// </remarks>
         /// <param name="lsn">LSN of sector.</param>
-        /// <param name="value">True if the sector is to be marked as allocated.</param>
-        private void SetSectorAllocated(int lsn, bool value)
+        /// <param name="allocated">True if the sector is to be marked as allocated.</param>
+        private void SetSectorAllocated(int lsn, bool allocated)
         {
-            int sector = 0;
+            SetSectorAllocated(lsn, allocated, directoryTrack);
+        }
+
+
+        /// <summary>
+        /// Marks a sector as allocated or unallocated by the filesystem.
+        /// </summary>
+        /// <remarks>
+        /// This method will not write the modified directory track back to disk.  This is the responsibility of the caller.
+        /// </remarks>
+        /// <param name="lsn">LSN of sector.</param>
+        /// <param name="allocated">True if the sector is to be marked as allocated.</param>
+        /// <param name="allocationmap">Byte array containing the allocation map.</param>
+        private static void SetSectorAllocated(int lsn, bool allocated, byte[][] allocationmap)
+        {
+            int offset = 0;
             if (lsn >= EntriesInFirstAllocSector)
             {
-                sector = 1;
+                offset = 1;
                 lsn -= EntriesInFirstAllocSector;
             }
 
-            if (value)
+            if (allocated)
             {
-                directoryTrack[sector][lsn/8] &= (byte) ~(1 << lsn%8);
+                allocationmap[offset][lsn/8] &= (byte) ~(1 << lsn%8);
             }
             else
             {
-                directoryTrack[sector][lsn/8] |= (byte) (1 << lsn%8);
+                allocationmap[offset][lsn/8] |= (byte) (1 << lsn%8);
             }
         }
+
 
         /// <summary>
         /// The encoded size (in bytes) of a directory entry.
@@ -840,7 +904,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <summary>
         /// Total number of directory entries in the directory track.
         /// </summary>
-        private int DirectoryEntries { get { return (Disk.Sectors - DirectoryEntryOffset)*DirectoryEntryCount; } }
+        private int DirectoryEntries = (SectorsPerHead - DirectoryEntryOffset)*DirectoryEntryCount;
 
         /// <summary>
         /// Returns the directory entry at a given index.
@@ -880,14 +944,14 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
         internal int SectorToLsn(int head, int track, int sector)
         {
-            return track*Sectors + head*Disk.Sectors + sector;
+            return track*Sectors + head*SectorsPerHead + sector - 1;
         }
 
         internal void LsnToSector(int lsn, out int head, out int track, out int sector)
         {
-            track = lsn/(Disk.Sectors*Disk.Heads);
-            head = lsn%(Disk.Sectors*Disk.Heads) / Disk.Sectors;
-            sector = lsn % (Disk.Sectors * Disk.Heads) % Disk.Sectors;
+            track = lsn/(SectorsPerHead*Disk.Heads);
+            head = lsn%(SectorsPerHead*Disk.Heads) / SectorsPerHead;
+            sector = lsn % (SectorsPerHead * Disk.Heads) % SectorsPerHead + 1;
         }
 
         internal byte[] ReadSector(int lsn)
@@ -1038,7 +1102,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         public override string ToString()
         {
             return String.Format("DragonDos Filesystem (Sides={0} Tracks={1} Sectors={2} Sector Size={3})",
-                                 Disk.Heads, Disk.Tracks, Disk.Sectors, Disk.SectorSize);
+                                 Disk.Heads, Disk.Tracks, SectorsPerHead, SectorSize);
         }
     }
 }

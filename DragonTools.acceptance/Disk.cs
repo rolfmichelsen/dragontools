@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -94,16 +94,12 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
             var classtype = Convert.ToString(TestContext.DataRow["class"]);
             var heads = Convert.ToInt32(TestContext.DataRow["heads"]);
             var tracks = Convert.ToInt32(TestContext.DataRow["tracks"]);
-            var sectors = Convert.ToInt32(TestContext.DataRow["sectors"]);
-            var sectorsize = Convert.ToInt32(TestContext.DataRow["sectorsize"]);
 
             using (var disk = DiskFactory.OpenDisk(filename, false))
             {
                 Assert.AreEqual(classtype, disk.GetType().FullName);
                 Assert.AreEqual(heads, disk.Heads);
                 Assert.AreEqual(tracks, disk.Tracks);
-                Assert.AreEqual(sectors, disk.Sectors);
-                Assert.AreEqual(sectorsize, disk.SectorSize);
             }
 
         }

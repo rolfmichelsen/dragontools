@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -50,6 +50,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex
 
 
         private bool IsDisposed = false;
+
+        /// <summary>
+        /// Number of sectors per track
+        /// </summary>
+        private const int Sectors = 18;         //TODO Validate that this is correct for all FLEX filesystems.  It probably isn't...
+
 
 
         /// <summary>
@@ -182,14 +188,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Create an empty filesystem.
-        /// </summary>
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -294,9 +292,9 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex
         /// <param name="sector">Disk sector</param>
         internal void IndexToSector(int index, out int head, out int track, out int sector)
         {
-            track = (index-1) / (Disk.Sectors * Disk.Heads);
-            head = (index-1) % (Disk.Sectors * Disk.Heads) / Disk.Sectors;
-            sector = (index-1) % (Disk.Sectors * Disk.Heads) % Disk.Sectors;
+            track = (index-1) / (Sectors * Disk.Heads);
+            head = (index-1) % (Sectors * Disk.Heads) / Sectors;
+            sector = (index-1) % (Sectors * Disk.Heads) % Sectors + 1;
         }
 
 

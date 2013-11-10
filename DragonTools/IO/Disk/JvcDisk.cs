@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -45,12 +45,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <summary>
         /// The size of the JVC header in the disk image.
         /// </summary>
-        private int diskHeaderSize = 0;
+        private int diskHeaderSize;
 
         /// <summary>
         /// The size of the sector header in the disk image.
         /// </summary>
-        private int sectorHeaderSize = 0;
+        private int sectorHeaderSize;
 
 
         private JvcDisk(Stream image, int heads, int tracks, int sectors, int sectorsize)
@@ -78,7 +78,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (!IsWriteable) throw new DiskNotWriteableException();
 
             diskStream.Seek(0, SeekOrigin.Begin);
-            diskStream.Write(diskData, 0, diskData.Length);
+            diskStream.Write(DiskData, 0, DiskData.Length);
 
             IsModified = false;
         }
@@ -100,7 +100,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// Returns the offset into the <see cref="diskData">diskData</see> array of the first byte of the identified sector.
+        /// Returns the offset into the <see cref="AbstractDisk.DiskData">diskData</see> array of the first byte of the identified sector.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
@@ -108,7 +108,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>The byte offset of the first byte of this sector.</returns>
         protected override int SectorOffset(int head, int track, int sector)
         {
-            return (track * Sectors * Heads + head * Sectors + sector) * (SectorSize + sectorHeaderSize) + diskHeaderSize;
+            return (track * Sectors * Heads + head * Sectors + sector - 1) * (SectorSize + sectorHeaderSize) + diskHeaderSize;
         }
 
 
@@ -118,7 +118,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>String representation of this object.</returns>
         public override string ToString()
         {
-            return String.Format("JVC Disk: heads={0}, tracks={1}, sectors={2}, sectorsize={3} bytes, capacity={4} bytes)", Heads, Tracks, Sectors, SectorSize, Capacity);
+            return String.Format("JVC Disk: heads={0}, tracks={1}, sectors={2}, sectorsize={3} bytes)", Heads, Tracks, Sectors, SectorSize);
         }
 
 
@@ -129,6 +129,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="heads">Number of disk heads.</param>
         /// <param name="tracks">Number of tracks per head.</param>
         /// <param name="sectors">Number of sectors per track.</param>
+        /// <param name="sectorsize">Sector size in bytes</param>
         /// <returns>A disk object</returns>
         public static JvcDisk Create(Stream image, int heads, int tracks, int sectors, int sectorsize)
         {
@@ -146,8 +147,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             disk.IsWriteable = true;
             disk.IsModified = true;
 
-            disk.diskData = new byte[heads*tracks*sectors*sectorsize + disk.diskHeaderSize];
-            Array.Copy(headerRaw, disk.diskData, headerRaw.Length);
+            disk.DiskData = new byte[heads*tracks*sectors*sectorsize + disk.diskHeaderSize];
+            Array.Copy(headerRaw, disk.DiskData, headerRaw.Length);
 
             return disk;
         }
@@ -168,7 +169,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             var header = JvcHeader.Parse(imageData);
 
             var disk = new JvcDisk(image, header.Heads, header.Tracks, header.Sectors, header.SectorSize);
-            disk.diskData = imageData;
+            disk.DiskData = imageData;
             disk.diskHeaderSize = header.HeaderSize;
             disk.sectorHeaderSize = header.SectorAttribute ? 1 : 0;
             disk.IsWriteable = (isWriteable && image.CanSeek && image.CanWrite);
@@ -218,7 +219,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
                     headersize = raw.Length % 257;
                 }
 
-                int sectorheadersize = sectorattribute ? 1 : 0;
                 int tracks = (raw.Length - headersize)/heads/sectors/sectorsize;
 
                 var header = new JvcHeader(heads, tracks, sectors, sectorsize, sectorattribute);
@@ -233,7 +233,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
                 var header = new byte[5];
                 header[0] = (byte) Sectors;
                 header[1] = (byte) Heads;
-                header[3] = (byte) 1;
+                header[3] = 1;
                 header[4] = (byte) (SectorAttribute ? 0xff : 0);
 
                 switch (SectorSize) 

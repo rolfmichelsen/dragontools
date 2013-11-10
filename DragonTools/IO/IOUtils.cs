@@ -60,5 +60,26 @@ namespace RolfMichelsen.Dragon.DragonTools.IO
             Array.Resize<byte>(ref data, dataSize);
             return data;
         }
+
+
+        /// <summary>
+        /// Read a block of data of specific size from a stream.
+        /// </summary>
+        /// <param name="block">Byte buffer to receive the data.</param>
+        /// <param name="offset">Offset into to buffer of where to store the first byte.</param>
+        /// <param name="length">Number of bytes to read from the stream.</param>
+        /// <exception cref="EndOfStreamException">Thrown if the required number of bytes cannot be read from the stream.</exception>
+        public static void ReadBlock(Stream stream, byte[] block, int offset, int length)
+        {
+            while (length > 0)
+            {
+                var chunksize = stream.Read(block, offset, length);
+                if (chunksize == 0) throw new EndOfStreamException();
+                offset += chunksize;
+                length -= chunksize;
+            }
+        }
+
     }
+
 }

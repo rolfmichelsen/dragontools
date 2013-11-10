@@ -33,7 +33,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
     /// <summary>
     /// This class provides a number of convenience methods for creating Disk objects.
     /// </summary>
-    public sealed class DiskFactory
+    public static class DiskFactory
     {
         /// <summary>
         /// Returns a Disk object associated with an existing virtual disk image file.  The name (extension) of the file name determines the 
@@ -52,6 +52,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (filename.EndsWith(".dsk"))
             {
                 return JvcDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+            }
+            if (filename.EndsWith(".hfe"))
+            {
+                return HfeDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
             }
             return null;
         }

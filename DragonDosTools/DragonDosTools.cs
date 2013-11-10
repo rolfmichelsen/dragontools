@@ -282,7 +282,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             Console.WriteLine("Commands:");
             Console.WriteLine("  check <diskimage>");
             Console.WriteLine("  create <diskimage> [<tracks> [<sectors>]]");
-            Console.WriteLine("  dump <diskimage> <track> <sector>");
+            Console.WriteLine("  dump <diskimage> <head> <track> <sector>");
             Console.WriteLine("  delete <diskimage> {<filename>}");
             Console.WriteLine("  dir <diskimage>");
             Console.WriteLine("  freemap <diskimage>");
@@ -408,13 +408,12 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
 
 
-
         /// <summary>
         /// Dump content of a sector to console.
         /// </summary>
-        /// <param name="args">Command arguments; disk image name, track, sector</param>
+        /// <param name="args">Command arguments; disk image name, head, track, sector</param>
         private void DumpSector(IEnumerable<string> args)
-        {
+        {            
             var ai = args.GetEnumerator();
 
             if (!ai.MoveNext())
@@ -424,6 +423,13 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var diskname = ai.Current;
 
+            if (!ai.MoveNext())
+            {
+                Console.Error.WriteLine("ERROR: Head number missing");
+                return;
+            }
+            var head = Convert.ToInt32(ai.Current);
+ 
             if (!ai.MoveNext())
             {
                 Console.Error.WriteLine("ERROR: Track number missing");
@@ -445,11 +451,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     Console.Error.WriteLine("ERROR: Disk image file {0} is not in a supported format.", diskname);
                     return;
                 }
-                var head = (sector-1)/disk.Sectors;
-                sector -= head*disk.Sectors;
                 if (verbose)
-                    Console.Error.WriteLine("Reading sector data at head={0} track={1} sector={2}", head, track-1, sector-1);
-                var data = disk.ReadSector(head, track-1, sector-1);
+                    Console.Error.WriteLine("Reading sector data at head={0} track={1} sector={2}", head, track, sector);
+                var data = disk.ReadSector(head, track, sector);
                 int offset = 0;
                 while (offset < data.Length)
                 {
@@ -460,7 +464,6 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                 }
             }
         }
-
 
 
         /// <summary>
@@ -601,10 +604,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
 
             using (var disk = DiskFactory.CreateDisk(diskname, heads, tracks, sectors, DefaultSectorSize))
             {
-                using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, disk, true))
+                using (var dos = DragonDos.Initialize(disk))
                 {
-                    dos.Initialize();
-                    Console.WriteLine("Created empty filesystem in {0}. Capacity {1} bytes.", diskname, dos.Free());
+                    Console.WriteLine("Created empty filesystem in {0}. Capacity {1} bytes.", diskname, dos.Free());     
                 }
             }
         }
@@ -869,7 +871,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             }
             var diskname = ai.Current;
 
-            using (var dos = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
+            using (var dos = (DragonDos) DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, diskname, false))
             {
                 if (dos == null)
                 {
@@ -885,7 +887,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     Console.Write("{0,2} : ", track+1);
                     for (int head=0; head<dos.Disk.Heads; head++)
                     {
-                        for (int sector=0; sector<dos.Disk.Sectors; sector++)
+                        for (int sector=0; sector<DragonDos.SectorsPerHead; sector++)
                         {
                             if (dos.IsSectorAllocated(head, track, sector))
                             {

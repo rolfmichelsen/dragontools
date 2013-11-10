@@ -18,6 +18,12 @@
     </Free>
 
     <Free>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>10752</freespace>
+    </Free>
+
+    <Free>
       <diskimage>dragondos-empty.vdk</diskimage>
       <filesystem>dragondos</filesystem>
       <freespace>175104</freespace>
@@ -54,6 +60,12 @@
       <freespace>48896</freespace>
     </Free>
 
+    <Free>
+      <diskimage>os9-system.hfe</diskimage>
+      <filesystem>os9</filesystem>
+      <freespace>48896</freespace>
+    </Free>
+
     <!-- RS-DOS -->
     <Free>
       <diskimage>rsdos-empty.dsk</diskimage>
@@ -85,6 +97,12 @@
       <filelist>NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN</filelist>
     </ListFiles>
 
+    <ListFiles>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filelist>NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN</filelist>
+    </ListFiles>
+
     <!-- OS9 -->
     <ListFiles>
       <diskimage>os9-empty.vdk</diskimage>
@@ -97,8 +115,13 @@
       <filesystem>os9</filesystem>
       <filelist>.. . OS9Boot CMDS SYS DEFS startup RUN32 RUN51</filelist>
     </ListFiles>
-    
-    
+
+    <ListFiles>
+      <diskimage>os9-system.hfe</diskimage>
+      <filesystem>os9</filesystem>
+      <filelist>.. . OS9Boot CMDS SYS DEFS startup RUN32 RUN51</filelist>
+    </ListFiles>
+
     <!-- FLEX -->
     <ListFiles>
       <diskimage>flex-system.vdk</diskimage>
@@ -147,6 +170,19 @@
       <exists>true</exists>
     </FileExists>
 
+    <FileExists>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>SWAN.BIN</file>
+      <exists>true</exists>
+    </FileExists>
 
     <!-- OS9 -->
     <FileExists>
@@ -169,8 +205,21 @@
       <file>startup</file>
       <exists>true</exists>
     </FileExists>
-    
-    
+
+    <FileExists>
+      <diskimage>os9-system.hfe</diskimage>
+      <filesystem>os9</filesystem>
+      <file>foo.bar</file>
+      <exists>false</exists>
+    </FileExists>
+
+    <FileExists>
+      <diskimage>os9-system.hfe</diskimage>
+      <filesystem>os9</filesystem>
+      <file>startup</file>
+      <exists>true</exists>
+    </FileExists>
+
     <!-- FLEX -->
     <FileExists>
       <diskimage>flex-system.vdk</diskimage>
@@ -281,6 +330,31 @@
       <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException</exception>
     </DeleteFile>
 
+    <DeleteFile>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>DRYBONES.BIN</filename>
+    </DeleteFile>
+
+    <DeleteFile>
+      <!-- File does not exist -->
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>FOO.BAS</filename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
+    </DeleteFile>
+
+    <DeleteFile>
+      <!-- Filesystem is write protected -->
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>true</writeprotected>
+      <filename>DRYBONES.BIN</filename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException</exception>
+    </DeleteFile>
+
   </DeleteFileTests>
 
 
@@ -335,6 +409,54 @@
       <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.InvalidFilenameException</exception>
     </RenameFile>
 
+    <RenameFile>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOO.BAR</newfilename>
+    </RenameFile>
+
+    <RenameFile>
+      <description>File does not exist</description>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>FOO.BAS</oldfilename>
+      <newfilename>FOOBAR.BAS</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
+    </RenameFile>
+
+    <RenameFile>
+      <description>Filesystem is write protected</description>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>true</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOO.BAR</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException</exception>
+    </RenameFile>
+
+    <RenameFile>
+      <description>Target filename already exists</description>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>DANCER.BIN</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileExistsException</exception>
+    </RenameFile>
+
+    <RenameFile>
+      <description>Target filename is invalid</description>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <oldfilename>DRYBONES.BIN</oldfilename>
+      <newfilename>FOOBARFOOBAR.FOO</newfilename>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.InvalidFilenameException</exception>
+    </RenameFile>
+
   </RenameFileTests>
 
 
@@ -359,9 +481,27 @@
         <filetype/>
         <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
       </ReadFile>
-    
-    
-    
+
+    <ReadFile>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filename>DRYBONES.BIN</filename>
+      <length>28490</length>
+      <filetype>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile</filetype>
+      <exception/>
+    </ReadFile>
+
+    <ReadFile>
+      <description>File does not exist</description>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filename>FOO.BAR</filename>
+      <length>0</length>
+      <filetype/>
+      <exception>RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException</exception>
+    </ReadFile>
+
+
     <!-- OS-9 -->
 
     <ReadFile>
@@ -440,7 +580,12 @@
       <valid>true</valid>
     </Check>
 
-    
+    <Check>
+      <diskimage>dragondos-tunes.hfe</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
     <!-- OS9 -->
     <Check>
       <diskimage>os9-empty.vdk</diskimage>

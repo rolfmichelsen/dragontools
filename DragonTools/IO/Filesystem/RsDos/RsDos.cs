@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -57,13 +57,25 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         /// <summary>
         /// The number of bytes in each granule.
         /// </summary>
-        private int GranuleSize { get { return GranuleSectors*Disk.SectorSize; } }
+        private const int GranuleSize = 2304;
 
 
         /// <summary>
         /// The total number of granules on a disk.
         /// </summary>
-        private int GranuleCount = 68;
+        private const int GranuleCount = 68;
+
+
+        /// <summary>
+        /// Sectors per track.
+        /// </summary>
+        private const int Sectors = 18;
+
+
+        /// <summary>
+        /// Bytes per sector.
+        /// </summary>
+        private const int SectorSize = 256;
 
 
         /// <summary>
@@ -98,8 +110,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         public RsDos(IDisk disk, bool isWriteable)
         {
             if (disk == null) throw new ArgumentNullException("disk");
-            if (disk.Heads != 1 || disk.Tracks != 35 || disk.Sectors != 18 || disk.SectorSize != 256) 
-                throw new DiskImageFormatException(string.Format("Invalid disk geometry {0} heads {1} tracks {2} sectors {3} bytes per sector", disk.Heads, disk.Tracks, disk.Sectors, disk.SectorSize));
+            if (disk.Heads != 1 || disk.Tracks != 35) 
+                throw new DiskImageFormatException(string.Format("Invalid disk geometry {0} heads {1} tracks", disk.Heads, disk.Tracks));
 
             Disk = disk;
             IsWriteable = isWriteable;
@@ -271,14 +283,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
             }
         }
 
-        /// <summary>
-        /// Create an empty filesystem.
-        /// </summary>
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -341,7 +345,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         public bool IsSectorAllocated(int head, int track, int sector)
         {
             if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
-            Disk.ValidateGeometryParameters(head, track, sector);
+            if (!Disk.SectorExists(head, track, sector)) throw new SectorNotFoundException(head, track, sector);
 
             if (track == DirectoryTrack) return true;
 
@@ -357,8 +361,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("RSDOS Filesystem (Sides={0} Tracks={1} Sectors={2} Sector Size={3}", 
-                                 Disk.Heads, Disk.Tracks, Disk.Sectors, Disk.SectorSize);
+            return String.Format("RSDOS Filesystem (Sides={0} Tracks={1}", 
+                                 Disk.Heads, Disk.Tracks);
         }
 
 
@@ -371,7 +375,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         {
             int track = (granule < 34) ? granule/2 : granule/2 + 1;
             int sector = (granule%2 == 0) ? 0 : GranuleSectors;
-            return track*Disk.Sectors*Disk.Heads + sector;
+            return track*Sectors*Disk.Heads + sector;
         }
 
 
@@ -383,22 +387,22 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
         /// <returns>The LSN of the first sector of this track.</returns>
         internal int TrackToLsn(int track)
         {
-            return track * Disk.Sectors * Disk.Heads;
+            return track * Sectors * Disk.Heads;
         }
 
 
         internal int SectorToGranule(int head, int track, int sector)
         {
-            int lsn = track*Disk.Heads*Disk.Sectors + head*Disk.Sectors + sector;
-            return (track < DirectoryTrack) ? lsn/GranuleSectors : (lsn-Disk.Heads*Disk.Sectors)/GranuleSectors;
+            int lsn = track*Disk.Heads*Sectors + head*Sectors + sector;
+            return (track < DirectoryTrack) ? lsn/GranuleSectors : (lsn-Disk.Heads*Sectors)/GranuleSectors;
         }
 
 
         internal void LsnToSector(int lsn, out int head, out int track, out int sector)
         {
-            track = lsn / (Disk.Sectors * Disk.Heads);
-            head = lsn % (Disk.Sectors * Disk.Heads) / Disk.Sectors;
-            sector = lsn % (Disk.Sectors * Disk.Heads) % Disk.Sectors;
+            track = lsn / (Sectors * Disk.Heads);
+            head = lsn % (Sectors * Disk.Heads) / Sectors;
+            sector = lsn % (Sectors * Disk.Heads) % Sectors + 1;
         }
 
 
@@ -497,7 +501,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
             int completegranules = Math.Max(0, granulechain.granules.Length - 1) * GranuleSize;
             int lastgranule = (granulechain.sectors == 0)
                                   ? 0
-                                  : (granulechain.sectors - 1)*Disk.SectorSize + lastsectorsize;
+                                  : (granulechain.sectors - 1)*SectorSize + lastsectorsize;
             return completegranules + lastgranule;
         }
 
@@ -517,7 +521,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos
                 for (int j=0; j < Math.Min(GranuleSectors,sectorcount); j++)                    // Once for each granule sector, paying special attention to the last granule
                 {
                     var sector = ReadSector(lsn++);
-                    int sectorsize = Math.Min(Disk.SectorSize, filesize);                       // Pay special attention to the last sector
+                    int sectorsize = Math.Min(SectorSize, filesize);                       // Pay special attention to the last sector
                     Array.Copy(sector, 0, data, dataoffset, sectorsize);
                     dataoffset += sectorsize;
                     filesize -= sectorsize;

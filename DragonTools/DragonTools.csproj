@@ -45,6 +45,14 @@
     <Compile Include="Basic\DragonBasicTokens.cs" />
     <Compile Include="Basic\DragonDosTokens.cs" />
     <Compile Include="Basic\IBasicTokens.cs" />
+    <Compile Include="IO\Disk\BasicSector.cs" />
+    <Compile Include="IO\Disk\HfeDisk.cs" />
+    <Compile Include="IO\Disk\HfeDiskHeader.cs" />
+    <Compile Include="IO\Disk\HfeSector.cs" />
+    <Compile Include="IO\Disk\HfeTrack.cs" />
+    <Compile Include="IO\Disk\ISector.cs" />
+    <Compile Include="IO\Disk\SectorId.cs" />
+    <Compile Include="IO\Disk\SectorNotFoundException.cs" />
     <Compile Include="IO\Filesystem\DragonDos\DragonDosFile.cs" />
     <Compile Include="IO\Filesystem\DragonDos\DragonDosFileName.cs" />
     <Compile Include="IO\Filesystem\DragonTape\DragonFileName.cs" />

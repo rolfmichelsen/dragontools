@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -76,6 +76,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 
         private readonly int Tracks;
         private readonly int Sectors;
+        private const int SectorSize = 256;
 
         private OS9DiskInfo DiskInfo = null;
         private OS9AllocationMap AllocationMap = null;
@@ -87,8 +88,11 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 
             Disk = disk;
             IsWriteable = iswriteable;
+
+            DiskInfo = new OS9DiskInfo(Disk.ReadSector(0, 0, 1));
+
             Tracks = Disk.Tracks;
-            Sectors = Disk.Sectors * Disk.Heads;
+            Sectors = DiskInfo.Sectors * Disk.Heads;
             Disk.SectorWritten += SectorWrittenHandler;
         }
 
@@ -307,7 +311,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
                 if (!AllocationMap.IsAllocated(i))
                     freeClusters++;
             }
-            return freeClusters*DiskInfo.ClusterSize*Disk.SectorSize;
+            return freeClusters*DiskInfo.ClusterSize*SectorSize;
         }
 
 
@@ -478,15 +482,6 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
 
 
         /// <summary>
-        /// Create an empty filesystem.
-        /// </summary>
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
         /// Returns meta-information for a named file.
         /// </summary>
         /// <param name="filename">Name of file</param>
@@ -543,20 +538,20 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         {
             ReadDiskHeader();
             return String.Format("OS-9 Filesystem (Sides={0} Tracks={1} Sectors={2} Sector Size={3} Cluster Size={4})",
-                Disk.Heads, Disk.Tracks, Disk.Sectors, Disk.SectorSize, DiskInfo.ClusterSize);
+                Disk.Heads, Disk.Tracks, DiskInfo.Sectors, SectorSize, DiskInfo.ClusterSize);
         }
 
 
         internal int SectorToLsn(int head, int track, int sector)
         {
-            return track * Sectors + head * Disk.Sectors + sector;
+            return track * Sectors + head * DiskInfo.Sectors + sector;
         }
 
         internal void LsnToSector(int lsn, out int head, out int track, out int sector)
         {
-            track = lsn / (Disk.Sectors * Disk.Heads);
-            head = lsn % (Disk.Sectors * Disk.Heads) / Disk.Sectors;
-            sector = lsn % (Disk.Sectors * Disk.Heads) % Disk.Sectors;
+            track = lsn / (DiskInfo.Sectors * Disk.Heads);
+            head = lsn % (DiskInfo.Sectors * Disk.Heads) / DiskInfo.Sectors;
+            sector = lsn % (DiskInfo.Sectors * Disk.Heads) % DiskInfo.Sectors + 1;
         }
 
         internal byte[] ReadSector(int lsn)

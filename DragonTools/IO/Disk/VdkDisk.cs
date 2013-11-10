@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -54,7 +54,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <summary>
         /// The size of the VDK header.
         /// </summary>
-        private int VdkHeaderSize;
+        private int vdkHeaderSize;
 
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (!IsWriteable) throw new DiskNotWriteableException();
 
             vdkDiskStream.Seek(0, SeekOrigin.Begin);
-            vdkDiskStream.Write(diskData, 0, diskData.Length);
+            vdkDiskStream.Write(DiskData, 0, DiskData.Length);
 
             IsModified = false;
         }
@@ -88,7 +88,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// Returns the offset into the <see cref="diskData">diskData</see> array of the first byte of the identified sector.
+        /// Returns the offset into the <see cref="AbstractDisk.DiskData">diskData</see> array of the first byte of the identified sector.
         /// </summary>
         /// <param name="head">Disk head.</param>
         /// <param name="track">Disk track.</param>
@@ -96,7 +96,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>The byte offset of the first byte of this sector.</returns>
         protected override int SectorOffset(int head, int track, int sector)
         {
-            return (track * Sectors * Heads + head * Sectors + sector) * SectorSize + VdkHeaderSize;
+            return (track * Sectors * Heads + head * Sectors + sector - 1) * SectorSize + vdkHeaderSize;
         }
 
 
@@ -106,7 +106,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>String representation of this object.</returns>
         public override string ToString()
         {
-            return String.Format("VDK Disk: heads={0}, tracks={1}, sectors={2}, sectorsize={3} bytes, capacity={4} bytes, header={5} bytes)", Heads, Tracks, Sectors, SectorSize, Capacity, VdkHeaderSize);
+            return String.Format("VDK Disk: heads={0}, tracks={1}, sectors={2}, sectorsize={3} bytes, header={4} bytes)", Heads, Tracks, Sectors, SectorSize, vdkHeaderSize);
         }
 
 
@@ -140,9 +140,9 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             var disk = new VdkDisk(image, heads, tracks, sectors);
             var header = new VdkHeader(heads, tracks);
             var headerRaw = header.Encode();
-            disk.VdkHeaderSize = headerRaw.Length;
-            disk.diskData = new byte[disk.VdkHeaderSize + heads * tracks * sectors * VdkSectorSize];
-            Array.Copy(headerRaw, disk.diskData, disk.VdkHeaderSize);
+            disk.vdkHeaderSize = headerRaw.Length;
+            disk.DiskData = new byte[disk.vdkHeaderSize + heads * tracks * sectors * VdkSectorSize];
+            Array.Copy(headerRaw, disk.DiskData, disk.vdkHeaderSize);
             disk.IsWriteable = true;
             disk.IsModified = true;
 
@@ -165,8 +165,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             int sectors = (imageData.Length - header.HeaderSize)/(header.Heads*header.Tracks*VdkSectorSize);
 
             var disk = new VdkDisk(image, header.Heads, header.Tracks, sectors);
-            disk.diskData = imageData;
-            disk.VdkHeaderSize = header.HeaderSize;
+            disk.DiskData = imageData;
+            disk.vdkHeaderSize = header.HeaderSize;
             disk.IsWriteable = (isWriteable && image.CanSeek && image.CanWrite);
 
             return disk;

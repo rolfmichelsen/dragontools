@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2012, Rolf Michelsen
+Copyright (c) 2012-2013, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -58,7 +58,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonTape
             {
                 DumpBlocks(args[0]);
             }
-            catch (System.IO.IOException e)
+            catch (System.IO.IOException)
             {
                 Console.Error.WriteLine("ERROR: Local filesystem I/O error.");
                 return;
@@ -73,7 +73,6 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonTape
             //TODO Print more information about each tape block
             using (var tape = new CasTape(new FileStream(tapefile, FileMode.Open, FileAccess.Read)))
             {
-                var blockno = 0;
                 try
                 {
                     while (true)
@@ -82,7 +81,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonTape
                         Console.WriteLine(block.ToString());
                     }
                 }
-                catch (EndOfTapeException e)
+                catch (EndOfTapeException)
                 {
                     return;
                 }

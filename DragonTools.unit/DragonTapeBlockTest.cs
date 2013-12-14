@@ -137,7 +137,7 @@ namespace DragonTools.unit
                 block.Validate();
                 Assert.Fail("This block has an invalid block type and should not pass validation.");
             }
-            catch (InvalidBlockTypeException e) { }
+            catch (InvalidBlockTypeException) { }
         }
 
 
@@ -161,7 +161,7 @@ namespace DragonTools.unit
                 block.Validate();
                 Assert.Fail("This block has an invalid checksum and should not pass validation.");
             }
-            catch (InvalidBlockChecksumException e) {}
+            catch (InvalidBlockChecksumException) {}
         }
 
         

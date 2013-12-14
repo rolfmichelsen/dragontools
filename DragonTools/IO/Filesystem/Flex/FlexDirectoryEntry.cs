@@ -66,7 +66,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex
             {
                 CreateTime = new DateTime(raw[23 + offset] + 1900, raw[21 + offset], raw[22 + offset]); 
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 CreateTime = new DateTime(1980, 1, 1);
             }

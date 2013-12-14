@@ -125,7 +125,7 @@ namespace DragonTools.unit
                 block = new DragonTapeDataBlock(payload);
                 Assert.Fail("Block with too large payload incorrectly created.");
             }
-            catch (ArgumentOutOfRangeException e) {}
+            catch (ArgumentOutOfRangeException) {}
         }
 
         

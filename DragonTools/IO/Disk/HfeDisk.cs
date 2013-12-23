@@ -38,7 +38,9 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
     /// Virtual disk in the HFE format.
     /// </summary>
     /// <remarks>The HFE format is documented SD HxC Floppy Emulator HFE File Format, rev 1.1, 2012-06-20.
-    /// http://hxc2001.com/download/floppy_drive_emulator/SDCard_HxC_Floppy_Emulator_HFE_file_format.pdf</remarks>
+    /// http://hxc2001.com/download/floppy_drive_emulator/SDCard_HxC_Floppy_Emulator_HFE_file_format.pdf.
+    /// This implementation only supports the GENERIC_SHUGART_DD floppy disk interface mode and the
+    /// ISOIBM_MFM track encoding mode.</remarks>
     public sealed class HfeDisk : IDisk
     {
         /// <summary>

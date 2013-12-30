@@ -47,6 +47,7 @@
     <Compile Include="Basic\IBasicTokens.cs" />
     <Compile Include="IO\Disk\BasicSector.cs" />
     <Compile Include="IO\Disk\Crc16Ccitt.cs" />
+    <Compile Include="IO\Disk\CrcException.cs" />
     <Compile Include="IO\Disk\HfeDisk.cs" />
     <Compile Include="IO\Disk\HfeDiskHeader.cs" />
     <Compile Include="IO\Disk\HfeSector.cs" />

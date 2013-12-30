@@ -174,15 +174,31 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
                 while (true)  
                 {
                     trackDataOffset += SkipSectorIdGap(trackData, trackDataOffset, firstSector);
+                    var crc = new Crc16Ccitt();
+                    crc.Add(0xa1);
+                    crc.Add(0xa1);
+                    crc.Add(0xa1);
+                    crc.Add(trackData, trackDataOffset - 1, 5);
                     int track = trackData[trackDataOffset++];
                     int side = trackData[trackDataOffset++];
                     int sector = trackData[trackDataOffset++];
                     int sectorSize = 128 << trackData[trackDataOffset++];
-                    int idcrc = trackData[trackDataOffset++] | (trackData[trackDataOffset++] << 8);
-                    //TODO Do proper CRC verificaton
+                    uint idcrc = (uint) (trackData[trackDataOffset++] << 8) | (uint) trackData[trackDataOffset++];
+                    if (crc.Crc != idcrc)
+                        throw new CrcException(side, track, sector, crc.Crc, idcrc);
                     trackDataOffset += SkipSectorDataGap(trackData, trackDataOffset);
-                    sectors.Add(new HfeSector(side, track, sector, trackData, trackDataOffset, sectorSize));
-                    trackDataOffset += sectorSize + 2;            //TODO Do proper CRC verification
+                    var s = new HfeSector(side, track, sector, trackData, trackDataOffset, sectorSize);
+                    crc = new Crc16Ccitt();
+                    crc.Add(0xa1);
+                    crc.Add(0xa1);
+                    crc.Add(0xa1);
+                    crc.Add(DATA_ADDRESS_MARK);
+                    crc.Add(trackData, trackDataOffset, sectorSize);
+                    trackDataOffset += sectorSize;
+                    uint sectorCrc = (uint) (trackData[trackDataOffset++] << 8) | (uint) trackData[trackDataOffset++];
+                    if (crc.Crc != sectorCrc)
+                        throw new CrcException(side, track, sector, crc.Crc, sectorCrc);
+                    sectors.Add(s);
                     firstSector = false;
                 }    
             }

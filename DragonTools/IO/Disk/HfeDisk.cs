@@ -179,7 +179,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (head <0 || head >= Heads) throw new SectorNotFoundException(head, track, sector);
             if (track < 0 || track >= Tracks) throw new SectorNotFoundException(head, track, sector);
-            var trackdata = new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], head);
+            var trackdata = new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], Heads);
             var sectordata = trackdata.GetSector(head, track, sector);
             return sectordata.Data;
         }
@@ -258,7 +258,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (head < 0 || head >= Heads) throw new SectorNotFoundException(head, track, sector);
             if (track < 0 || track >= Tracks) throw new SectorNotFoundException(head, track, sector);
-            var trackdata = new HfeTrack(diskImageStream, trackBlock[track] * BlockSize, trackLength[track], head);
+            var trackdata = new HfeTrack(diskImageStream, trackBlock[track] * BlockSize, trackLength[track], Heads);
             return trackdata.SectorExists(head, track, sector);
         }
 
@@ -286,15 +286,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <filterpriority>1</filterpriority>
         public IEnumerator<ISector> GetEnumerator()
         {
-            for (var h = 0; h < Heads; h++)
+            for (var t = 0; t < Tracks; t++)
             {
-                for (var t = 0; t < Tracks; t++)
+                var track = new HfeTrack(diskImageStream, trackBlock[t]*BlockSize, trackLength[t], Heads);
+                foreach (var sector in track)
                 {
-                    var track = new HfeTrack(diskImageStream, trackBlock[t]*BlockSize, trackLength[t], h);
-                    foreach (var sector in track)
-                    {
-                        yield return sector;
-                    }
+                    yield return sector;
                 }
             }
         }
@@ -317,16 +314,14 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// Reads an entire disk track.
         /// Applications will normally not use this method but rather ReadSector or GetEnumerator to access disk data.
         /// </summary>
-        /// <param name="head">Head number.</param>
         /// <param name="track">Track number.</param>
         /// <returns>A disk track.</returns>
         /// <seealso cref="ReadSector">ReadSector</seealso>
         /// <seealso cref="GetEnumerator">GetEnumerator</seealso>
-        public HfeTrack ReadTrack(int head, int track)
+        public HfeTrack ReadTrack(int track)
         {
-            if (head < 0 || head >= Heads) throw new ArgumentOutOfRangeException("head", head, String.Format("Disk has {0} heads", Heads));
             if (track < 0 || track >= Tracks) throw new ArgumentOutOfRangeException("track", track, String.Format("Disk has {0} tracks", Tracks));
-            return new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], head);
+            return new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], Heads);
         }
 
 

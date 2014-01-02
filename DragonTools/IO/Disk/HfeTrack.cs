@@ -70,12 +70,17 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="diskImageStream">Stream for accessing the HFE disk image.</param>
         /// <param name="trackOffset">Offset to start of track data in bytes.</param>
         /// <param name="trackLength">Length of encoded track data in bytes.</param>
+        /// <param name="heads">Number of disk heads.</param>
         /// <exception cref="DiskImageFormatException">The disk track cannot be correctly decoded.</exception>
-        public HfeTrack(Stream diskImageStream, int trackOffset, int trackLength, int head)
+        public HfeTrack(Stream diskImageStream, int trackOffset, int trackLength, int heads)
         {
             TrackOffset = trackOffset;
             TrackLength = trackLength;
-            sectors = ReadTrack(diskImageStream, trackOffset, trackLength, head);
+            sectors = new List<HfeSector>();
+            for (int h = 0; h < heads; h++)
+            {
+                sectors.AddRange(ReadTrack(diskImageStream, trackOffset, trackLength, h));
+            }
         }
 
 

@@ -93,7 +93,7 @@ namespace HfeDiskInfo
 
                     for (int track = 0; track < diskHeader.Tracks; track++)
                     {
-                        var t = disk.ReadTrack(0, track);
+                        var t = disk.ReadTrack(track);
                         Console.WriteLine("Track {0,2}  Offset={1}  Length={2}", track, t.TrackOffset, t.TrackLength);
                         foreach (var s in t)
                         {

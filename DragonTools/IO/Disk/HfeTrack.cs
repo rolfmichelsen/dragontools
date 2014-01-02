@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2014, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -38,9 +38,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
     /// <summary>
     /// Represents a track on a virtual HFE format disk.
     /// This class can handle tracks written by the WD279X floppy disk controller and is
-    /// further limited to only handle MFM encoded tracks.
+    /// further limited to only handle MFM encoded tracks.  Applications will normally not
+    /// interact directly with this class.
     /// </summary>
-    internal sealed class HfeTrack : IEnumerable<HfeSector>
+    public sealed class HfeTrack : IEnumerable<HfeSector>
     {
         private static readonly byte ID_ADDRESS_MARK = 0xfe;
         private static readonly byte DATA_ADDRESS_MARK = 0xfb;
@@ -52,6 +53,18 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
+        /// Byte offset of start of encoded track data in the virtual disk image.
+        /// </summary>
+        public int TrackOffset { get; private set; }
+
+
+        /// <summary>
+        /// Length in bytes of the encoded track data in the virtual disk image.
+        /// </summary>
+        public int TrackLength { get; private set; }
+
+
+        /// <summary>
         /// Create a track object.
         /// </summary>
         /// <param name="diskImageStream">Stream for accessing the HFE disk image.</param>
@@ -60,6 +73,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <exception cref="DiskImageFormatException">The disk track cannot be correctly decoded.</exception>
         public HfeTrack(Stream diskImageStream, int trackOffset, int trackLength, int head)
         {
+            TrackOffset = trackOffset;
+            TrackLength = trackLength;
             sectors = ReadTrack(diskImageStream, trackOffset, trackLength, head);
         }
 

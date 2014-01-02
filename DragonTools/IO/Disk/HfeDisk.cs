@@ -314,6 +314,23 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
+        /// Reads an entire disk track.
+        /// Applications will normally not use this method but rather ReadSector or GetEnumerator to access disk data.
+        /// </summary>
+        /// <param name="head">Head number.</param>
+        /// <param name="track">Track number.</param>
+        /// <returns>A disk track.</returns>
+        /// <seealso cref="ReadSector">ReadSector</seealso>
+        /// <seealso cref="GetEnumerator">GetEnumerator</seealso>
+        public HfeTrack ReadTrack(int head, int track)
+        {
+            if (head < 0 || head >= Heads) throw new ArgumentOutOfRangeException("head", head, String.Format("Disk has {0} heads", Heads));
+            if (track < 0 || track >= Tracks) throw new ArgumentOutOfRangeException("track", track, String.Format("Disk has {0} tracks", Tracks));
+            return new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], head);
+        }
+
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>

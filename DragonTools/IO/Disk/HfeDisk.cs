@@ -177,10 +177,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         public byte[] ReadSector(int head, int track, int sector)
         {
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (head <0 || head >= Heads) throw new SectorNotFoundException(head, track, sector);
             if (track < 0 || track >= Tracks) throw new SectorNotFoundException(head, track, sector);
-            var trackdata = new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], Heads);
-            var sectordata = trackdata.GetSector(head, track, sector);
+            var trackdata = GetTrack(track, head);
+            var sectordata = trackdata.ReadSector(head, track, sector);
+            OnSectorRead(new SectorReadEventArgs(head, track, sector));
             return sectordata.Data;
         }
 
@@ -214,8 +216,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         public void WriteSector(int head, int track, int sector, byte[] data)
         {
-            throw new NotImplementedException();
-            //TODO HfeDisk.WriteSector not implemented
+            WriteSector(head, track, sector, data, 0, data.Length);
         }
 
 
@@ -233,8 +234,14 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <exception cref="SectorNotFoundException">The sector does not exist on the disk.</exception>
         public void WriteSector(int head, int track, int sector, byte[] data, int offset, int length)
         {
-            throw new NotImplementedException();
-            //TODO HfeDisk.WriteSector not implemented
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+            if (head < 0 || head >= Heads) throw new SectorNotFoundException(head, track, sector);
+            if (track < 0 || track >= Tracks) throw new SectorNotFoundException(head, track, sector);
+            using (var trackdata = GetTrack(track, head))
+            {
+                trackdata.WriteSector(head, track, sector, data, offset, length);                
+            }
+            OnSectorWritten(new SectorWrittenEventArgs(head, track, sector));
         }
 
 
@@ -256,9 +263,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>True if the sector exists, otherwise false.</returns>
         public bool SectorExists(int head, int track, int sector)
         {
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (head < 0 || head >= Heads) throw new SectorNotFoundException(head, track, sector);
             if (track < 0 || track >= Tracks) throw new SectorNotFoundException(head, track, sector);
-            var trackdata = new HfeTrack(diskImageStream, trackBlock[track] * BlockSize, trackLength[track], Heads);
+            var trackdata = GetTrack(track, head);
             return trackdata.SectorExists(head, track, sector);
         }
 
@@ -278,32 +286,35 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Return an enumerator of disk sectors.
+        /// Note that accessing the sectors in this manner will not invoke the SectorRead event
+        /// handler.
         /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        /// </returns>
-        /// <filterpriority>1</filterpriority>
+        /// <returns></returns>
         public IEnumerator<ISector> GetEnumerator()
         {
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+
             for (var t = 0; t < Tracks; t++)
             {
-                var track = new HfeTrack(diskImageStream, trackBlock[t]*BlockSize, trackLength[t], Heads);
-                foreach (var sector in track)
+                for (var h = 0; h < Heads; h++)
                 {
-                    yield return sector;
+                    var track = GetTrack(t, h);
+                    foreach (var sector in track)
+                    {
+                        yield return sector;
+                    }    
                 }
             }
         }
 
 
         /// <summary>
-        /// Returns an enumerator that iterates through a collection.
+        /// Return an enumerator of disk sectors.
+        /// Note that accessing the sectors in this manner will not invoke the SectorRead event
+        /// handler.
         /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
+        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -311,31 +322,53 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
 
         /// <summary>
-        /// Reads an entire disk track.
+        /// Return an disk track.
         /// Applications will normally not use this method but rather ReadSector or GetEnumerator to access disk data.
         /// </summary>
         /// <param name="track">Track number.</param>
+        /// <param name="head">Head number.</param>
         /// <returns>A disk track.</returns>
         /// <seealso cref="ReadSector">ReadSector</seealso>
         /// <seealso cref="GetEnumerator">GetEnumerator</seealso>
-        public HfeTrack ReadTrack(int track)
+        /// <exception cref="SectorNotFoundException">The head and track number is out of range.</exception>
+        public HfeTrack GetTrack(int track, int head)
         {
-            if (track < 0 || track >= Tracks) throw new ArgumentOutOfRangeException("track", track, String.Format("Disk has {0} tracks", Tracks));
-            return new HfeTrack(diskImageStream, trackBlock[track]*BlockSize, trackLength[track], Heads);
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+            if (track < 0 || track >= Tracks) throw new ArgumentOutOfRangeException("track", track, String.Format("Disk contanins {0} tracks", Tracks));
+            if (head < 0 || head >= Heads) throw new ArgumentOutOfRangeException("head", head, String.Format("Disk contains {0} sides", Heads));
+            return new HfeTrack(diskImageStream, trackBlock[track] * BlockSize, trackLength[track], head);
+        }
+
+
+        private void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+
+            if (disposing)
+            {
+                Flush();
+                diskImageStream.Close();
+                isDisposed = true;
+                diskImageStream = null;                            
+            }
+            isDisposed = true;
         }
 
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            if (isDisposed) return;
-            Flush();
-            diskImageStream.Close();
-            isDisposed = true;
-            diskImageStream = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+
+        ~HfeDisk()
+        {
+            Dispose(false);
         }
 
 
@@ -350,6 +383,28 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// This event is triggered after reading a disk sector using the <c>ReadSector</c> function.
         /// </summary>
         public event EventHandler<SectorReadEventArgs> SectorRead;
+
+
+        /// <summary>
+        /// Signals that a sector has been written and invokes any registered event handles for the SectorWritten event.
+        /// </summary>
+        /// <param name="e"></param>
+        private void OnSectorWritten(SectorWrittenEventArgs e)
+        {
+            if (SectorWritten != null)
+                SectorWritten(this, e);
+        }
+
+
+        /// <summary>
+        /// Signals that a sector has been read and invokes any registered event handles for the SectorRead event.
+        /// </summary>
+        /// <param name="e"></param>
+        private  void OnSectorRead(SectorReadEventArgs e)
+        {
+            if (SectorRead != null)
+                SectorRead(this, e);
+        }
 
     }
 }

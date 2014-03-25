@@ -93,11 +93,14 @@ namespace HfeDiskInfo
 
                     for (int track = 0; track < diskHeader.Tracks; track++)
                     {
-                        var t = disk.ReadTrack(track);
-                        Console.WriteLine("Track {0,2}  Offset={1}  Length={2}", track, t.TrackOffset, t.TrackLength);
-                        foreach (var s in t)
+                        for (int head = 0; head < diskHeader.Sides; head++)
                         {
-                            Console.WriteLine("  Sector Head={0} Track={1,-2} Sector={2,-2}  Size={3}", s.Head, s.Track, s.Sector, s.Size);
+                            var t = disk.GetTrack(track, head);
+                            Console.WriteLine("Track {0,2}  Offset={1}  Length={2}", track, t.TrackOffset, t.TrackLength);
+                            foreach (var s in t)
+                            {
+                                Console.WriteLine("  Sector Head={0} Track={1,-2} Sector={2,-2}  Size={3}", s.Head, s.Track, s.Sector, s.Size);
+                            }                            
                         }
                     }
                 }

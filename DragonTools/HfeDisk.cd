@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDisk">
+    <Position X="1" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAEGAxcBAEEAABBAABAAAIAAAGIBAACCAIAAA=</HashCode>
+      <FileName>IO\Disk\HfeDisk.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDiskHeader">
+    <Position X="9.5" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDiskHeader.TrackEncodingMode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IO\Disk\HfeDiskHeader.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDiskHeader.FloppyInterfaceMode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IO\Disk\HfeDiskHeader.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAQIAAAAAFAAAAQCgAAAAAAAABAACABgAAEAQAAAAAA=</HashCode>
+      <FileName>IO\Disk\HfeDiskHeader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeSector">
+    <Position X="3.5" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACEAAgIAACAAAAAAAAAAAABAAAAAQAAAAAAA=</HashCode>
+      <FileName>IO\Disk\HfeSector.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeTrack">
+    <Position X="6" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Internal" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeTrack.SectorInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>IO\Disk\HfeTrack.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IQAAQAACACAgBhCAEAAEAAAAAAAIAIAEIAAAAAAAAAA=</HashCode>
+      <FileName>IO\Disk\HfeTrack.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeRawTrack">
+    <Position X="3.5" Y="6.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAACgCAASAAgOAYAACBgAAAAAEAoAAAACAGIAGA=</HashCode>
+      <FileName>IO\Disk\HfeRawTrack.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.MfmStream">
+    <Position X="6" Y="6.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAgGIgAAABgAAAAAEAgAAAAAAEIACA=</HashCode>
+      <FileName>IO\Disk\MfmStream.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

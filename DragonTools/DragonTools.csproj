@@ -50,9 +50,11 @@
     <Compile Include="IO\Disk\CrcException.cs" />
     <Compile Include="IO\Disk\HfeDisk.cs" />
     <Compile Include="IO\Disk\HfeDiskHeader.cs" />
+    <Compile Include="IO\Disk\HfeRawTrack.cs" />
     <Compile Include="IO\Disk\HfeSector.cs" />
     <Compile Include="IO\Disk\HfeTrack.cs" />
     <Compile Include="IO\Disk\ISector.cs" />
+    <Compile Include="IO\Disk\MfmStream.cs" />
     <Compile Include="IO\Disk\SectorId.cs" />
     <Compile Include="IO\Disk\SectorNotFoundException.cs" />
     <Compile Include="IO\Filesystem\DragonDos\DragonDosFile.cs" />
@@ -129,6 +131,7 @@
   <ItemGroup>
     <None Include="Disk.cd" />
     <None Include="DiskFilesystem.cd" />
+    <None Include="HfeDisk.cd" />
     <None Include="IO\Filesystem\DragonDos\DragonDos.cd" />
     <None Include="IO\Filesystem\DragonTape\DragonTape.cd" />
     <None Include="IO\OS9.cd" />

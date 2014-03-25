@@ -29,27 +29,30 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
     /// <summary>
-    /// Represents a track on a virtual HFE format disk.
+    /// Represents one side of a track on a virtual HFE format disk.
     /// This class can handle tracks written by the WD279X floppy disk controller and is
     /// further limited to only handle MFM encoded tracks.  Applications will normally not
     /// interact directly with this class.
     /// </summary>
-    public sealed class HfeTrack : IEnumerable<HfeSector>
+    public sealed class HfeTrack : IEnumerable<HfeSector>, IDisposable
     {
-        private static readonly byte ID_ADDRESS_MARK = 0xfe;
-        private static readonly byte DATA_ADDRESS_MARK = 0xfb;
+        private readonly byte ID_ADDRESS_MARK = 0xfe;
+        private readonly byte DATA_ADDRESS_MARK = 0xfb;
+
 
         /// <summary>
-        /// Collection containing all sectors in this track.
+        /// Stream for accessing the track data.  The underlying stream accesses the disk image
+        /// file and is not owned by this object and will not be closed when the object is disposed.
         /// </summary>
-        private List<HfeSector> sectors = null;
+        private MfmStream trackStream;
+
+        private bool isDisposed = false;
 
 
         /// <summary>
@@ -67,20 +70,19 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <summary>
         /// Create a track object.
         /// </summary>
-        /// <param name="diskImageStream">Stream for accessing the HFE disk image.</param>
-        /// <param name="trackOffset">Offset to start of track data in bytes.</param>
-        /// <param name="trackLength">Length of encoded track data in bytes.</param>
-        /// <param name="heads">Number of disk heads.</param>
+        /// <param name="diskStream">Stream for reading disk image data.</param>
+        /// <param name="trackOffset"></param>
+        /// <param name="trackLength"></param>
+        /// <param name="head"></param>
         /// <exception cref="DiskImageFormatException">The disk track cannot be correctly decoded.</exception>
-        public HfeTrack(Stream diskImageStream, int trackOffset, int trackLength, int heads)
+        internal HfeTrack(Stream diskStream, int trackOffset, int trackLength, int head)
         {
+            if (diskStream == null) throw new ArgumentNullException("diskStream");
+            if (!diskStream.CanRead) throw new NotSupportedException("Stream does not support read operations");
+            if (!diskStream.CanSeek) throw new NotSupportedException("Stream does not support seek operations");
+            trackStream = new MfmStream(new HfeRawTrack(diskStream, trackOffset, trackLength, head));
             TrackOffset = trackOffset;
             TrackLength = trackLength;
-            sectors = new List<HfeSector>();
-            for (int h = 0; h < heads; h++)
-            {
-                sectors.AddRange(ReadTrack(diskImageStream, trackOffset, trackLength, h));
-            }
         }
 
 
@@ -92,14 +94,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <param name="sector">Sector number.</param>
         /// <returns>Sector object.</returns>
         /// <exception cref="SectorNotFoundException">Thrown if the sector cannot be found on this track.</exception>
-        public HfeSector GetSector(int head, int track, int sector)
+        public HfeSector ReadSector(int head, int track, int sector)
         {
-            foreach (var s in sectors)
-            {
-                if (s.Head == head && s.Track == track && s.Sector == sector)
-                    return s;
-            }
-            throw new SectorNotFoundException(head, track, sector);
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+            trackStream.Seek(0, SeekOrigin.Begin);
+            var sectorInfo = GetSectorInfo(head, track, sector);
+            if (sectorInfo == null) throw new SectorNotFoundException(head, track, sector);
+            return GetSectorData(sectorInfo);
         }
 
 
@@ -112,199 +113,236 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <returns>True if the sector exists.</returns>
         public bool SectorExists(int head, int track, int sector)
         {
-            return sectors.Any(s => s.Head == head && s.Track == track && s.Sector == sector);
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+            trackStream.Seek(0, SeekOrigin.Begin);
+            return (GetSectorInfo(head, track, sector) != null);
         }
 
 
         /// <summary>
-        /// Read a track from the disk image, decode it and return its sectors.
+        /// Write a sector to this track.
         /// </summary>
-        /// <param name="diskImageStream">Stream for accessing the HFE disk image.</param>
-        /// <param name="trackOffset">Offset to start of track data in bytes.</param>
-        /// <param name="trackLength">Length of encoded track data in bytes.</param>
-        /// <param name="head">Disk head.</param>
-        /// <returns>Track sectors.</returns>
-        private static List<HfeSector> ReadTrack(Stream diskImageStream, int trackOffset, int trackLength, int head)
+        /// <param name="head">Head number.</param>
+        /// <param name="track">Track number.</param>
+        /// <param name="sector">Sector number.</param>
+        /// <param name="data">Sector payload data.</param>
+        /// <param name="dataOffset">Offset into sector payload data of first byte to write.</param>
+        /// <param name="dataLength">Size of sector payload data.</param>
+        /// <exception cref="SectorNotFoundException">Thrown if the sector cannot be found on this track.</exception>
+        public void WriteSector(int head, int track, int sector, byte[] data, int dataOffset, int dataLength)
         {
-            var rawTrackDataAllHeads = ReadRawTrack(diskImageStream, trackOffset, trackLength);
-            var rawTrackData = ExtractTrackSide(rawTrackDataAllHeads, head);
-            var trackData = DecodeMFM(rawTrackData);
-            var sectors = ExtractSectors(trackData);
-            return sectors;
-        }
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+            if (data == null) throw new ArgumentNullException("data");
+            if (!trackStream.CanWrite) throw new NotSupportedException("Stream does not support write operations");
 
+            trackStream.Seek(0, SeekOrigin.Begin);
+            var sectorInfo = GetSectorInfo(head, track, sector);
+            if (sectorInfo == null) throw new SectorNotFoundException(head, track, sector);
 
-        private static byte[] ReadRawTrack(Stream diskImageStream, int trackOffset, int trackLength)
-        {
-            var trackData = new byte[trackLength];
-            diskImageStream.Seek(trackOffset, SeekOrigin.Begin);
-            IOUtils.ReadBlock(diskImageStream, trackData, 0, trackLength);
-            return trackData;
-        }
+            /* Ensure that sector has correct size. */
+            var data2 = new byte[sectorInfo.Size];
+            Array.Copy(data, dataOffset, data2, 0, Math.Min(sectorInfo.Size, dataLength));
 
-
-        private static byte[] ExtractTrackSide(byte[] rawTrackDataAllHeads, int head)
-        {
-            // No attempts at cleverness here.  This will have to be redesigned to support writing sectors anyway...
-            var rawTrackData = new byte[rawTrackDataAllHeads.Length];
-            var destOffset = 0;
-            var srcOffset = head*HfeDisk.BlockSize/2;
-            while (srcOffset < rawTrackDataAllHeads.Length)
-            {
-                var blockSize = Math.Min(HfeDisk.BlockSize/2, rawTrackDataAllHeads.Length - srcOffset);
-                Array.Copy(rawTrackDataAllHeads, srcOffset, rawTrackData, destOffset, blockSize);
-                destOffset += blockSize;
-                srcOffset += HfeDisk.BlockSize;
-            }
-            Array.Resize(ref rawTrackData, destOffset);
-            return rawTrackData;
-        }
-
-
-        private static byte[] DecodeMFM(byte[] encodedData)
-        {
-            var decodedData = new byte[encodedData.Length / 2];
-            for (int i = 0; i < decodedData.Length; i++)
-            {
-                byte decodedValue = 0;
-                byte encodedValue1 = encodedData[i * 2];
-                byte encodedValue2 = encodedData[i * 2 + 1];
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue1 & 0x02) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue1 & 0x08) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue1 & 0x20) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue1 & 0x80) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue2 & 0x02) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue2 & 0x08) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue2 & 0x20) == 0 ? 0 : 1));
-                decodedValue = (byte)((decodedValue << 1) | ((encodedValue2 & 0x80) == 0 ? 0 : 1));
-                decodedData[i] = decodedValue;
-            }
-            return decodedData;
-        }
-
-
-        private static List<HfeSector> ExtractSectors(byte[] trackData)
-        {
-            var sectors = new List<HfeSector>();
-            var trackDataOffset = 0;
-            var firstSector = true;
-
-            try
-            {
-                while (true)  
-                {
-                    trackDataOffset += SkipSectorIdGap(trackData, trackDataOffset, firstSector);
-                    var crc = new Crc16Ccitt();
-                    crc.Add(0xa1);
-                    crc.Add(0xa1);
-                    crc.Add(0xa1);
-                    crc.Add(trackData, trackDataOffset - 1, 5);
-                    int track = trackData[trackDataOffset++];
-                    int side = trackData[trackDataOffset++];
-                    int sector = trackData[trackDataOffset++];
-                    int sectorSize = 128 << trackData[trackDataOffset++];
-                    uint idcrc = (uint) (trackData[trackDataOffset++] << 8) | (uint) trackData[trackDataOffset++];
-                    if (crc.Crc != idcrc)
-                        throw new CrcException(side, track, sector, crc.Crc, idcrc);
-                    trackDataOffset += SkipSectorDataGap(trackData, trackDataOffset);
-                    var s = new HfeSector(side, track, sector, trackData, trackDataOffset, sectorSize);
-                    crc = new Crc16Ccitt();
-                    crc.Add(0xa1);
-                    crc.Add(0xa1);
-                    crc.Add(0xa1);
-                    crc.Add(DATA_ADDRESS_MARK);
-                    crc.Add(trackData, trackDataOffset, sectorSize);
-                    trackDataOffset += sectorSize;
-                    uint sectorCrc = (uint) (trackData[trackDataOffset++] << 8) | (uint) trackData[trackDataOffset++];
-                    if (crc.Crc != sectorCrc)
-                        throw new CrcException(side, track, sector, crc.Crc, sectorCrc);
-                    sectors.Add(s);
-                    firstSector = false;
-                }    
-            }
-            catch (IndexOutOfRangeException) {}   // Very primitive way of terminating the loop when all sectors have been extracted
-            
-            return sectors;
+            WriteSectorData(data2, 0, data2.Length);
         }
 
 
         /// <summary>
-        /// Read the gap preceeding a sector ID record, including the ID address mark byte.
+        /// Returns an enumerator that iterates through the sectors in this track.
         /// </summary>
-        /// <param name="trackData"></param>
-        /// <param name="trackDataOffset"></param>
-        /// <param name="firstSector"></param>
-        /// <returns>The number of raw track bytes actually read.</returns>
-        private static int SkipSectorIdGap(byte[] trackData, int trackDataOffset, bool firstSector)
-        {
-            var length1 = SkipBytes(trackData, trackDataOffset, 0x4e);
-            if (length1 < 22) throw new DiskImageFormatException(String.Format("Reading sector ID gap and found {0} bytes of 0x4e", length1));
-            trackDataOffset += length1;
-
-            var length2 = SkipBytes(trackData, trackDataOffset, 0x00);
-            if (firstSector && length2 != 12) throw new DiskImageFormatException(String.Format("Reading sector ID gap and found {0} bytes of 0x00", length2));
-            if (!firstSector && length2 < 8) throw new DiskImageFormatException(String.Format("Reading sector ID gap and found {0} bytes of 0x00", length2));
-            trackDataOffset += length2;
-
-            var length3 = SkipBytes(trackData, trackDataOffset, 0xa1);
-            if (length3 != 3) throw new DiskImageFormatException(String.Format("Reading sector ID gap and found {0} bytes of 0xa1", length2));
-            trackDataOffset += length3;
-
-            if (trackData[trackDataOffset] != ID_ADDRESS_MARK)
-                throw new DiskImageFormatException("Reading sector ID gap but did not find data address mark");
-
-            return length1 + length2 + length3 + 1;
-        }
-
-
-        /// <summary>
-        /// Read the gap preceeding a sector data record, including the data address mark byte.
-        /// This gap is always a minimum of 22 bytes of ox4e, exactly 12 bytes of 0x00, exactly
-        /// 3 bytes of 0xa1 and finally the sector data record address mark.
-        /// </summary>
-        /// <param name="trackData"></param>
-        /// <param name="trackDataOffset"></param>
-        /// <returns></returns>
-        private static int SkipSectorDataGap(byte[] trackData, int trackDataOffset)
-        {
-            var length1 = SkipBytes(trackData, trackDataOffset, 0x4e);
-            if (length1 < 22) throw new DiskImageFormatException(String.Format("Reading sector data gap and found {0} bytes of 0x4e", length1));
-            trackDataOffset += length1;
-
-            var length2 = SkipBytes(trackData, trackDataOffset, 0x00);
-            if (length2 != 12) throw new DiskImageFormatException(String.Format("Reading sector data gap and found {0} bytes of 0x00", length2));
-            trackDataOffset += length2;
-
-            var length3 = SkipBytes(trackData, trackDataOffset, 0xa1);
-            if (length3 != 3) throw new DiskImageFormatException(String.Format("Reading sector data gap and found {0} bytes of 0xa1", length2));
-            trackDataOffset += length3;
-
-            if (trackData[trackDataOffset] != DATA_ADDRESS_MARK)
-                throw new DiskImageFormatException("Reading sector data gap but did not find data address mark");
-
-            return length1 + length2 + length3 + 1;
-        }
-
-
-
-
-        private static int SkipBytes(byte[] trackData, int trackDataOffset, byte value)
-        {
-            int length = 0;
-            while (trackData[trackDataOffset++] == value) length++;
-            return length;
-        }
-
-
         public IEnumerator<HfeSector> GetEnumerator()
         {
-            return ((IEnumerable<HfeSector>) sectors).GetEnumerator();
+            if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
+
+            /* First extract all track sectors and store them in a collection. */
+            var sectors = new List<HfeSector>();
+            trackStream.Seek(0, SeekOrigin.Begin);
+            SectorInfo sectorInfo;
+            while ((sectorInfo = GetSectorInfo()) != null)
+            {
+                sectors.Add(GetSectorData(sectorInfo));
+            }
+            
+            /* Now iterate over the sectors. */
+            foreach (var sector in sectors)
+            {
+                yield return sector;
+            }
         }
 
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the sectors in this track.
+        /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+
+        private void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+
+            if (disposing)
+            {
+                trackStream.Flush();
+                trackStream = null;                            
+            }
+
+            isDisposed = true;
+        }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        ~HfeTrack()
+        {
+            Dispose(false);
+        }
+
+
+        /// <summary>
+        /// Reads from the current stream position and until a sync sequence have been fully read.  The stream
+        /// will be positioned on the first byte following the sync sequence.
+        /// </summary>
+        /// <returns>The number of bytes read, including the sync sequence.  Returns -1 if the end of the stream was reached
+        /// without finding a sync sequence.</returns>
+        private int Sync()
+        {
+            int syncCount = 0;
+            int readCount = 0;
+            while (syncCount < 3)
+            {
+                bool isSync;
+                if (trackStream.ReadByte(out isSync) == -1) return -1;
+                readCount++;
+                syncCount = isSync ? syncCount + 1 : 0;
+            }
+            return readCount;
+        }
+
+
+        /// <summary>
+        /// Reads from the current stream position and returns meta-information for the first sector encountered.  The stream
+        /// will be positioned just after the sector ID block.
+        /// </summary>
+        /// <returns>Returns sector meta-information, or <value>null</value> if no sector was found.</returns>
+        private SectorInfo GetSectorInfo()
+        {
+            int blockId;
+            do
+            {
+                Sync();
+                blockId = trackStream.ReadByte();
+                if (blockId == -1) return null;
+            } while (blockId != ID_ADDRESS_MARK);
+            
+            int track = trackStream.ReadByte();
+            int head = trackStream.ReadByte();
+            int sector = trackStream.ReadByte();
+            int sizeCode = trackStream.ReadByte();
+            int crc1 = trackStream.ReadByte();
+            int crc2 = trackStream.ReadByte();
+            if (crc2 == -1) throw new EndOfStreamException("Reading beyond end of stream while reading sector ID block");
+
+            return new SectorInfo(head, track, sector, 128 << sizeCode);
+        }
+
+
+        /// <summary>
+        /// Reads from the current stream position and returns meta-information for the given sector.  The stream will be 
+        /// positioned just after the sector ID block.
+        /// </summary>
+        /// <param name="head">Sector head.</param>
+        /// <param name="track">Sector track.</param>
+        /// <param name="sector">Sector number.</param>
+        /// <returns>Returns sector meta-information, or <value>null</value> if the sector was not found.</returns>
+        private SectorInfo GetSectorInfo(int head, int track, int sector)
+        {
+            SectorInfo si;
+            do
+            {
+                si = GetSectorInfo();
+                if (si == null) return null;
+            } while (si.Head != head || si.Track != track || si.Sector != sector);
+            return si;
+        }
+
+
+        /// <summary>
+        /// Reads sector data and returns a sector object.  The stream must be positioned at the first byte of the sector payload
+        /// data.  On exit the stream will be positioned on the first byte following the sector payload CRC.
+        /// </summary>
+        /// <param name="info">Sector meta-information.</param>
+        /// <returns>A sector object.</returns>
+        private HfeSector GetSectorData(SectorInfo info)
+        {
+            Sync();
+            var blockId = trackStream.ReadByte();
+            if (blockId == -1) return null;
+            if (blockId != DATA_ADDRESS_MARK) throw new DiskImageFormatException(String.Format("Unexpected block type {0}", blockId));
+
+            var data = new byte[info.Size];
+            IOUtils.ReadBlock(trackStream, data, 0, info.Size);
+            var crc1 = trackStream.ReadByte();
+            var crc2 = trackStream.ReadByte();
+            if (crc2 == -1) throw new EndOfStreamException();
+            var crc = (crc1 << 8) | crc2;
+
+            // TODO Verify disk sector CRC
+
+            return new HfeSector(info.Head, info.Track, info.Sector, data, 0, data.Length);
+        }
+
+
+        /// <summary>
+        /// Write sector data, including the CRC, to the stream.  The stream must be positioned at the first byte of the sector
+        /// payload data.
+        /// </summary>
+        /// <param name="data">Sector data buffer.</param>
+        /// <param name="offset">Offset of the first byte of sector data into the data buffer.</param>
+        /// <param name="length">Size of the sector data.</param>
+        private void WriteSectorData(byte[] data, int offset, int length)
+        {
+            Sync();
+            var blockId = trackStream.ReadByte();
+            if (blockId == -1) throw new DiskImageFormatException("Sector data not found after sector address mark");
+            if (blockId != DATA_ADDRESS_MARK) throw new DiskImageFormatException(String.Format("Unexpected block type {0}", blockId));
+
+            var crc = new Crc16Ccitt();
+            crc.Add(0xa1);
+            crc.Add(0xa1);
+            crc.Add(0xa1);
+            crc.Add(DATA_ADDRESS_MARK);
+            for (int i = 0; i < length; i++)
+                crc.Add(data[offset + i]);
+
+            trackStream.Write(data, offset, length);
+            trackStream.WriteByte((byte) ((crc.Crc >> 8) & 0xff));
+            trackStream.WriteByte((byte) (crc.Crc & 0xff));
+        }
+
+
+        private class SectorInfo
+        {
+            public readonly int Head;
+            public readonly int Track;
+            public readonly int Sector;
+            public readonly int Size;
+
+            internal SectorInfo(int head, int track, int sector, int size)
+            {
+                Head = head;
+                Track = track;
+                Sector = sector;
+                Size = size;
+            }
         }
     }
 }

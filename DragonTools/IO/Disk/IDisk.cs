@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2014, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -151,6 +151,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             Track = track;
             Sector = sector;
         }
+
+
+        public override string ToString()
+        {
+            return String.Format("Write sector h={0} t={1} s={2}", Head, Track, Sector);
+        }
+
     }
 
 
@@ -168,6 +175,12 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             Head = head;
             Track = track;
             Sector = sector;
+        }
+
+
+        public override string ToString()
+        {
+            return String.Format("Read sector h={0} t={1} s={2}", Head, Track, Sector);
         }
     }
 

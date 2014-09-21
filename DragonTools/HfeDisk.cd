@@ -2,18 +2,17 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDisk">
     <Position X="1" Y="1" Width="2.25" />
-    <Compartments>
-      <Compartment Name="Internal" Collapsed="true" />
-      <Compartment Name="Private" Collapsed="true" />
-    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAQAAAEGAxcBAEEAABBAABAAAIAAAGIBAACCAIAAA=</HashCode>
+      <HashCode>AAAAQAAAEGBxcBAEEIAVBAABACAIAEgGIBAACCAIAAA=</HashCode>
       <FileName>IO\Disk\HfeDisk.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="diskImageStream" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeDiskHeader">
-    <Position X="9.5" Y="1" Width="2.25" />
+    <Position X="3.5" Y="4" Width="2.25" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
@@ -30,59 +29,53 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAQIAAAAAFAAAAQCgAAAAAAAABAACABgAAEAQAAAAAA=</HashCode>
+      <HashCode>AAQKAAAAAFBAAAQCgAAAAAAAABgACABgABEAQAAAAAA=</HashCode>
       <FileName>IO\Disk\HfeDiskHeader.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeSector">
-    <Position X="3.5" Y="1" Width="2.25" />
+    <Position X="11" Y="1" Width="2.25" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAACEAAgIAACAAAAAAAAAAAABAAAAAQAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACFBAgIAACAAAAAAAAAAAAJACAAAQAAAAAAA=</HashCode>
       <FileName>IO\Disk\HfeSector.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeTrack">
-    <Position X="6" Y="1" Width="2.25" />
-    <Compartments>
-      <Compartment Name="Private" Collapsed="true" />
-      <Compartment Name="Internal" Collapsed="true" />
-    </Compartments>
-    <NestedTypes>
-      <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeTrack.SectorInfo" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>IO\Disk\HfeTrack.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
+    <Position X="8.5" Y="1" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>IQAAQAACACAgBhCAEAAEAAAAAAAIAIAEIAAAAAAAAAA=</HashCode>
+      <HashCode>IQAAQAACCCAgBhCQEAAEAAAAAAAIAIAEIAAAAAAAQAA=</HashCode>
       <FileName>IO\Disk\HfeTrack.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeRawTrack">
-    <Position X="3.5" Y="6.25" Width="2.25" />
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.HfeRawTrack" Collapsed="true">
+    <Position X="3.5" Y="2.5" Width="2.25" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAACgCAASAAgOAYAACBgAAAAAEAoAAAACAGIAGA=</HashCode>
+      <HashCode>AAAAAAACgCAASAAgOAYAACBgAAAAAEAoAAAACAEIAGA=</HashCode>
       <FileName>IO\Disk\HfeRawTrack.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.MfmStream">
-    <Position X="6" Y="6.25" Width="2.25" />
+  <Class Name="RolfMichelsen.Dragon.DragonTools.IO.Disk.MfmStream" Collapsed="true">
+    <Position X="6" Y="2.5" Width="2.25" />
     <Compartments>
       <Compartment Name="Private" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAAgGIgAAABgAAAAAEAgAAAAAAEIACA=</HashCode>
+      <HashCode>AAAAAAAABCAAQAAgGIgAAABgQAAAAEAgEAAAAAEIACA=</HashCode>
       <FileName>IO\Disk\MfmStream.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="System.IO.Stream" Collapsed="true">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

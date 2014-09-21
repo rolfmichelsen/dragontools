@@ -87,6 +87,8 @@ namespace HfeDiskInfo
                     Console.WriteLine("Track encoding (track 0, side 0) : {0}", diskHeader.TrackEncoding0);
                     Console.WriteLine("Track encoding (track 0, side 1) : {0}", diskHeader.TrackEncoding1);
                     Console.WriteLine("Floppy interface mode            : {0}", diskHeader.FloppyInterface);
+                    Console.WriteLine("Disk bit rate                    : {0}", diskHeader.DiskBitRate);
+                    Console.WriteLine("Disk rotation speed              : {0}", diskHeader.DiskRotationSpeed);
                     Console.WriteLine("Disk write protected             : {0}", diskHeader.IsDiskWriteProtected);
                     Console.WriteLine("Track list block                 : {0}", diskHeader.TrackListBlock);
                     Console.WriteLine();
@@ -103,8 +105,46 @@ namespace HfeDiskInfo
                             }                            
                         }
                     }
+
+//                    DumpTrackData(diskStream, disk, 0, 0);
                 }
             }
+        }
+
+
+
+        /// <summary>
+        /// Dump raw track data after MFM encoding.
+        /// </summary>
+        /// <param name="diskStream">Stream for reading the disk image data.</param>
+        /// <param name="disk">Disk.</param>
+        /// <param name="headId">Head.</param>
+        /// <param name="trackId">Track.</param>
+        void DumpTrackData(Stream diskStream, HfeDisk disk, int headId, int trackId)
+        {
+            Console.WriteLine();
+            Console.Write("Track data for track {0} side {1}", trackId, headId);
+            Console.WriteLine();
+
+            var t = disk.GetTrack(trackId, headId);
+
+            var trackStream = new MfmStream(new HfeRawTrack(diskStream, t.TrackOffset, t.TrackLength, headId));
+            var offset = 0;
+            var done = false;
+            var buffer = new byte[16];
+            while (!done)
+            {
+                Console.Write(String.Format("{0:x4} : ", offset));
+                var len = trackStream.Read(buffer, 0, buffer.Length);
+                for (var i = 0; i < Math.Min(buffer.Length, len); i++)
+                {
+                    Console.Write(String.Format("{0:x2} ", buffer[i]));
+                }
+                Console.WriteLine();
+                done = (len < buffer.Length);
+                offset += len;
+            }
+            trackStream.Dispose();
         }
     }
 }

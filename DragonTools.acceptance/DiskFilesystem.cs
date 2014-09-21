@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -88,8 +88,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "Free", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void Free()
         {
@@ -105,8 +105,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "ListFiles", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void ListFiles()
         {
@@ -125,8 +125,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "FileExists", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void FileExists()
         {
@@ -144,8 +144,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "IsValidFilename", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void IsValidFilename()
         {
@@ -163,8 +163,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "Check", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void Check()
         {
@@ -188,8 +188,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "DeleteFile", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void DeleteFile()
         {
@@ -227,8 +227,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "RenameFile", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void RenameFile()
         {
@@ -268,8 +268,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "ReadFile", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void ReadFile()
         {
@@ -302,7 +302,6 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
 
-        [TestMethod()]
         public void WriteFile()
         {
             //TODO Implement tests for WriteFile
@@ -310,8 +309,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\DiskFilesystem.xml", "Initialize", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\DiskFilesystem.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("DiskFilesystem.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void Initialize()
         {

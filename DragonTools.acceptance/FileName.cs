@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -56,7 +56,7 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\FileName.xml", "FileNameAccess", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\FileName.xml")]
+        [DeploymentItem("FileName.xml")]
         [TestMethod()]
         public void FileNameAccess()
         {

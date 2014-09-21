@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -31,6 +31,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+// BUG HFE disks created by this class report incorrect size when read in the SD Floppy Emulator
+// BUG HFE disks created by this class does not show a filename in the SD Floppy Emulator
 
 namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
@@ -47,6 +49,24 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// HFE disk files are organized in blocks of this size.
         /// </summary>
         internal static readonly int BlockSize = 512;
+
+
+        /// <summary>
+        /// Block offset of the track list block for disk images created by this class.
+        /// </summary>
+        private static readonly int DefaultTrackListBlock = 1;
+
+
+        /// <summary>
+        /// Default sector ID for first sector of each track for disk images created by this class.
+        /// </summary>
+        private static readonly int DefaultFirstSector = 1;
+
+
+        /// <summary>
+        /// Default sector interleaving for disk images created by this class.
+        /// </summary>
+        private static readonly int DefaultSectorInterleaving = 9;
 
 
         /// <summary>
@@ -135,7 +155,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (diskHeader.TrackEncoding0 != HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM)
                 throw new DiskImageFormatException(
                     String.Format("Unsupported track encoding mode {0} for track 0 head 0", diskHeader.TrackEncoding0));
-            if (diskHeader.TrackEncoding1 != HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM)
+            if (diskHeader.Sides > 1 && diskHeader.TrackEncoding1 != HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM)
                 throw new DiskImageFormatException(
                     String.Format("Unsupported track encoding mode {0} for track 0 head 1", diskHeader.TrackEncoding1));
 
@@ -144,6 +164,99 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
             return disk;
         }
+
+
+
+        /// <summary>
+        /// Create a new HFE disk associated with the given stream.
+        /// </summary>
+        /// <param name="image">Stream for storing the disk image.</param>
+        /// <param name="heads">Number of disk heads.</param>
+        /// <param name="tracks">Number of tracks per head.</param>
+        /// <param name="sectors">Number of sectors per track.</param>
+        /// <param name="sectorsize">Sector size in bytes</param>
+        /// <returns>A disk object</returns>
+        public static HfeDisk Create(Stream image, int heads, int tracks, int sectors, int sectorsize)
+        {
+            if (image == null) throw new ArgumentNullException("image");
+            if (!image.CanRead) throw new NotSupportedException("Disk image stream does not support reading");
+            if (!image.CanSeek) throw new NotSupportedException("Disk image stream does not support seeking");
+            if (!image.CanWrite) throw new NotSupportedException("Disk image stream does not support writing");
+            if (heads < 1 || heads > 2) throw new NotSupportedException("HFE disk images only support 1 or 2 disk heads");
+
+            var disk = new HfeDisk {IsWriteable = true, diskImageStream = image};
+            disk.DiskHeader = new HfeDiskHeader(heads, tracks, DefaultTrackListBlock); 
+            disk.trackBlock = new int[tracks];
+            disk.trackLength = new int[tracks];
+
+            int trackBlock = DefaultTrackListBlock + 1; 
+
+            for (var t = 0; t < tracks; t++)
+            {
+                var trackLength = disk.CreateTrack(heads, t, sectors, sectorsize, trackBlock);
+                disk.trackBlock[t] = trackBlock;
+                disk.trackLength[t] = trackLength;
+                trackBlock += (trackLength + BlockSize - 1)/BlockSize;
+            }
+
+            var encodedHeader = disk.DiskHeader.Encode();
+            image.Seek(0, SeekOrigin.Begin);
+            image.Write(encodedHeader, 0, encodedHeader.Length);
+            disk.WriteTrackList();
+
+            return disk;
+        }
+
+
+
+        /// <summary>
+        /// Create a track with default sector configuration.
+        /// </summary>
+        /// <param name="headCnt">Number of disk heads.</param>
+        /// <param name="trackId">Disk track.</param>
+        /// <param name="sectorCnt">Number of sectors per head.</param>
+        /// <param name="sectorSize">Sector size.</param>
+        /// <param name="trackBlockId">ID of the first disk image block occuiped by the track representation.</param>
+        /// <returns>Length in bytes of the track representation in the disk image.</returns>
+        private int CreateTrack(int headCnt, int trackId, int sectorCnt, int sectorSize, int trackBlockId)
+        {
+            var trackLength = 0;
+            for (var headId = 0; headId < headCnt; headId++)
+            {
+                var sectors = CreateTrackSectors(headId, trackId, sectorCnt, sectorSize);
+                var length = HfeTrack.InitializeTrack(diskImageStream, trackBlockId*BlockSize, headId, sectors);
+                trackLength = Math.Max(trackLength, length);
+            }
+            return trackLength;
+        }
+
+
+
+        /// <summary>
+        /// Create a default sector configuration for a diskette track.
+        /// </summary>
+        /// <param name="headId">Disk head.</param>
+        /// <param name="trackId">Disk track.</param>
+        /// <param name="sectorCnt">Number of sectors to create.</param>
+        /// <param name="sectorSize">Size of each sector.</param>
+        /// <returns>A collection of sector objects.</returns>
+        private static IEnumerable<HfeSector> CreateTrackSectors(int headId, int trackId, int sectorCnt, int sectorSize)
+        {
+            var sectors = new List<HfeSector>(sectorCnt);
+            var payload = new byte[sectorSize];
+
+            for (var i = 0; i < DefaultSectorInterleaving; i++)
+            {
+                for (var s = DefaultFirstSector+i; s < sectorCnt + DefaultFirstSector; s += DefaultSectorInterleaving)
+                {
+                    sectors.Add(new HfeSector(headId, trackId, s, payload, 0, sectorSize));
+                }
+            }
+
+            return sectors;
+        }
+
+
 
 
         /// <summary>
@@ -165,6 +278,27 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
                 trackLength[i] = blockBuffer[i*4 + 2] | (blockBuffer[i*4 + 3] << 8);
             }
         }
+
+
+        /// <summary>
+        /// Write the track list to the disk image.
+        /// </summary>
+        private void WriteTrackList()
+        {
+            var blockBuffer = new byte[BlockSize];
+            for (var t = 0; t < Tracks; t++)
+            {
+                blockBuffer[t*4] = (byte) (trackBlock[t] & 0xff);
+                blockBuffer[t*4 + 1] = (byte) ((trackBlock[t] >> 8) & 0xff);
+                blockBuffer[t*4 + 2] = (byte) (trackLength[t] & 0xff);
+                blockBuffer[t*4 + 3] = (byte) ((trackLength[t] >> 8) & 0xff);
+            }
+
+            var trackListOffset = DiskHeader.TrackListBlock*BlockSize;
+            diskImageStream.Seek(trackListOffset, SeekOrigin.Begin);
+            diskImageStream.Write(blockBuffer, 0, blockBuffer.Length);
+        }
+
 
 
         /// <summary>

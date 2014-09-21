@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -85,8 +85,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         #endregion
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "DiskGeometry", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Disk.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("Disk.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void DiskGeometry()
         {
@@ -106,8 +106,8 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
 
 
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "ReadSector", DataAccessMethod.Sequential)]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Disk.xml")]
-        [DeploymentItem("DragonLib.AcceptanceTest\\Testdata\\")]
+        [DeploymentItem("Disk.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
         public void ReadSector()
         {

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2014, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -36,7 +36,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
     /// Provides MFM encoding and decoding of a stream, including A1 sync detection and generation.  The codec also flips
     /// bytes. The byte 0x4e can be encoded as 0x9254.  The byte is flipped so that the data actually output is 0x492a.
     /// </summary>
-    sealed class MfmStream : Stream
+    public sealed class MfmStream : Stream
     {
         /// <summary>
         /// Stream for accessing MFM encoded data.
@@ -86,13 +86,21 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
 
-            byte out1 = encoderTable[((lastOutput << 4) | (value >> 4)) & 0x1f];
-            byte out2 = encoderTable[value & 0x1f];
+            byte out1 = EncoderTable[((lastOutput << 4) | (value >> 4)) & 0x1f];
+            byte out2 = EncoderTable[value & 0x1f];
 
             encodedStream.WriteByte(out1);
             encodedStream.WriteByte(out2);
             lastOutput = value;
         }
+
+
+        public void WriteBytes(byte value, int count)
+        {
+            while (count-- > 0)
+                WriteByte(value);
+        }
+
 
 
         /// <summary>
@@ -308,7 +316,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
             if (disposing)
             {
-                encodedStream.Close();
+                Flush();
                 encodedStream = null;
             }
 
@@ -317,11 +325,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         }
 
 
+
+
         /// <summary>
         /// MFM encoding table used by <see cref="WriteByte"/>.  The table index is 5 bits.  The MSB is the last bit from the
         /// previously encoded byte followed by the nibble to be encoded.
         /// </summary>
-        private static readonly byte[] encoderTable =
+        private static readonly byte[] EncoderTable =
         {
             0x55, 0x95, 0x25, 0xa5,
             0x49, 0x89, 0x29, 0xa9,

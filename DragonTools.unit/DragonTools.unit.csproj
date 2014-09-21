@@ -58,12 +58,15 @@
     <Compile Include="DragonTapeDataBlockTest.cs" />
     <Compile Include="DragonTapeEofBlockTest.cs" />
     <Compile Include="DragonTapeHeaderBlockTest.cs" />
+    <Compile Include="HfeSectorInfoTest.cs" />
+    <Compile Include="HfeSectorTest.cs" />
     <Compile Include="OS9FileTest.cs" />
     <Compile Include="OS9ModuleFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MemoryDiskTest.cs" />
     <Compile Include="Crc16CcittTest.cs" />
     <Compile Include="MfmStreamTest.cs" />
+    <Compile Include="HfeDiskTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DragonTools\DragonTools.csproj">

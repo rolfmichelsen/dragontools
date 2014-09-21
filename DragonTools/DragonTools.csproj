@@ -52,6 +52,7 @@
     <Compile Include="IO\Disk\HfeDiskHeader.cs" />
     <Compile Include="IO\Disk\HfeRawTrack.cs" />
     <Compile Include="IO\Disk\HfeSector.cs" />
+    <Compile Include="IO\Disk\HfeSectorInfo.cs" />
     <Compile Include="IO\Disk\HfeTrack.cs" />
     <Compile Include="IO\Disk\ISector.cs" />
     <Compile Include="IO\Disk\MfmStream.cs" />

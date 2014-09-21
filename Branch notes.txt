@@ -1,0 +1,16 @@
+HFE DISK BRANCH NOTES
+=====================
+
+
+Initialize a new HFE disk image
+-------------------------------
+
+HfeDisk.Create(...)
+
+	Create HfeDisk instance with diskImageStream referencing the disk image stream.
+	Invoke HfeDisk.CreateTrack(...) for each track.
+
+
+HfeDisk.CreateTrack(...)
+
+	Invoke 

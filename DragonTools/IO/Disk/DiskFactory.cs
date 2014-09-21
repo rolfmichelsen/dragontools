@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011, Rolf Michelsen
+Copyright (c) 2011-2014, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -81,6 +81,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (filename.EndsWith(".dsk"))
             {
                 return JvcDisk.Create(new FileStream(filename, FileMode.Create), heads, tracks, sectors, sectorsize);
+            }
+            if (filename.EndsWith(".hfe"))
+            {
+                return HfeDisk.Create(new FileStream(filename, FileMode.Create), heads, tracks, sectors, sectorsize);
             }
             return null;
         }

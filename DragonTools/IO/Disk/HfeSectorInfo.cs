@@ -32,95 +32,63 @@ using System;
 namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
     /// <summary>
-    /// A sector from a HFE virtual disk.
+    /// Information about a disk sector.  This class encapsulates the sector ID record.
     /// </summary>
-    public sealed class HfeSector : ISector
+    public class HfeSectorInfo
     {
         /// <summary>
-        /// Sector payload data.
-        /// </summary>
-        private byte[] data;
-
-        /// <summary>
-        /// Sector head number.
+        /// Head number (0 or 1).
         /// </summary>
         public int Head { get; private set; }
 
         /// <summary>
-        /// Sector track number.
+        /// Track number.
         /// </summary>
         public int Track { get; private set; }
-
+        
         /// <summary>
         /// Sector number.
         /// </summary>
         public int Sector { get; private set; }
-
+        
         /// <summary>
-        /// Sector size in bytes.
+        /// Sector payload size in bytes.
         /// </summary>
-        public int Size { get { return data.Length; } }
-
-        /// <summary>
-        /// Sector payload data.
-        /// </summary>
-        public byte[] Data { get { return data; } }
-
-        /// <summary>
-        /// Data at a given position within the sector payload.
-        /// </summary>
-        public byte this[int offset] { get { return data[offset]; } }
+        public int Size { get; private set; }
 
 
         /// <summary>
-        ///  Returns the sector CRC.
+        /// Sector ID record CRC.
         /// </summary>
         public uint Crc { get; private set; }
 
 
         /// <summary>
-        /// Create a disk sector suitable for the HFE virtual disk format.
+        /// Returns true if the CRC is valid.
         /// </summary>
-        /// <param name="head">Sector head number.</param>
-        /// <param name="track">Sector track number.</param>
-        /// <param name="sector">Sector number.</param>
-        /// <param name="payload">Sector payload data.</param>
-        /// <param name="payloadOffset">Offset into sector payload array where payload starts.</param>
-        /// <param name="payloadSize">Size of sector payload.</param>
-        public HfeSector(int head, int track, int sector, byte[] payload, int payloadOffset, int payloadSize)
+        public bool IsValid {
+            get { return Crc == ComputeCrc(); }
+        }
+
+
+        public HfeSectorInfo(int head, int track, int sector, int size)
         {
-            data = new byte[payloadSize];
-            Array.Copy(payload, payloadOffset, data, 0, payloadSize);
             Head = head;
             Track = track;
             Sector = sector;
+            Size = size;
             Crc = ComputeCrc();
         }
 
 
-        public HfeSectorInfo GetSectorInfo()
+        public HfeSectorInfo(int head, int track, int sector, int size, uint crc)
         {
-            return new HfeSectorInfo(Head, Track, Sector, Size);
+            Head = head;
+            Track = track;
+            Sector = sector;
+            Size = size;
+            Crc = crc;
         }
-
-
-        /// <summary>
-        /// Returns the encoded version of the sector data record.  Thie encoded version includes the DATA address mark and the CRC
-        /// checksum, but not the sync and gap bytes.
-        /// </summary>
-        /// <returns>Encoded sector data record.</returns>
-        public byte[] Encode()
-        {
-            var encoded = new byte[data.Length + 3];
-            var i = 0;
-            encoded[i++] = HfeTrack.DataAddressMark;
-            foreach (byte t in data)
-                encoded[i++] = t;
-            encoded[i++] = (byte) ((Crc >> 8) & 0xff);
-            encoded[i] = (byte) (Crc & 0xff);
-            return encoded;
-        }
-
 
 
         private uint ComputeCrc()
@@ -129,10 +97,56 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             crc.Add(HfeTrack.SyncMark);
             crc.Add(HfeTrack.SyncMark);
             crc.Add(HfeTrack.SyncMark);
-            crc.Add(HfeTrack.DataAddressMark);
-            foreach (byte t in data)
-                crc.Add(t);
+            crc.Add(HfeTrack.IdAddressMark);
+            crc.Add((byte) Track);
+            crc.Add((byte) Head);
+            crc.Add((byte) Sector);
+            crc.Add(ConvertToEncodedSize(Size));
             return crc.Crc;
         }
+
+
+
+        /// <summary>
+        /// Returns the encoded version of the sector ID record.  Thie encoded version includes the ID address mark and the CRC
+        /// checksum, but not the sync and gap bytes.
+        /// </summary>
+        /// <returns>Encoded sector ID record.</returns>
+        public byte[] Encode()
+        {
+            var encoded = new byte[7];
+            encoded[0] = HfeTrack.IdAddressMark;
+            encoded[1] = (byte) Track;
+            encoded[2] = (byte) Head;
+            encoded[3] = (byte) Sector;
+            encoded[4] = ConvertToEncodedSize(Size);
+            encoded[5] = (byte) ((Crc >> 8) & 0xff);
+            encoded[6] = (byte) (Crc & 0xff);
+            return encoded;
+        }
+
+
+
+        /// <summary>
+        /// Convert a sector size in bytes to its encoded representation as used on disk.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static byte ConvertToEncodedSize(int size)
+        {
+            switch (size)
+            {
+                case 128:
+                    return 0;
+                case 256:
+                    return 1;
+                case 512:
+                    return 2;
+                case 1024:
+                    return 3;
+            }
+            throw new ArgumentException();
+        }
     }
+
 }

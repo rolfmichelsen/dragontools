@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2014, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -35,45 +35,65 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 {
     /// <summary>
     /// Provide access to raw HFE disk track data for a single side.  This class abstracts
-    /// away the block structure of the HFE disk format.  The underlying stream for accessing the disk
-    /// image is accessed only from the constructor and when flush is called.
+    /// away the block structure of the HFE disk format.
     /// </summary>
-    internal sealed class HfeRawTrack : Stream
+    /// 
+    /// <remarks>
+    /// A HFE disk track is represented as a sequence of 512 byte blocks. The first 256 bytes of each block
+    /// represents data on disk side 1, and the last 256 bytes of a block represents data on side 2.  The constructor
+    /// reads the data for a single disk side into memory, and subsequent operations on the track uses this in memory
+    /// buffer.  Flush will write any modified in memory data back to the underlying stream.  The underlying stream
+    /// is only accessed in the constructor and by Flush.
+    /// 
+    /// A special constructor is used for initializing a track in a new HFE disk image.  This constructor does not read
+    /// track data from disk and initializes an empty in memory buffer.  Track write operations are allowed to extend
+    /// the size of this buffer.
+    /// </remarks>
+    public sealed class HfeRawTrack : Stream
     {
+
         /// <summary>
         /// Stream for accessing the disk image.
         /// </summary>
         private Stream diskStream;
 
+
         /// <summary>
         /// Offset of the beginning of this track in <see cref="diskStream"/>.
         /// </summary>
-        private long trackOffset;
+        private readonly long trackOffset;
+
 
         /// <summary>
-        /// Length of this track (both sides) in <see cref="diskStream"/>.
+        /// Length of this track (both sides) in <see cref="diskStream"/>.  The value is 0 when a track is being initialized and only
+        /// set when Flush is called.
         /// </summary>
-        private int trackLength;
+        public int TrackLength { get; private set; }
+
 
         /// <summary>
         /// Identifies the disk head of this track.
         /// </summary>
-        private int head;
+        private readonly int head;
+
 
         /// <summary>
-        /// Buffer containing the track data.
+        /// Buffer containing the track data for the specified disk side.
         /// </summary>
         private byte[] trackData;
+
 
         /// <summary>
         /// Length of the track data buffer.
         /// </summary>
         private int trackDataLength;
 
+
         /// <summary>
-        /// Read/write position within the stream.
+        /// Read/write position within the stream, or track data buffer.
         /// </summary>
         private int trackDataPosition;
+
 
         /// <summary>
         /// Set to true to indicate that <see cref="trackData"/> has been modified and the modifications
@@ -81,6 +101,16 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// </summary>
         private bool trackDataDirty = false;
 
+
+        /// <summary>
+        /// Initial size of track data buffer when initializing a new track.
+        /// </summary>
+        private readonly int defaultTrackDataLength = 16384;
+
+
+        /// <summary>
+        /// Set when the object has been disposed.
+        /// </summary>
         private bool isDisposed = false;
 
 
@@ -97,12 +127,41 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             if (!diskStream.CanRead) throw new NotSupportedException("Stream does not support reading");
             if (!diskStream.CanSeek) throw new NotSupportedException("Stream does not support seeking");
             if (head<0 || head>1) throw new ArgumentOutOfRangeException("head", head, "Only 1 or 2 heads supported");
+            
             this.diskStream = diskStream;
             this.trackOffset = trackOffset;
-            this.trackLength = trackLength;
+            this.TrackLength = trackLength;
             this.head = head;
+            
             ReadTrack();
         }
+
+
+        /// <summary>
+        /// Create a stream for creating a raw HFE disk track.  This constructor is typically only used when first creating
+        /// a HFE virtual disk image.  
+        /// </summary>
+        /// <param name="diskStream">Stream for writing the HFE disk file.</param>
+        /// <param name="trackOffset">Offset of the first byte of the track.</param>
+        /// <param name="head">Disk head.</param>
+        public HfeRawTrack(Stream diskStream, long trackOffset, int head)
+        {
+            if (diskStream == null) throw new ArgumentNullException("diskStream");
+            if (!diskStream.CanRead) throw new NotSupportedException("Stream does not support reading");
+            if (!diskStream.CanSeek) throw new NotSupportedException("Stream does not support seeking");
+            if (!diskStream.CanWrite) throw new NotSupportedException("Stream does not support writing");
+            if (head < 0 || head > 1) throw new ArgumentOutOfRangeException("head", head, "Only 1 or 2 heads supported");
+
+            this.diskStream = diskStream;
+            this.trackOffset = trackOffset;
+            this.TrackLength = 0;
+            this.head = head;
+
+            trackData = new byte[defaultTrackDataLength];
+            trackDataLength = 0;
+            trackDataPosition = 0;
+        }
+
 
 
         /// <summary>
@@ -113,6 +172,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
             WriteTrack();
+            diskStream.Flush();
         }
 
 
@@ -237,9 +297,13 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             if (isDisposed) throw new ObjectDisposedException(GetType().FullName);
             if (!CanWrite) throw new NotSupportedException("Stream does not support writing");
-            if (trackDataPosition == trackDataLength) throw new EndOfStreamException("Writing past end of track");
+            if (trackDataPosition == trackDataLength && TrackLength > 0) throw new EndOfStreamException("Writing past end of track");
+            if (trackDataPosition == trackData.Length) throw new EndOfStreamException("Writing past end of track");
             trackData[trackDataPosition++] = value;
+            trackDataLength = Math.Max(trackDataLength, trackDataPosition);
             trackDataDirty = true;
+
+            // TODO Support increasing the size of the trackData buffer when initializing a new track (tracklength = 0).
         }
 
 
@@ -314,7 +378,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
 
             if (disposing)
             {
-                diskStream.Close();
+                Flush();
                 diskStream = null;
             }
 
@@ -332,14 +396,14 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         {
             var blockOffset = head*HfeDisk.BlockSize/2;
             var blockBuffer = new byte[HfeDisk.BlockSize/2];
-            var trackBuffer = new byte[trackLength];
+            var trackBuffer = new byte[TrackLength];
             trackDataLength = 0;
             trackDataPosition = 0;
             trackDataDirty = false;
 
-            while (blockOffset < trackLength)
+            while (blockOffset < TrackLength)
             {
-                var blockSize = Math.Min(HfeDisk.BlockSize/2, trackLength - blockOffset);
+                var blockSize = Math.Min(HfeDisk.BlockSize/2, TrackLength - blockOffset);
                 diskStream.Position = trackOffset + blockOffset;
                 IOUtils.ReadBlock(diskStream, blockBuffer, 0, blockSize);
                 Array.Copy(blockBuffer, 0, trackBuffer, trackDataLength, blockSize);
@@ -372,6 +436,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             }
 
             trackDataDirty = false;
+            if (TrackLength == 0)
+                TrackLength = (int) diskStream.Position;
         }
     }
 }

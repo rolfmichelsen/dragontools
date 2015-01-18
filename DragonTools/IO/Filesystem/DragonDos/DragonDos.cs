@@ -614,12 +614,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
             /* Write the sector allocation map. */
             var allocationmap = new byte[2][];
-            for (int i = 0; i < 2; i++)
-            {
-                allocationmap[i] = new byte[SectorSize];
-                for (int j = 0; j < SectorSize; j++)                 
-                    allocationmap[i][j] = 0xff;
-            }
+            allocationmap[0] = new byte[SectorSize];
+            allocationmap[1] = new byte[SectorSize];
 
             int sectors = SectorsPerHead*disk.Heads;
             allocationmap[0][252] = (byte) disk.Tracks;                         // encode disk geometry
@@ -627,15 +623,18 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
             allocationmap[0][254] = (byte) (~disk.Tracks & 0xff);
             allocationmap[0][255] = (byte) (~sectors & 0xff);
 
-            int lsnPrimaryDirectory = DirectoryTrackPrimary*disk.Heads*SectorsPerHead;
+            for (var i=0; i<disk.Tracks*disk.Heads*SectorsPerHead; i++)              // mark all sectors as unallocated
+                SetSectorAllocated(i, false, allocationmap);
+
+            int lsnPrimaryDirectory = DirectoryTrackPrimary*disk.Heads*SectorsPerHead;      // mark directory track as allocated
             int lsnBackupDirectory = DirectoryTrackBackup*disk.Heads*SectorsPerHead;
-            for (int i = 0; i < SectorsPerHead; i++)
+            for (var i = 0; i < SectorsPerHead; i++)
             {
                 SetSectorAllocated(lsnPrimaryDirectory++, true, allocationmap);
                 SetSectorAllocated(lsnBackupDirectory++, true, allocationmap);
             }
 
-            for (int i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 disk.WriteSector(0, DirectoryTrackPrimary, i+1, allocationmap[i]);
                 disk.WriteSector(0, DirectoryTrackBackup, i+1, allocationmap[i]);        

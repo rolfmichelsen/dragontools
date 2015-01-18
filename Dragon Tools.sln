@@ -9,7 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonTools.acceptance", "D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{21946C38-9098-4DF0-8FCC-3C7B5A61BE9E}"
 	ProjectSection(SolutionItems) = preProject
-		Branch notes.txt = Branch notes.txt
 		Create-Distribution.ps1 = Create-Distribution.ps1
 		Dist Readme.txt = Dist Readme.txt
 		Dragon Tools.vsmdi = Dragon Tools.vsmdi

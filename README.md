@@ -1,7 +1,7 @@
 DRAGON TOOLS
 ============
 
-&copy; Rolf Michelsen, 2011-2013  
+&copy; Rolf Michelsen, 2011-2015  
 All rights reserved.
 
 
@@ -37,7 +37,7 @@ Contents
 
 ### DragonDos
 
-A command line utility for accessing virtual DragonDos filesystems in VDK or DSK
+A command line utility for accessing virtual DragonDos filesystems in VDK, DSK or HFE
 floppy disk images from a Windows environment.  The utility supports
 functionality to list files, rename files, delete files, create an empty
 filesystem and copying files between the DragonDos filesystem and the Windows
@@ -55,7 +55,7 @@ disk and tape-based filesystems.
 Development
 -----------
 
-*Dragon Tools* have been developed using Visual Studio 2012.  The repository
+*Dragon Tools* have been developed using Visual Studio 2013.  The repository
 contains a Visual Studio solution with multiple projects.
 
 <table>

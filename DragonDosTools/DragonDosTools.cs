@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -32,11 +32,11 @@ using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Reflection;
 using System.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
+using RolfMichelsen.Dragon.DragonTools.Util;
 using FileNotFoundException = RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException;
 
 
@@ -257,25 +257,16 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         }
 
 
-        /// <summary>
-        /// Return the file version attribute for the program's assembly.
-        /// </summary>
-        /// <returns>File version attribute.</returns>
-        private string GetVersionInfo()
-        {
-            var assembly = Assembly.GetEntryAssembly();
-            var version = (AssemblyFileVersionAttribute[]) assembly.GetCustomAttributes(typeof (AssemblyFileVersionAttribute), false);
-            return (version.Length == 0) ? "" : version[0].Version;
-        }
-
 
         /// <summary>
         /// Output program usage information to the console.
         /// </summary>
         private void ShowUsage()
         {
-            Console.WriteLine("DragonDos {0} - Tools for accessing DragonDos virtual filesystems", GetVersionInfo());
-            Console.WriteLine("(C) Rolf Michelsen, 2011-2013");
+            var programinfo = new ProgramInformation();
+            
+            Console.WriteLine("{0} {1} - {2}", programinfo.ProgramName, programinfo.Version, programinfo.Description);
+            Console.WriteLine("{0}", programinfo.Copyright);
             Console.WriteLine();
             Console.WriteLine("Usage: DragonDos COMMAND COMMAND-ARGS [OPTIONS]");
             Console.WriteLine();

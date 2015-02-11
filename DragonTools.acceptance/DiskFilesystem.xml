@@ -28,7 +28,19 @@
       <filesystem>dragondos</filesystem>
       <freespace>175104</freespace>
     </Free>
-    
+
+    <Free>
+      <diskimage>dragondos-empty-1s-40t.dmk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>175104</freespace>
+    </Free>
+
+    <Free>
+      <diskimage>dragondos-empty-2s-40t.dmk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <freespace>359424</freespace>
+    </Free>
+
     <Free>
       <diskimage>dragondos-empty-1s-80t.vdk</diskimage>
       <filesystem>dragondos</filesystem>
@@ -92,7 +104,19 @@
     </ListFiles>
 
     <ListFiles>
+      <diskimage>dragondos-empty-1s-40t.dmk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filelist></filelist>
+    </ListFiles>
+
+    <ListFiles>
       <diskimage>dragondos-tunes.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <filelist>NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN</filelist>
+    </ListFiles>
+
+    <ListFiles>
+      <diskimage>dragondos-tunes.dmk</diskimage>
       <filesystem>dragondos</filesystem>
       <filelist>NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN</filelist>
     </ListFiles>
@@ -155,7 +179,14 @@
       <file>FOO.BAR</file>
       <exists>false</exists>
     </FileExists>
-    
+
+    <FileExists>
+      <diskimage>dragondos-empty-1s-40t.dmk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <file>FOO.BAR</file>
+      <exists>false</exists>
+    </FileExists>
+
     <FileExists>
       <diskimage>dragondos-tunes.vdk</diskimage>
       <filesystem>dragondos</filesystem>
@@ -552,6 +583,12 @@
     <!-- DragonDos -->
     <Check>
       <diskimage>dragondos-empty.vdk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <valid>true</valid>
+    </Check>
+
+    <Check>
+      <diskimage>dragondos-empty-1s-40t.dmk</diskimage>
       <filesystem>dragondos</filesystem>
       <valid>true</valid>
     </Check>

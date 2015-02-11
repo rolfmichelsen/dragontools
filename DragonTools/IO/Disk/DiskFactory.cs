@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2014, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -57,6 +57,10 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             {
                 return HfeDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
             }
+            if (filename.EndsWith(".dmk"))
+            {
+                return DmkDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+            }
             return null;
         }
 
@@ -86,6 +90,11 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
             {
                 return HfeDisk.Create(new FileStream(filename, FileMode.Create), heads, tracks, sectors, sectorsize);
             }
+            if (filename.EndsWith(".dmk"))
+            {
+                return DmkDisk.Create(new FileStream(filename, FileMode.Create), heads, tracks, sectors, sectorsize);
+            }
+
             return null;
         }
     }

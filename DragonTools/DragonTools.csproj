@@ -48,6 +48,11 @@
     <Compile Include="IO\Disk\BasicSector.cs" />
     <Compile Include="IO\Disk\Crc16Ccitt.cs" />
     <Compile Include="IO\Disk\CrcException.cs" />
+    <Compile Include="IO\Disk\DmkDisk.cs" />
+    <Compile Include="IO\Disk\DmkDiskHeader.cs" />
+    <Compile Include="IO\Disk\DmkSector.cs" />
+    <Compile Include="IO\Disk\DmkSectorInfo.cs" />
+    <Compile Include="IO\Disk\DmkTrack.cs" />
     <Compile Include="IO\Disk\HfeDisk.cs" />
     <Compile Include="IO\Disk\HfeDiskHeader.cs" />
     <Compile Include="IO\Disk\HfeRawTrack.cs" />

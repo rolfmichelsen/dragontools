@@ -67,6 +67,7 @@
     <Compile Include="Crc16CcittTest.cs" />
     <Compile Include="MfmStreamTest.cs" />
     <Compile Include="HfeDiskTest.cs" />
+    <Compile Include="DmkDiskTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DragonTools\DragonTools.csproj">

@@ -345,6 +345,13 @@
       <filename>DRYBONES.BIN</filename>
     </DeleteFile>
 
+    <DeleteFile>
+      <diskimage>dragondos-tunes.dmk</diskimage>
+      <filesystem>dragondos</filesystem>
+      <writeprotected>false</writeprotected>
+      <filename>DRYBONES.BIN</filename>
+    </DeleteFile>
+
     <DeleteFile>   <!-- File does not exist -->
       <diskimage>dragondos-tunes.vdk</diskimage>
       <filesystem>dragondos</filesystem>

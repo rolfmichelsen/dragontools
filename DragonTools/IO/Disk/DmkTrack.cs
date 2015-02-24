@@ -216,7 +216,43 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <exception cref="SectorNotFoundException">Thrown if the sector cannot be found on this track.</exception>
         public void WriteSector(int headId, int trackId, int sectorId, byte[] data, int dataOffset, int dataLength)
         {
-            throw new NotImplementedException();
+            var sectorInfo = GetSectorInfo(headId, trackId, sectorId);
+            if (sectorInfo == null) throw new SectorNotFoundException(headId, trackId, sectorId);
+
+            /* Ensure that sector has correct size. */
+            var data2 = new byte[sectorInfo.Size];
+            Array.Copy(data, dataOffset, data2, 0, Math.Min(sectorInfo.Size, dataLength));
+
+            WriteSectorData(data2, 0, data2.Length);
+        }
+
+
+
+        /// <summary>
+        /// Write sector data, including the CRC, to the stream.  The stream must be positioned at the first byte of the sector
+        /// payload data.
+        /// </summary>
+        /// <param name="data">Sector data buffer.</param>
+        /// <param name="offset">Offset of the first byte of sector data into the data buffer.</param>
+        /// <param name="length">Size of the sector data.</param>
+        private void WriteSectorData(byte[] data, int offset, int length)
+        {
+            Sync();
+            var blockId = diskStream.ReadByte();
+            if (blockId == -1) throw new DiskImageFormatException("Sector data not found after sector address mark");
+            if (blockId != DataAddressMark) throw new DiskImageFormatException(String.Format("Unexpected block type {0}", blockId));
+
+            var crc = new Crc16Ccitt();
+            crc.Add(0xa1);
+            crc.Add(0xa1);
+            crc.Add(0xa1);
+            crc.Add(DataAddressMark);
+            for (int i = 0; i < length; i++)
+                crc.Add(data[offset + i]);
+
+            diskStream.Write(data, offset, length);
+            diskStream.WriteByte((byte)((crc.Crc >> 8) & 0xff));
+            diskStream.WriteByte((byte)(crc.Crc & 0xff));
         }
 
 

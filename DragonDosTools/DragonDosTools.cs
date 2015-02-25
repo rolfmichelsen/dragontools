@@ -390,9 +390,11 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     dos.Check();
                     Console.WriteLine("The filesystem in {0} is healthy.", diskname);
                 }
-                catch (FilesystemConsistencyException)
+                catch (FilesystemConsistencyException e)
                 {
                     Console.WriteLine("The filesystem in {0} is inconsistent.", diskname);
+                    if (debug)
+                        Console.WriteLine(e.Message);
                 }
             }
         }

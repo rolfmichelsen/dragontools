@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -665,19 +665,34 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         }
 
 
+        private void Dispose(bool disposing)
+        {
+            if (IsDisposed) return;
+
+            if (disposing)
+            {
+                Disk.SectorWritten -= SectorWrittenHandler;
+                Disk.Dispose();
+                Disk = null;
+                directoryTrack = null;
+            }
+            IsDisposed = true;
+        }
+
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            if (IsDisposed) return;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            Disk.SectorWritten -= SectorWrittenHandler;
-            Disk.Dispose();
-            Disk = null;
-            directoryTrack = null;
 
-            IsDisposed = true;
+        ~DragonDos()
+        {
+            Dispose(false);
         }
 
 

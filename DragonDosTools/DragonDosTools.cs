@@ -75,6 +75,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
         /// </summary>
         private bool debug = false;
 
+        private bool raw = false;
 
         /// <summary>
         /// Set when certain operations should produce ASCII output.
@@ -275,7 +276,7 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
             Console.WriteLine("  create <diskimage> [<tracks> [<sectors>]]");
             Console.WriteLine("  dump <diskimage> <head> <track> <sector>");
             Console.WriteLine("  delete <diskimage> {<filename>}");
-            Console.WriteLine("  dir <diskimage>");
+            Console.WriteLine("  dir <diskimage> [-raw]");
             Console.WriteLine("  freemap <diskimage>");
             Console.WriteLine("  read <diskimage> <filename> [<local filename>] [-ascii]");
             Console.WriteLine("  read <diskimage> <filename> <tape image>.CAS [<local filename>] [-ascii}");
@@ -312,6 +313,9 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                             break;
                         case "-d":
                             verbose = debug = true;
+                            break;
+                        case "-raw":
+                            raw = true;
                             break;
                         case "-ascii":
                             ascii = true;
@@ -481,17 +485,29 @@ namespace RolfMichelsen.Dragon.DragonTools.DragonDosTools
                     Console.Error.WriteLine("ERROR: DragonDos disk image file \"{0}\" does not exist.", diskname);
                     return;
                 }
-                var filecount = 0;
-                var files = dos.ListFiles();
-                foreach (var file in files)
+                if (raw)
                 {
-                    var fileinfo = dos.GetFileInfo(file);
-                    Console.WriteLine("{0,-15} {1,6} {2}", file, fileinfo.Size, fileinfo.GetAttributes());
-                    filecount++;
+                    var directoryEntries = ((DragonDos) dos).GetDirectoryEntries();
+                    for (var i = 0; i < directoryEntries.Length; i++)
+                    {
+                        Console.WriteLine("{0} {1}", i, directoryEntries[i]);
+                    }
                 }
-                if (filecount > 0)
-                    Console.WriteLine();
-                Console.WriteLine("{1} files, {0} bytes free.", dos.Free(), filecount);
+                else
+                {
+                    var filecount = 0;
+                    var files = dos.ListFiles();
+                    foreach (var file in files)
+                    {
+                        var fileinfo = dos.GetFileInfo(file);
+                        Console.WriteLine("{0,-15} {1,6} {2}", file, fileinfo.Size, fileinfo.GetAttributes());
+                        filecount++;
+                    }
+                    if (filecount > 0)
+                        Console.WriteLine();
+                    Console.WriteLine("{1} files, {0} bytes free.", dos.Free(), filecount);
+                    
+                }
             }
         }
 

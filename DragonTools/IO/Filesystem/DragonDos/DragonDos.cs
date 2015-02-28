@@ -785,6 +785,24 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
 
         /// <summary>
+        /// Returns an array of raw DragonDos directory entries.
+        /// </summary>
+        /// <returns>Array of directory entries.</returns>
+        public DragonDosDirectoryEntry[] GetDirectoryEntries()
+        {
+            if (IsDisposed) throw new ObjectDisposedException(GetType().FullName);
+
+            ReadDirectoryTrack();
+            var directoryEntries = new List<DragonDosDirectoryEntry>();
+            for (var i = 0; i < DirectoryEntries; i++)
+            {
+                directoryEntries.Add(GetDirectoryEntry(i));
+            }
+            return directoryEntries.ToArray();
+        }
+
+
+        /// <summary>
         /// Reads the directory track from disk and populates the directory track cache.
         /// </summary>
         private void ReadDirectoryTrack()

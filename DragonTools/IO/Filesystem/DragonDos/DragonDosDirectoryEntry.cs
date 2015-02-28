@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -28,6 +28,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 {
@@ -35,68 +36,88 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
     /// This class represents a single entry in the DragonDos directory structure.  Multiple entries may
     /// be required to get the complete directory information for a single file.
     /// </summary>
-    internal sealed class DragonDosDirectoryEntry
+    public sealed class DragonDosDirectoryEntry
     {
-        public DirectoryFlags Flags { get; set; }
-        public string Filename { get; set; }
-        public Extent[] Extents { get; set; }
-        public int NextEntry { get; set; }
-        public int LastSectorSize { get; set; }
+        /// <summary>
+        /// Directory entry flags.  The flags can also be accessed through convenience methods.
+        /// </summary>
+        public DirectoryFlags Flags { get; internal set; }
 
+        /// <summary>
+        /// File name.  This is undefined for an extension entry.
+        /// </summary>
+        public string Filename { get; internal set; }
+
+        /// <summary>
+        /// File extents.
+        /// </summary>
+        public Extent[] Extents { get; internal set; }
+
+        /// <summary>
+        /// Index of the next extension directory entry. This is undefined if IsExtended is false.
+        /// </summary>
+        public int NextEntry { get; internal set; }
+
+        /// <summary>
+        /// Number of bytes in the last sector of the file. This is undefined if IsExtended is true.
+        /// </summary>
+        public int LastSectorSize { get; internal set; }
+
+        /// <summary>
+        /// True for an extension directory entry that only contains additional extents.
+        /// </summary>
         public bool IsExtensionEntry
         {
             get { return (Flags & DirectoryFlags.ExtensionEntry) != 0; }
-            set
+            internal set
             {
                 if (value) Flags |= DirectoryFlags.ExtensionEntry;
                 else Flags &= ~DirectoryFlags.ExtensionEntry;
             }
         }
 
-        public bool IsMainEntry
-        {
-            get { return !IsExtensionEntry; }
-        }
+        /// <summary>
+        /// True for the main directory entry for a file.
+        /// </summary>
+        public bool IsMainEntry { get { return !IsExtensionEntry; } }
 
-        public bool IsExtended
-        {
-            get { return (Flags & DirectoryFlags.MoreExtensions) != 0; }
-            set
-            {
-                if (value) Flags |= DirectoryFlags.MoreExtensions;
-                else Flags &= ~DirectoryFlags.MoreExtensions;
-            }
-        }
+        /// <summary>
+        /// True if this directory entry has additional extensions.
+        /// </summary>
+        public bool IsExtended { get { return (Flags & DirectoryFlags.MoreExtensions) != 0; } }
 
-        public bool IsInvalid
-        {
-            get { return (Flags & DirectoryFlags.Invalid) != 0; }
-        }
-
+        /// <summary>
+        /// True for a valid directory entry.
+        /// </summary>
         public bool IsValid
         {
             get { return (Flags & DirectoryFlags.Invalid) == 0; }
-            set
+            internal set
             {
                 if (value) Flags &= ~DirectoryFlags.Invalid;
                 else Flags |= DirectoryFlags.Invalid;
             }
         }
 
+        /// <summary>
+        /// True if the file is protected by the operating system.
+        /// </summary>
         public bool IsProtected
         {
             get { return (Flags & DirectoryFlags.Protected) != 0; }
-            set
+            internal set
             {
                 if (value) Flags |= DirectoryFlags.Protected;
                 else Flags &= ~DirectoryFlags.Protected;
             }
         }
 
-        public bool IsEndOfDirectory
-        {
-            get { return (Flags & DirectoryFlags.EndOfDirectory) != 0; }
-        }
+        /// <summary>
+        /// True if this directory entry is the end of the directory structure.
+        /// </summary>
+        public bool IsEndOfDirectory { get { return (Flags & DirectoryFlags.EndOfDirectory) != 0; } }
+
+
 
         public DragonDosDirectoryEntry()
         {
@@ -194,7 +215,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// </summary>
         /// <param name="dest"></param>
         /// <param name="offset"></param>
-        public static void EncodeFilename(string filename, byte[] dest, int offset)
+        private static void EncodeFilename(string filename, byte[] dest, int offset)
         {
             Array.Clear(dest, offset, 11);
             if (filename == null) return;
@@ -229,6 +250,27 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
             return entry;
         }
 
+
+        public override string ToString()
+        {
+            var s = new StringBuilder();
+            if (IsExtensionEntry) s.Append("Extension ");
+            if (IsProtected) s.Append("Protected ");
+            if (IsEndOfDirectory) s.Append("End ");
+            if (IsExtended) s.Append("Extended ");
+            if (!IsValid) s.Append("Invalid ");
+            if (IsMainEntry && Filename != null) s.AppendFormat("Filename=\"{0}\" ", Filename);
+            if (IsExtended) s.AppendFormat("Next={0} ", NextEntry);
+            if (!IsExtended) s.AppendFormat("Last sector size={0} ", LastSectorSize);
+            s.Append("Extents=");
+            foreach (var extent in Extents)
+            {
+                s.AppendFormat("[lsn={0} len={1}] ", extent.Lsn, extent.Length);
+            }
+            return s.ToString();
+        }
+
+
         [Flags]
         public enum DirectoryFlags
         {
@@ -242,8 +284,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
 
         public struct Extent
         {
-            public int Lsn;
-            public int Length;
+            public readonly int Lsn;
+            public readonly int Length;
 
             public Extent(int lsn, int length)
             {

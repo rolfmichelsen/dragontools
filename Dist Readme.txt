@@ -1,4 +1,4 @@
-DRAGON TOOLS 0.5
+DRAGON TOOLS 0.6
 ================
 
 Copyright (c) 2011-2015, Rolf Michelsen
@@ -19,6 +19,9 @@ The following tools are currently included:
 DragonDos
 	Permits accessing DragonDos filesystem in virtual diskette images.  The
 	VDK, DSK and HFE virtual diskette formats are currently supported.
+
+File2VDK
+        Simple tool for writing files to a new VDK disk image.
 
 Refer to the wiki at https://github.com/rolfmichelsen/dragontools/wiki for
 full documentation of the tools.  This site also hosts the source code for

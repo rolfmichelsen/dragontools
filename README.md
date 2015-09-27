@@ -1,7 +1,7 @@
 DRAGON TOOLS
 ============
 
-&copy; Rolf Michelsen, 2011-2015  
+&copy; Rolf Michelsen, 2011-2015
 All rights reserved.
 
 
@@ -9,21 +9,21 @@ All rights reserved.
 Introduction
 ------------
 
-*Dragon Tools* is a collection of tools to work and interface with the 1980's 
-Dragon series of home computers.  There are a number of excellent Dragon 
+*Dragon Tools* is a collection of tools to work and interface with the 1980's
+Dragon series of home computers.  There are a number of excellent Dragon
 emulators that replicate a Dragon environment on a modern PC.  The Dragon Tools
 build a bridge between the emulated Dragon environment and the host operating
 system.
 
-Download binary distributions from the 
+Download binary distributions from the
 [Dragon Tools home](http://www.rolfmichelsen.com/dragontools/).
 Source is available in the GitHub
 [Dragon Tools repository](http://github.com/rolfmichelsen/dragontools).
 Documentation for the tools and the library can be found in the corresponding
-wiki.  All code and binaries are available under a BSD-style open source 
+wiki.  All code and binaries are available under a BSD-style open source
 license.  See the file *License.txt* for licensing terms and conditions.
 
-The Microsoft .NET Framework 4.0 or later must be installed to use any of the 
+The Microsoft .NET Framework 4.0 or later must be installed to use any of the
 programs in this package.  Use Windows Update to install the .NET 4.0 Framework
 or install from the Microsoft downloads site.
 
@@ -42,6 +42,11 @@ floppy disk images from a Windows environment.  The utility supports
 functionality to list files, rename files, delete files, create an empty
 filesystem and copying files between the DragonDos filesystem and the Windows
 filesystem.
+
+
+### File2VDK
+
+A command line utility for very simple writing of local files to a new VDK disk image.
 
 
 ### DragonTools
@@ -78,6 +83,10 @@ contains a Visual Studio solution with multiple projects.
     <td>DragonDosTools</td>
     <td>Command line program for accessing DragonDos virtual filesystems from a
         Windows environment.</td>
+</tr>
+<tr>
+    <td>File2VDK</td>
+    <td>The File2VDK command line utility.</td>
 </tr>
 </table>
 

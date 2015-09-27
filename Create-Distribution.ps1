@@ -1,4 +1,4 @@
-# Copyright (c) 2011-2013, Rolf Michelsen
+# Copyright (c) 2011-2015, Rolf Michelsen
 # All rights reserved.
 #
 # Create a binary distribution package.  Run from the solution root.  It will
@@ -36,7 +36,8 @@ $packageFiles = @{
     "License.txt" = "License.txt";
     "Dist Readme.txt" = "README.txt";
     "DragonDosTools\bin\Release\DragonDos.exe" = "DragonDos.exe";
-    "DragonDosTools\bin\Release\DragonTools.dll" = "DragonTools.dll"
+    "DragonDosTools\bin\Release\DragonTools.dll" = "DragonTools.dll";
+    "File2VDK\bin\Release\File2VDK.exe" = "File2VDK.exe"
 }
 
 
@@ -98,7 +99,7 @@ function Package-Release($version)
     $out = New-Item -Path $tmpDir -ItemType Directory
     Write-Output ("Using temporary directory " + $tmpDir)
 
-    foreach ($sourceFile in $packageFiles.keys) 
+    foreach ($sourceFile in $packageFiles.keys)
     {
         $destinationFile = Join-Path $tmpDir ($packageFiles[$sourceFile])
         Copy-Item $sourceFile -Destination $destinationFile

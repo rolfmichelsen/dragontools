@@ -88,7 +88,7 @@ namespace RolfMichelsen.Dragon.DragonTools.File2VDK
                     {
                         if (Verbose)
                             Console.WriteLine("Writing file \"{0}\" to disk image.", file);
-                        dos.WriteFile(file, DragonDosFile.CreateDataFile(IOUtils.ReadStreamFully(new FileStream(file, FileMode.Open))));
+                        dos.WriteFile(Path.GetFileName(file).ToUpper(), DragonDosFile.CreateDataFile(IOUtils.ReadStreamFully(new FileStream(file, FileMode.Open))));
                     }                    
                 }
 

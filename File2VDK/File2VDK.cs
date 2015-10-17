@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using RolfMichelsen.Dragon.DragonTools.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 using RolfMichelsen.Dragon.DragonTools.Util;
 
@@ -92,6 +93,41 @@ namespace RolfMichelsen.Dragon.DragonTools.File2VDK
                     }                    
                 }
 
+            }
+            catch (DirectoryFullException e)
+            {
+                Console.Error.WriteLine("ERROR: Cannot write file to filesystem.  The directory is full.");
+                if (Debug)
+                    Console.Error.WriteLine(e);
+                return;
+            }
+            catch (FileExistsException e)
+            {
+                Console.Error.WriteLine("ERROR: Cannot write the file as a file with the same name already exists.");
+                if (Debug)
+                    Console.Error.WriteLine(e);
+                return;
+            }
+            catch (FilesystemFullException e)
+            {
+                Console.Error.WriteLine("ERROR: Cannot write file as the filesystem is full.");
+                if (Debug)
+                    Console.Error.WriteLine(e);
+                return;
+            }
+            catch (InvalidFilenameException e)
+            {
+                Console.Error.WriteLine("ERROR: The filename {0} is invalid.", e.Filename);
+                if (Debug)
+                    Console.Error.WriteLine(e);
+                return;
+            }
+            catch (System.IO.IOException e)
+            {
+                Console.Error.WriteLine("ERROR: Local filesystem I/O error.");
+                if (Debug)
+                    Console.Error.WriteLine(e);
+                return;
             }
             catch (Exception e)
             {
@@ -156,28 +192,5 @@ namespace RolfMichelsen.Dragon.DragonTools.File2VDK
             Console.WriteLine();
         }
 
-
-        /// <summary>
-        /// Create a VDK disk image 
-        /// </summary>
-        /// <param name="diskName"></param>
-        /// <param name="fileNames"></param>
-        public void CreateVDKDisk(string diskName, IEnumerable<string> fileNames)
-        {
-            using (var disk = DiskFactory.CreateDisk(diskName, DiskHeads, DiskTracks, DiskSectors, DiskSectorSize))
-            {
-                using (var dos = DragonDos.Initialize(disk))
-                {
-                    foreach (var fileName in fileNames)
-                    {
-                        using (var localFile = new FileStream(fileName, FileMode.Open))
-                        {
-                            var filePayload = IOUtils.ReadStreamFully(localFile);
-                            dos.WriteFile(fileName, DragonDosFile.CreateDataFile(filePayload));
-                        }
-                    }
-                }
-            }
-        }
     }
 }

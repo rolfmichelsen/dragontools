@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonTools", "DragonTools\DragonTools.csproj", "{0AA6DBD3-AB80-4EDA-A039-DF7F8DAF9FF7}"
 EndProject
@@ -11,11 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Create-Distribution.ps1 = Create-Distribution.ps1
 		Dist Readme.txt = Dist Readme.txt
-		Dragon Tools.vsmdi = Dragon Tools.vsmdi
 		License.txt = License.txt
-		Local.testsettings = Local.testsettings
 		README.md = README.md
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonDosTools", "DragonDosTools\DragonDosTools.csproj", "{4123910C-6365-4B64-A126-C1F9B1F52AF7}"
@@ -111,6 +108,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE429EB5-6F80-4104-B104-C0B91C327A80}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Dragon Tools.vsmdi

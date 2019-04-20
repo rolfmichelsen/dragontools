@@ -61,7 +61,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         /// <param name="fileinfo">File directory information.</param>
         /// <param name="data">Raw file data.</param>
         /// <returns></returns>
-        internal static OS9File CreateFile(OS9FileInfo fileinfo, byte[] data)
+        public static OS9File CreateFile(OS9FileInfo fileinfo, byte[] data)
         {
             if (OS9ModuleFile.IsModuleFile(data))
             {

@@ -33,7 +33,7 @@ using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 
 
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     [TestClass]
     public class HfeSectorInfoTest

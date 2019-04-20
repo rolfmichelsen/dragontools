@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using RolfMichelsen.Dragon.DragonTools.Basic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace RolfMichelsen.Dragon.DragonTools.acceptance
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     [TestClass]
     public class Basic

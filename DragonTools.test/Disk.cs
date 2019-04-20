@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -26,24 +26,22 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
+    /// <summary>
+    /// Tests all common functionality for the Disk interface.
+    /// </summary>
     [TestClass()]
-    public class DragonDosFileNameTest
+    public class Disk
     {
-
-
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
         public TestContext TestContext
         {
             get
@@ -86,24 +84,53 @@ namespace DragonTools.unit
         //
         #endregion
 
-
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "DiskGeometry", DataAccessMethod.Sequential)]
+        [DeploymentItem("Disk.xml")]
+        [DeploymentItem("Testdata\\")]
         [TestMethod()]
-        public void Equals()
+        public void DiskGeometry()
         {
-            var filename1 = new DragonDosFileName("FOOBAR.DAT");
-            var filename2 = new DragonDosFileName("FOOFOO.DAT");
-            var filename3 = new DragonDosFileName("FOOBAR.DAT");
-            var filename4 = new DragonDosFileName("FOOBAR.dat");
-            var filename5 = filename1;
-            var filename6 = filename1.Clone();
+            var filename = Convert.ToString(TestContext.DataRow["file"]);
+            var classtype = Convert.ToString(TestContext.DataRow["class"]);
+            var heads = Convert.ToInt32(TestContext.DataRow["heads"]);
+            var tracks = Convert.ToInt32(TestContext.DataRow["tracks"]);
 
-            Assert.AreNotEqual(filename1, filename2);
-            Assert.AreEqual(filename1, filename3);
-            Assert.AreNotEqual(filename1, filename4);
-            Assert.AreEqual(filename1, filename5);
-            Assert.AreSame(filename1, filename5);
-            Assert.AreEqual(filename1, filename6);
-            Assert.AreNotSame(filename1, filename6);
+            using (var disk = DiskFactory.OpenDisk(filename, false))
+            {
+                Assert.AreEqual(classtype, disk.GetType().FullName);
+                Assert.AreEqual(heads, disk.Heads);
+                Assert.AreEqual(tracks, disk.Tracks);
+            }
+
+        }
+
+
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "ReadSector", DataAccessMethod.Sequential)]
+        [DeploymentItem("Disk.xml")]
+        [DeploymentItem("Testdata\\")]
+        [TestMethod()]
+        public void ReadSector()
+        {
+            var filename = Convert.ToString(TestContext.DataRow["file"]);
+            var head = Convert.ToInt32(TestContext.DataRow["head"]);
+            var track = Convert.ToInt32(TestContext.DataRow["track"]);
+            var sector = Convert.ToInt32(TestContext.DataRow["sector"]);
+            var expectedSectorDataRaw =
+                Convert.ToString(TestContext.DataRow["data"])
+                       .Split(new char[] {' ', '\t', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+
+            var expectedSectorData = new byte[expectedSectorDataRaw.Length];
+            for (int i = 0; i < expectedSectorDataRaw.Length; i++)
+            {
+                expectedSectorData[i] = Convert.ToByte(expectedSectorDataRaw[i], 16);
+            }
+
+            using (var disk = DiskFactory.OpenDisk(filename, false))
+            {
+                var sectorData = disk.ReadSector(head, track, sector);
+                for (int i = 0; i < expectedSectorData.Length; i++)
+                    Assert.AreEqual(expectedSectorData[i], sectorData[i]);
+            }
         }
     }
 }

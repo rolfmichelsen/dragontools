@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
     [TestClass()]

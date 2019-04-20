@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2012, Rolf Michelsen
+Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -30,16 +30,12 @@ using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
     
-    /// <summary>
-    ///This is a test class for DragonTapeEofBlockTest and is intended
-    ///to contain all DragonTapeEofBlockTest Unit Tests
-    ///</summary>
     [TestClass()]
-    public class DragonTapeEofBlockTest
+    public class DragonTapeHeaderBlockTest
     {
 
 
@@ -94,11 +90,62 @@ namespace DragonTools.unit
 
 
         [TestMethod()]
-        public void CreateDragonTapeEOFBlock()
+        public void CreateDragonTapeHeaderBlock_BasicProgram()
         {
-            var block = new DragonTapeEofBlock();
-            Assert.AreEqual(DragonTapeBlockType.EndOfFile, block.BlockType);
-            Assert.AreEqual(0, block.Length);
+            var filename = "FOOBAR";
+            var filetype = DragonFileType.Basic;
+            var isAscii = true;
+            var isGapped = false;
+            var loadAddress = 0;
+            var startAddress = 0;
+
+            var payload = new byte[] {70, 79, 79, 66, 65, 82,32, 32, 0, 255, 0, 0, 0, 0, 0};
+
+            var block = new DragonTapeHeaderBlock(filename, filetype, isAscii, isGapped, loadAddress, startAddress);
+
+            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
+            Assert.AreEqual(filename, block.Filename);
+            Assert.AreEqual(filetype, block.FileType);
+            Assert.AreEqual(isAscii, block.IsAscii);
+            Assert.AreEqual(isGapped, block.IsGapped);
+            Assert.AreEqual(loadAddress, block.LoadAddress);
+            Assert.AreEqual(startAddress, block.StartAddress);
+            Assert.AreEqual(payload.Length, block.Length);
+            var data = block.Data;
+            for (int i=0; i<data.Length; i++) Assert.AreEqual(payload[i], data[i]);
+            Assert.AreEqual(0x07, block.Checksum);
+
+            block.Validate();
+        }
+
+
+
+        [TestMethod]
+        public void CreateDragonTapeHeaderBlock_MacineCodeProgram()
+        {
+            var filename = "BARBAR";
+            var filetype = DragonFileType.MachineCode;
+            var isAscii = false;
+            var isGapped = false;
+            var loadAddress = 10000;
+            var startAddress = 50000;
+
+            var payload = new byte[] {66 ,65, 82, 66, 65, 82, 32, 32, 2, 0, 0, 195, 80, 39, 16};
+
+            var block = new DragonTapeHeaderBlock(filename, filetype, isAscii, isGapped, loadAddress, startAddress);
+
+            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
+            Assert.AreEqual(filename, block.Filename);
+            Assert.AreEqual(filetype, block.FileType);
+            Assert.AreEqual(isAscii, block.IsAscii);
+            Assert.AreEqual(isGapped, block.IsGapped);
+            Assert.AreEqual(loadAddress, block.LoadAddress);
+            Assert.AreEqual(startAddress, block.StartAddress);
+            Assert.AreEqual(payload.Length, block.Length);
+            var data = block.Data;
+            for (int i = 0; i < data.Length; i++) Assert.AreEqual(payload[i], data[i]);
+            Assert.AreEqual(0x45, block.Checksum);
+
             block.Validate();
         }
 

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2012, Rolf Michelsen
+Copyright (c) 2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -26,16 +26,20 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
     
+    /// <summary>
+    ///This is a test class for DragonTapeEofBlockTest and is intended
+    ///to contain all DragonTapeEofBlockTest Unit Tests
+    ///</summary>
     [TestClass()]
-    public class DragonDosFileTest
+    public class DragonTapeEofBlockTest
     {
 
 
@@ -88,9 +92,15 @@ namespace DragonTools.unit
         #endregion
 
 
-        //TODO Add tests for DragonDosFile.EncodeFile
-        //TODO Add tests for DragonDosFile.DecodeFile
-    
-    
+
+        [TestMethod()]
+        public void CreateDragonTapeEOFBlock()
+        {
+            var block = new DragonTapeEofBlock();
+            Assert.AreEqual(DragonTapeBlockType.EndOfFile, block.BlockType);
+            Assert.AreEqual(0, block.Length);
+            block.Validate();
+        }
+
     }
 }

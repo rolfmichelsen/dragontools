@@ -40,7 +40,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         /// The size of a standard (minimal) module header.  
         /// This includes the module header from the sync bytes up to and including the module header checksum.
         /// </summary>
-        internal const int StandardModuleHeaderSize = 9;
+        public const int StandardModuleHeaderSize = 9;
 
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         /// </summary>
         /// <param name="data">Array containing the data to calculate the parity over.</param>
         /// <param name="length">The number of bytes to calculate the parity over.</param>
-        internal static int CalculateHeaderParity(byte[] data, int length)
+        public static int CalculateHeaderParity(byte[] data, int length)
         {
             int parity = 0;
             for (int i = 0; i < length; i++)
@@ -147,7 +147,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9
         /// Calculate the module CRC.
         /// The result is a 24-bit CRC value generated using the polynomial 0x800063.
         /// </summary>
-        internal static int CalculateModuleCRC(byte[] data, int length)
+        public static int CalculateModuleCRC(byte[] data, int length)
         {
             /* This algorithm is copied directly from the documentation of the F$CRC service request in the
              * OS-9 System Programmer's Manual. */

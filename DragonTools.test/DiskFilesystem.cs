@@ -32,7 +32,7 @@ using System;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 
-namespace RolfMichelsen.Dragon.DragonTools.acceptance
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     /// <summary>
     /// Tests all common functionality for the IDiskFilesystem interface.

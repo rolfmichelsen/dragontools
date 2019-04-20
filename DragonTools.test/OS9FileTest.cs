@@ -26,24 +26,21 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
+    
     [TestClass()]
-    public class DragonFileNameTest
+    public class OS9FileTest
     {
 
 
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
         public TestContext TestContext
         {
             get
@@ -87,24 +84,34 @@ namespace DragonTools.unit
         #endregion
 
 
-        [TestMethod]
-        public void Equals()
+        [TestMethod()]
+        public void CreateFileTest()
         {
-            var filename1 = new DragonFileName("FOOBAR");
-            var filename2 = new DragonFileName("FOOFOO");
-            var filename3 = new DragonFileName("FOOBAR");
-            var filename4 = new DragonFileName("foobar");
-            var filename5 = filename1;
-            var filename6 = filename1.Clone();
+            var fileinfo = new OS9FileInfo("list", 0x4f, OS9FileAttributes.Execute|OS9FileAttributes.Read, null, null, 0, 0, null);
+            byte[] data = {
+                              0x87, 0xcd, 0x00, 0x4f, 0x00, 0x0d, 0x11, 0x81,
+                              0x67, 0x00, 0x12, 0x02, 0x8d, 0x4c, 0x69, 0x73,
+                              0xf4, 0x05, 0x9f, 0x01, 0x86, 0x01, 0x10, 0x3f,
+                              0x84, 0x25, 0x2e, 0x97, 0x00, 0x9f, 0x01, 0x96,
+                              0x00, 0x30, 0x43, 0x10, 0x8e, 0x00, 0xc8, 0x10,
+                              0x3f, 0x8b, 0x25, 0x09, 0x86, 0x01, 0x10, 0x3f,
+                              0x8c, 0x24, 0xec, 0x20, 0x14, 0xc1, 0xd3, 0x26,
+                              0x10, 0x96, 0x00, 0x10, 0x3f, 0x8f, 0x25, 0x09,
+                              0x9e, 0x01, 0xa6, 0x84, 0x81, 0x0d, 0x26, 0xca,
+                              0x5f, 0x10, 0x3f, 0x06, 0x58, 0xbc, 0x12
+                          };
 
-            Assert.AreNotEqual(filename1, filename2);
-            Assert.AreEqual(filename1, filename3);
-            Assert.AreNotEqual(filename1, filename4);
-            Assert.AreEqual(filename1, filename5);
-            Assert.AreSame(filename1, filename5);
-            Assert.AreEqual(filename1, filename6);
-            Assert.AreNotSame(filename1, filename6);
-
+            var file = (OS9File) OS9File.CreateFile(fileinfo, data);
+            Assert.IsTrue(file is OS9ModuleFile);
+            
+            var module = (OS9ModuleFile) file;
+            Assert.AreEqual("List", module.ModuleName);
+            Assert.AreEqual(OS9ModuleType.Program, module.ModuleType);
+            Assert.AreEqual(1, module.ModuleLanguage);
+            Assert.AreEqual(8, module.ModuleAttributes);
+            Assert.AreEqual(1, module.ModuleRevision);
+            Assert.AreEqual(0x67, module.HeaderParity);
+            Assert.AreEqual(0x58bc12, module.ModuleCRC);
         }
     }
 }

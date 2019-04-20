@@ -34,7 +34,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
     /// Calculates the CCITT-CRC using the polynomial x^16 + x^12 + x^5 +1 (0x1021) as
     /// implemented in the WD279X floppy disk controller.
     /// </summary>
-    internal sealed class Crc16Ccitt
+    public sealed class Crc16Ccitt
     {
         private uint crc = 0xffff;
 

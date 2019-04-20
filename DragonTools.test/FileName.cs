@@ -34,7 +34,7 @@ using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos;
 
-namespace RolfMichelsen.Dragon.DragonTools.acceptance
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     [TestClass]
     public class FileName

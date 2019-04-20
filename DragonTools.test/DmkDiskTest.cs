@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2013, Rolf Michelsen
+Copyright (c) 2011-2015, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -27,24 +27,30 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.ComponentModel;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 
 
-namespace DragonTools.unit
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
     [TestClass]
-    public class Crc16CcittTest
+    public class DmkDiskTest
     {
-        [TestMethod]
-        public void CalculateCrc()
-        {
-            var data = new byte[] {0xa1, 0xa1, 0xa1, 0xfe, 0x14, 0x00, 0x09, 0x01};
-            var crcExpected = (uint) 0xa2f3;
 
-            var crc = new Crc16Ccitt();
-            var crcActual = crc.Add(data);
-            Assert.AreEqual(crcExpected, crcActual);
+        [TestMethod]
+        public void DecodeDmkHeader()
+        {
+            byte[] encodedHeader = {0x00, 0x28, 0x00, 0x19, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+            var header = new DmkDiskHeader(new MemoryStream(encodedHeader));
+
+            Assert.AreEqual(true, header.IsWriteable);
+            Assert.AreEqual(false, header.IsSingleDensity);
+            Assert.AreEqual(false, header.IgnoreDensity);
+            Assert.AreEqual(40, header.Tracks);
+            Assert.AreEqual(1, header.Heads);
+            Assert.AreEqual(0x1900, header.EncodedTrackLength);
         }
     }
 }

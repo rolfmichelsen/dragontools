@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2011-2015, Rolf Michelsen
+Copyright (c) 2011-2012, Rolf Michelsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -26,22 +26,24 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using RolfMichelsen.Dragon.DragonTools.IO.Disk;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 
-namespace RolfMichelsen.Dragon.DragonTools.acceptance
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    
-    /// <summary>
-    /// Tests all common functionality for the Disk interface.
-    /// </summary>
     [TestClass()]
-    public class Disk
+    public class DragonTapeDataBlockTest
     {
+
+
         private TestContext testContextInstance;
 
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
         public TestContext TestContext
         {
             get
@@ -84,53 +86,48 @@ namespace RolfMichelsen.Dragon.DragonTools.acceptance
         //
         #endregion
 
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "DiskGeometry", DataAccessMethod.Sequential)]
-        [DeploymentItem("Disk.xml")]
-        [DeploymentItem("Testdata\\")]
+
         [TestMethod()]
-        public void DiskGeometry()
+        public void CreateDragonTapeDataBlock()
         {
-            var filename = Convert.ToString(TestContext.DataRow["file"]);
-            var classtype = Convert.ToString(TestContext.DataRow["class"]);
-            var heads = Convert.ToInt32(TestContext.DataRow["heads"]);
-            var tracks = Convert.ToInt32(TestContext.DataRow["tracks"]);
-
-            using (var disk = DiskFactory.OpenDisk(filename, false))
-            {
-                Assert.AreEqual(classtype, disk.GetType().FullName);
-                Assert.AreEqual(heads, disk.Heads);
-                Assert.AreEqual(tracks, disk.Tracks);
-            }
-
+            var payload = new byte[] {0x10, 0x20, 0x30, 0x01, 0x02, 0x03, 0x55, 0xaa};
+            var block = new DragonTapeDataBlock(payload);
+            
+            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
+            Assert.AreEqual(payload.Length, block.Length);
+            var data = block.Data;
+            for (int i = 0; i < data.Length; i++ ) Assert.AreEqual(payload[i], data[i]);
+            Assert.AreEqual(0x6e, block.Checksum);   
+            block.Validate();
         }
 
 
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "ReadSector", DataAccessMethod.Sequential)]
-        [DeploymentItem("Disk.xml")]
-        [DeploymentItem("Testdata\\")]
-        [TestMethod()]
-        public void ReadSector()
+        [TestMethod]
+        public void CreateDragonTapeDataBlock_Empty()
         {
-            var filename = Convert.ToString(TestContext.DataRow["file"]);
-            var head = Convert.ToInt32(TestContext.DataRow["head"]);
-            var track = Convert.ToInt32(TestContext.DataRow["track"]);
-            var sector = Convert.ToInt32(TestContext.DataRow["sector"]);
-            var expectedSectorDataRaw =
-                Convert.ToString(TestContext.DataRow["data"])
-                       .Split(new char[] {' ', '\t', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
-
-            var expectedSectorData = new byte[expectedSectorDataRaw.Length];
-            for (int i = 0; i < expectedSectorDataRaw.Length; i++)
-            {
-                expectedSectorData[i] = Convert.ToByte(expectedSectorDataRaw[i], 16);
-            }
-
-            using (var disk = DiskFactory.OpenDisk(filename, false))
-            {
-                var sectorData = disk.ReadSector(head, track, sector);
-                for (int i = 0; i < expectedSectorData.Length; i++)
-                    Assert.AreEqual(expectedSectorData[i], sectorData[i]);
-            }
+            var block = new DragonTapeDataBlock(null);
+            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
+            Assert.AreEqual(0, block.Length);
+            Assert.AreEqual(null, block.Data);
+            Assert.AreEqual(1, block.Checksum);
+            block.Validate();
         }
+
+
+
+        [TestMethod]
+        public void CreateDragonTapeDataBlock_PayloadTooLarge_ThrowsException()
+        {
+            var payload = new byte[256];
+            DragonTapeBlock block = null;
+            try
+            {
+                block = new DragonTapeDataBlock(payload);
+                Assert.Fail("Block with too large payload incorrectly created.");
+            }
+            catch (ArgumentOutOfRangeException) {}
+        }
+
+        
     }
 }

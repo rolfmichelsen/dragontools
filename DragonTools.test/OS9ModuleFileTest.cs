@@ -26,24 +26,21 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
+using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace DragonTools.unit
+
+namespace RolfMichelsen.Dragon.DragonTools.test
 {
+    
     [TestClass()]
-    public class DragonTapeDataBlockTest
+    public class OS9ModuleFileTest
     {
 
 
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
         public TestContext TestContext
         {
             get
@@ -88,46 +85,41 @@ namespace DragonTools.unit
 
 
         [TestMethod()]
-        public void CreateDragonTapeDataBlock()
+        public void CalculateHeaderParityTest()
         {
-            var payload = new byte[] {0x10, 0x20, 0x30, 0x01, 0x02, 0x03, 0x55, 0xaa};
-            var block = new DragonTapeDataBlock(payload);
-            
-            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
-            Assert.AreEqual(payload.Length, block.Length);
-            var data = block.Data;
-            for (int i = 0; i < data.Length; i++ ) Assert.AreEqual(payload[i], data[i]);
-            Assert.AreEqual(0x6e, block.Checksum);   
-            block.Validate();
+            byte[] data = {
+                              0x87, 0xcd, 0x00, 0x4f, 0x00, 0x0d, 0x11, 0x81,
+                              0x67, 0x00, 0x12, 0x02, 0x8d, 0x4c, 0x69, 0x73,
+                              0xf4, 0x05, 0x9f, 0x01, 0x86, 0x01, 0x10, 0x3f,
+                              0x84, 0x25, 0x2e, 0x97, 0x00, 0x9f, 0x01, 0x96,
+                              0x00, 0x30, 0x43, 0x10, 0x8e, 0x00, 0xc8, 0x10,
+                              0x3f, 0x8b, 0x25, 0x09, 0x86, 0x01, 0x10, 0x3f,
+                              0x8c, 0x24, 0xec, 0x20, 0x14, 0xc1, 0xd3, 0x26,
+                              0x10, 0x96, 0x00, 0x10, 0x3f, 0x8f, 0x25, 0x09,
+                              0x9e, 0x01, 0xa6, 0x84, 0x81, 0x0d, 0x26, 0xca,
+                              0x5f, 0x10, 0x3f, 0x06, 0x58, 0xbc, 0x12
+                          };
+            Assert.AreEqual(0x67, OS9ModuleFile.CalculateHeaderParity(data, OS9ModuleFile.StandardModuleHeaderSize-1));
         }
 
 
-        [TestMethod]
-        public void CreateDragonTapeDataBlock_Empty()
+        [TestMethod()]
+        public void CalculateModuleCRCTest()
         {
-            var block = new DragonTapeDataBlock(null);
-            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
-            Assert.AreEqual(0, block.Length);
-            Assert.AreEqual(null, block.Data);
-            Assert.AreEqual(1, block.Checksum);
-            block.Validate();
+            byte[] data = {
+                              0x87, 0xcd, 0x00, 0x4f, 0x00, 0x0d, 0x11, 0x81,
+                              0x67, 0x00, 0x12, 0x02, 0x8d, 0x4c, 0x69, 0x73,
+                              0xf4, 0x05, 0x9f, 0x01, 0x86, 0x01, 0x10, 0x3f,
+                              0x84, 0x25, 0x2e, 0x97, 0x00, 0x9f, 0x01, 0x96,
+                              0x00, 0x30, 0x43, 0x10, 0x8e, 0x00, 0xc8, 0x10,
+                              0x3f, 0x8b, 0x25, 0x09, 0x86, 0x01, 0x10, 0x3f,
+                              0x8c, 0x24, 0xec, 0x20, 0x14, 0xc1, 0xd3, 0x26,
+                              0x10, 0x96, 0x00, 0x10, 0x3f, 0x8f, 0x25, 0x09,
+                              0x9e, 0x01, 0xa6, 0x84, 0x81, 0x0d, 0x26, 0xca,
+                              0x5f, 0x10, 0x3f, 0x06, 0x58, 0xbc, 0x12
+                          };
+            Assert.AreEqual(0x58bc12, OS9ModuleFile.CalculateModuleCRC(data, data.Length-3));
         }
 
-
-
-        [TestMethod]
-        public void CreateDragonTapeDataBlock_PayloadTooLarge_ThrowsException()
-        {
-            var payload = new byte[256];
-            DragonTapeBlock block = null;
-            try
-            {
-                block = new DragonTapeDataBlock(payload);
-                Assert.Fail("Block with too large payload incorrectly created.");
-            }
-            catch (ArgumentOutOfRangeException) {}
-        }
-
-        
     }
 }

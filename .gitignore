@@ -3,5 +3,6 @@
 **/*.user
 /.vs
 /TestResults
+/packages
 
 /DragonTools*.zip

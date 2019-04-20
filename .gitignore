@@ -1,26 +1,7 @@
-
-/_ReSharper.Dragon Tools
-/Dragon Tools.5.1.ReSharper.user
-/DragonTools/obj
-/DragonTools/bin
-/StorageTool/obj
-/StorageTool/bin
-/DragonTools.acceptance/obj
-/DragonTools.acceptance/bin
-/DragonTools.unit/obj
-/DragonTools.unit/bin
+**/bin
+**/obj
+**/*.user
+/.vs
 /TestResults
-/Dragon Tools.suo
-/DragonDosTools/bin
-/DragonDosTools/obj
-/DragonTape/bin
-/DragonTape/obj
-/Dragon Tools.v11.suo
-/Dragon Tools.sln.DotSettings.user
+
 /DragonTools*.zip
-/Dragon Tools.v12.suo
-/File2VDK/obj
-/File2VDK/bin
-/HfeDiskInfo/obj
-/HfeDiskInfo/bin
-*.user

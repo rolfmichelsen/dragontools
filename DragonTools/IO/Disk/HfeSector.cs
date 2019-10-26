@@ -39,7 +39,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         /// <summary>
         /// Sector payload data.
         /// </summary>
-        private byte[] data;
+        private readonly byte[] data;
 
         /// <summary>
         /// Sector head number.

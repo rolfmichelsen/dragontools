@@ -149,12 +149,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DragonTools\DragonTools.csproj">
-      <Project>{0aa6dbd3-ab80-4eda-a039-df7f8daf9ff7}</Project>
-      <Name>DragonTools</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Disk.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -165,6 +159,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Testdata\Index.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DragonTools\DragonTools.csproj">
+      <Project>{808c2653-22c3-4790-a2ff-ff49baf7276d}</Project>
+      <Name>DragonTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

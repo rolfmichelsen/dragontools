@@ -936,7 +936,7 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos
         /// <summary>
         /// Total number of directory entries in the directory track.
         /// </summary>
-        private int DirectoryEntries = (SectorsPerHead - DirectoryEntryOffset)*DirectoryEntryCount;
+        private readonly int DirectoryEntries = (SectorsPerHead - DirectoryEntryOffset)*DirectoryEntryCount;
 
         /// <summary>
         /// Returns the directory entry at a given index.

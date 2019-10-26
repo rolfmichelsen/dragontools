@@ -40,8 +40,8 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         public static readonly byte SyncMark = 0xa1;
 
         private Stream diskStream ;
-        private int trackOffset;
-        private int trackLength;
+        private readonly int trackOffset;
+        private readonly int trackLength;
 
         private IList<int> sectorOffset;
 

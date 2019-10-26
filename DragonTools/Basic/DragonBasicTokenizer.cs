@@ -37,7 +37,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Basic
     /// </summary>
     public sealed class DragonBasicTokenizer
     {
-        private Dictionary<int, string> Tokens = new Dictionary<int, string>();
+        private readonly Dictionary<int, string> Tokens = new Dictionary<int, string>();
 
         private static readonly byte EOL = 0;
 

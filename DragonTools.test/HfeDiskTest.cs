@@ -29,15 +29,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class HfeDiskTest
     {
-        [TestMethod]
+        [Fact]
         public void Create()
         {
             using (var diskStream = new MemoryStream())
@@ -45,22 +45,22 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 using (var disk = HfeDisk.Create(diskStream, 1, 40, 18, 256))
                 {
                     var diskHeader = disk.DiskHeader;
-                    Assert.AreEqual(0, diskHeader.FileFormatVersion);
-                    Assert.AreEqual(40, diskHeader.Tracks);
-                    Assert.AreEqual(1, diskHeader.Sides);
-                    Assert.AreEqual(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, diskHeader.TrackEncoding);
-                    Assert.AreEqual(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, diskHeader.TrackEncoding0);
+                    Assert.Equal(0, diskHeader.FileFormatVersion);
+                    Assert.Equal(40, diskHeader.Tracks);
+                    Assert.Equal(1, diskHeader.Sides);
+                    Assert.Equal(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, diskHeader.TrackEncoding);
+                    Assert.Equal(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, diskHeader.TrackEncoding0);
 
                     var track = disk.GetTrack(0, 0);
-                    Assert.IsNotNull(track);
+                    Assert.NotNull(track);
 
-                    Assert.IsTrue(disk.SectorExists(0, 0, 1));
+                    Assert.True(disk.SectorExists(0, 0, 1));
                 }
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public void CreateAndOpen()
         {
             byte[] diskImage;
@@ -78,20 +78,20 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 using (var disk = HfeDisk.Open(diskStream, false))
                 {
                     var header = disk.DiskHeader;
-                    Assert.AreEqual(0, header.FileFormatVersion);
-                    Assert.AreEqual(40, header.Tracks);
-                    Assert.AreEqual(1, header.Sides);
-                    Assert.AreEqual(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, header.TrackEncoding);
-                    Assert.AreEqual(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, header.TrackEncoding0);
+                    Assert.Equal(0, header.FileFormatVersion);
+                    Assert.Equal(40, header.Tracks);
+                    Assert.Equal(1, header.Sides);
+                    Assert.Equal(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, header.TrackEncoding);
+                    Assert.Equal(HfeDiskHeader.TrackEncodingMode.ISOIBM_MFM, header.TrackEncoding0);
                     var track = disk.GetTrack(0, 0);
-                    Assert.IsNotNull(track);
-                    Assert.IsTrue(disk.SectorExists(0, 0, 1));
-                    Assert.IsTrue(disk.SectorExists(0, 0, 3));
-                    Assert.IsTrue(disk.SectorExists(0, 0, 2));
-                    Assert.IsTrue(disk.SectorExists(0, 0, 17));
-                    Assert.IsTrue(disk.SectorExists(0, 0, 18));
-                    Assert.IsTrue(disk.SectorExists(0, 39, 1));
-                    Assert.IsTrue(disk.SectorExists(0, 39, 18));
+                    Assert.NotNull(track);
+                    Assert.True(disk.SectorExists(0, 0, 1));
+                    Assert.True(disk.SectorExists(0, 0, 3));
+                    Assert.True(disk.SectorExists(0, 0, 2));
+                    Assert.True(disk.SectorExists(0, 0, 17));
+                    Assert.True(disk.SectorExists(0, 0, 18));
+                    Assert.True(disk.SectorExists(0, 39, 1));
+                    Assert.True(disk.SectorExists(0, 39, 18));
                 }
             }
         

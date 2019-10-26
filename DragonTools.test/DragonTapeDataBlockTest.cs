@@ -28,94 +28,44 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass()]
     public class DragonTapeDataBlockTest
     {
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
+        [Fact]
         public void CreateDragonTapeDataBlock()
         {
             var payload = new byte[] {0x10, 0x20, 0x30, 0x01, 0x02, 0x03, 0x55, 0xaa};
             var block = new DragonTapeDataBlock(payload);
             
-            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(DragonTapeBlockType.Data, block.BlockType);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i = 0; i < data.Length; i++ ) Assert.AreEqual(payload[i], data[i]);
-            Assert.AreEqual(0x6e, block.Checksum);   
+            for (int i = 0; i < data.Length; i++ ) Assert.Equal(payload[i], data[i]);
+            Assert.Equal(0x6e, block.Checksum);   
             block.Validate();
         }
 
 
-        [TestMethod]
+        [Fact]
         public void CreateDragonTapeDataBlock_Empty()
         {
             var block = new DragonTapeDataBlock(null);
-            Assert.AreEqual(DragonTapeBlockType.Data, block.BlockType);
-            Assert.AreEqual(0, block.Length);
-            Assert.AreEqual(null, block.Data);
-            Assert.AreEqual(1, block.Checksum);
+            Assert.Equal(DragonTapeBlockType.Data, block.BlockType);
+            Assert.Equal(0, block.Length);
+            Assert.Null(block.Data);
+            Assert.Equal(1, block.Checksum);
             block.Validate();
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void CreateDragonTapeDataBlock_PayloadTooLarge_ThrowsException()
         {
             var payload = new byte[256];
@@ -123,7 +73,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             try
             {
                 block = new DragonTapeDataBlock(payload);
-                Assert.Fail("Block with too large payload incorrectly created.");
+                Assert.True(false, "Block with too large payload incorrectly created.");
             }
             catch (ArgumentOutOfRangeException) {}
         }

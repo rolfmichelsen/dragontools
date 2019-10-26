@@ -27,64 +27,16 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Xunit;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
-    [TestClass()]
     public class OS9ModuleFileTest
     {
 
-
-        private TestContext testContextInstance;
-
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
+        [Fact]
         public void CalculateHeaderParityTest()
         {
             byte[] data = {
@@ -99,11 +51,11 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                               0x9e, 0x01, 0xa6, 0x84, 0x81, 0x0d, 0x26, 0xca,
                               0x5f, 0x10, 0x3f, 0x06, 0x58, 0xbc, 0x12
                           };
-            Assert.AreEqual(0x67, OS9ModuleFile.CalculateHeaderParity(data, OS9ModuleFile.StandardModuleHeaderSize-1));
+            Assert.Equal(0x67, OS9ModuleFile.CalculateHeaderParity(data, OS9ModuleFile.StandardModuleHeaderSize-1));
         }
 
 
-        [TestMethod()]
+        [Fact]
         public void CalculateModuleCRCTest()
         {
             byte[] data = {
@@ -118,7 +70,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                               0x9e, 0x01, 0xa6, 0x84, 0x81, 0x0d, 0x26, 0xca,
                               0x5f, 0x10, 0x3f, 0x06, 0x58, 0xbc, 0x12
                           };
-            Assert.AreEqual(0x58bc12, OS9ModuleFile.CalculateModuleCRC(data, data.Length-3));
+            Assert.Equal(0x58bc12, OS9ModuleFile.CalculateModuleCRC(data, data.Length-3));
         }
 
     }

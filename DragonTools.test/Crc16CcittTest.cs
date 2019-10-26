@@ -26,17 +26,15 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class Crc16CcittTest
     {
-        [TestMethod]
+        [Fact]
         public void CalculateCrc()
         {
             var data = new byte[] {0xa1, 0xa1, 0xa1, 0xfe, 0x14, 0x00, 0x09, 0x01};
@@ -44,7 +42,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var crc = new Crc16Ccitt();
             var crcActual = crc.Add(data);
-            Assert.AreEqual(crcExpected, crcActual);
+            Assert.Equal(crcExpected, crcActual);
         }
     }
 }

@@ -27,67 +27,16 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.IO;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass()]
     public class CasTapeTest
     {
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
+        [Fact]
         public void ReadBits()
         {
             var tapedata = new byte[] {0x01, 0x02, 0x10, 0x20, 0xaa, 0x55};
@@ -103,26 +52,26 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             var tape = new CasTape(new MemoryStream(tapedata));
             foreach (var b in expected)
             {
-                Assert.AreEqual(b, tape.ReadBit());
+                Assert.Equal(b, tape.ReadBit());
             }
         }
 
 
 
-        [TestMethod()]
+        [Fact]
         public void ReadBytes()
         {
             var tapedata = new byte[] {0x01, 0x02, 0x10, 0x20, 0xaa, 0x55};
             var tape = new CasTape(new MemoryStream(tapedata));
             foreach (var b in tapedata)
             {
-                Assert.AreEqual(b, tape.ReadByte());
+                Assert.Equal(b, tape.ReadByte());
             }
         }
 
 
 
-        [TestMethod()]
+        [Fact]
         public void ReadUnalignedBytes()
         {
             var tapedate = new byte[] {0x01, 0x02, 0x10, 0x20, 0xaa, 0x55};
@@ -133,13 +82,13 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             tape.ReadBit();
             foreach (var b in expected)
             {
-                Assert.AreEqual(b, tape.ReadByte());
+                Assert.Equal(b, tape.ReadByte());
             }
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void WriteBits()
         {
             var stream = new MemoryStream();
@@ -161,13 +110,13 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             var actual = stream.GetBuffer();
             for (var i=0; i<expected.Length; i++)
             {
-                Assert.AreEqual(expected[i], actual[i]);
+                Assert.Equal(expected[i], actual[i]);
             }
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void WriteBytes()
         {
             var stream = new MemoryStream();
@@ -180,7 +129,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             var tapedata = stream.GetBuffer();
             for (var i=0; i<data.Length; i++)
             {
-                Assert.AreEqual(data[i], tapedata[i]);
+                Assert.Equal(data[i], tapedata[i]);
             }
         }
 

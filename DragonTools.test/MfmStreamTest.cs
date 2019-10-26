@@ -27,14 +27,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class MfmStreamTest
     {
         /// <summary>
@@ -53,7 +52,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         private bool[] syncPosition = {false, false, false, true, false};
 
 
-        [TestMethod]
+        [Fact]
         public void DecodeMfm()
         {
             using (var stream = new MfmStream(new MemoryStream(encodedData, false)))
@@ -62,15 +61,15 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 int readCount = 0;
                 while ((readData = stream.ReadByte()) != -1)
                 {
-                    Assert.AreEqual(decodedData[readCount], readData);
+                    Assert.Equal(decodedData[readCount], readData);
                     readCount++;
                 }
-                Assert.AreEqual(decodedData.Length, readCount);                
+                Assert.Equal(decodedData.Length, readCount);                
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public void DetectSync()
         {
             using (var stream = new MfmStream(new MemoryStream(encodedData, false)))
@@ -79,15 +78,15 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 bool sync;
                 while (stream.ReadByte(out sync) != -1)
                 {
-                    Assert.AreEqual(syncPosition[readCount], sync);
+                    Assert.Equal(syncPosition[readCount], sync);
                     readCount++;
                 }
-                Assert.AreEqual(decodedData.Length, readCount);                
+                Assert.Equal(decodedData.Length, readCount);                
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public void EncodeMfmWithSync()
         {
             using (var memstream = new MemoryStream())
@@ -110,7 +109,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 var encoded = memstream.GetBuffer();
                 for (var i = 0; i < encodedData.Length; i++)
                 {
-                    Assert.AreEqual(encodedData[i], encoded[i]);
+                    Assert.Equal(encodedData[i], encoded[i]);
                 }
             }
         }

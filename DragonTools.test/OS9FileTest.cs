@@ -27,64 +27,16 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
-    
-    [TestClass()]
     public class OS9FileTest
     {
 
-
-        private TestContext testContextInstance;
-
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
+        [Fact]
         public void CreateFileTest()
         {
             var fileinfo = new OS9FileInfo("list", 0x4f, OS9FileAttributes.Execute|OS9FileAttributes.Read, null, null, 0, 0, null);
@@ -102,16 +54,16 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                           };
 
             var file = (OS9File) OS9File.CreateFile(fileinfo, data);
-            Assert.IsTrue(file is OS9ModuleFile);
+            Assert.True(file is OS9ModuleFile);
             
             var module = (OS9ModuleFile) file;
-            Assert.AreEqual("List", module.ModuleName);
-            Assert.AreEqual(OS9ModuleType.Program, module.ModuleType);
-            Assert.AreEqual(1, module.ModuleLanguage);
-            Assert.AreEqual(8, module.ModuleAttributes);
-            Assert.AreEqual(1, module.ModuleRevision);
-            Assert.AreEqual(0x67, module.HeaderParity);
-            Assert.AreEqual(0x58bc12, module.ModuleCRC);
+            Assert.Equal("List", module.ModuleName);
+            Assert.Equal(OS9ModuleType.Program, module.ModuleType);
+            Assert.Equal(1, module.ModuleLanguage);
+            Assert.Equal(8, module.ModuleAttributes);
+            Assert.Equal(1, module.ModuleRevision);
+            Assert.Equal(0x67, module.HeaderParity);
+            Assert.Equal(0x58bc12, module.ModuleCRC);
         }
     }
 }

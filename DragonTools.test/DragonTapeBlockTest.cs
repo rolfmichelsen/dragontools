@@ -28,69 +28,17 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System.IO;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using RolfMichelsen.Dragon.DragonTools.IO.Tape;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
-    [TestClass()]
     public class DragonTapeBlockTest
     {
-
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-
-        [TestMethod()]
+        [Fact]
         public void CreateBlock_FileHeader()
         {
             var blocktype = DragonTapeBlockType.Header;
@@ -99,25 +47,25 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = DragonTapeBlock.CreateBlock(blocktype, payload, 0, payload.Length, checksum);
             
-            Assert.AreEqual(blocktype, block.BlockType);
-            Assert.AreEqual(checksum, block.Checksum);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(blocktype, block.BlockType);
+            Assert.Equal(checksum, block.Checksum);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i = 0; i < payload.Length; i++ ) Assert.AreEqual(payload[i], data[i]);
-            Assert.IsTrue(block is DragonTapeHeaderBlock);
+            for (int i = 0; i < payload.Length; i++ ) Assert.Equal(payload[i], data[i]);
+            Assert.True(block is DragonTapeHeaderBlock);
             var header = (DragonTapeHeaderBlock) block;
-            Assert.AreEqual("BARBAR", header.Filename);
-            Assert.AreEqual(DragonFileType.MachineCode, header.FileType);
-            Assert.AreEqual(false, header.IsAscii);
-            Assert.AreEqual(false, header.IsGapped);
-            Assert.AreEqual(10000, header.LoadAddress);
-            Assert.AreEqual(50000, header.StartAddress);
+            Assert.Equal("BARBAR", header.Filename);
+            Assert.Equal(DragonFileType.MachineCode, header.FileType);
+            Assert.False(header.IsAscii);
+            Assert.False(header.IsGapped);
+            Assert.Equal(10000, header.LoadAddress);
+            Assert.Equal(50000, header.StartAddress);
 
             block.Validate();
         }
 
 
-        [TestMethod]
+        [Fact]
         public void CreateBlock_UnknownBlockType()
         {
             var blocktype = (DragonTapeBlockType) 20;
@@ -126,22 +74,22 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = DragonTapeBlock.CreateBlock(blocktype, payload, 0, payload.Length, checksum);
 
-            Assert.AreEqual(blocktype, block.BlockType);
-            Assert.AreEqual(checksum, block.Checksum);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(blocktype, block.BlockType);
+            Assert.Equal(checksum, block.Checksum);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i=0; i<data.Length; i++) Assert.AreEqual(payload[i], data[i]);
+            for (int i=0; i<data.Length; i++) Assert.Equal(payload[i], data[i]);
 
             try
             {
                 block.Validate();
-                Assert.Fail("This block has an invalid block type and should not pass validation.");
+                Assert.True(false, "This block has an invalid block type and should not pass validation.");
             }
             catch (InvalidBlockTypeException) { }
         }
 
 
-        [TestMethod]
+        [Fact]
         public void CreateBlock_InvalidChecksum()
         {
             var blocktype = DragonTapeBlockType.Header;
@@ -150,23 +98,23 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = DragonTapeBlock.CreateBlock(blocktype, payload, 0, payload.Length, checksum);
             
-            Assert.AreEqual(blocktype, block.BlockType);
-            Assert.AreEqual(checksum, block.Checksum);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(blocktype, block.BlockType);
+            Assert.Equal(checksum, block.Checksum);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i=0; i<data.Length; i++) Assert.AreEqual(payload[i], data[i]);
+            for (int i=0; i<data.Length; i++) Assert.Equal(payload[i], data[i]);
 
             try
             {
                 block.Validate();
-                Assert.Fail("This block has an invalid checksum and should not pass validation.");
+                Assert.True(false, "This block has an invalid checksum and should not pass validation.");
             }
             catch (InvalidBlockChecksumException) {}
         }
 
         
         
-        [TestMethod]
+        [Fact]
         public void ReadBlock_Synchronized()
         {
             var tapedata = new byte[] {0x55, 0x3c, 0x00, 0x0f, 0x46, 0x4f, 0x4f, 0x42, 0x41, 0x52, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x55, 0x00};
@@ -175,15 +123,15 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = DragonTapeBlock.ReadBlock(tape, DragonTapeBlock.DefaultShortLeaderLength);
 
-            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
-            Assert.AreEqual(15, block.Length);
-            Assert.AreEqual(0x08, block.Checksum);
+            Assert.Equal(DragonTapeBlockType.Header, block.BlockType);
+            Assert.Equal(15, block.Length);
+            Assert.Equal(0x08, block.Checksum);
 
             var headerblock = (DragonTapeHeaderBlock) block;
-            Assert.AreEqual("FOOBAR", headerblock.Filename);
-            Assert.AreEqual(DragonFileType.Basic, headerblock.FileType);
-            Assert.AreEqual(false, headerblock.IsAscii);
-            Assert.AreEqual(false, headerblock.IsGapped);
+            Assert.Equal("FOOBAR", headerblock.Filename);
+            Assert.Equal(DragonFileType.Basic, headerblock.FileType);
+            Assert.False(headerblock.IsAscii);
+            Assert.False(headerblock.IsGapped);
 
             block.Validate();
         }
@@ -191,7 +139,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
 
 
-        [TestMethod]
+        [Fact]
         public void ReadBlock_NotSynchronized()
         {
             var tapedata = new byte[] { 0xbc, 0x45, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x3c, 0x00, 0x0f, 0x46, 0x4f, 0x4f, 0x42, 0x41, 0x52, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x55, 0x00 };
@@ -200,15 +148,15 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = DragonTapeBlock.ReadBlock(tape, 5);
 
-            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
-            Assert.AreEqual(15, block.Length);
-            Assert.AreEqual(0x08, block.Checksum);
+            Assert.Equal(DragonTapeBlockType.Header, block.BlockType);
+            Assert.Equal(15, block.Length);
+            Assert.Equal(0x08, block.Checksum);
 
             var headerblock = (DragonTapeHeaderBlock)block;
-            Assert.AreEqual("FOOBAR", headerblock.Filename);
-            Assert.AreEqual(DragonFileType.Basic, headerblock.FileType);
-            Assert.AreEqual(false, headerblock.IsAscii);
-            Assert.AreEqual(false, headerblock.IsGapped);
+            Assert.Equal("FOOBAR", headerblock.Filename);
+            Assert.Equal(DragonFileType.Basic, headerblock.FileType);
+            Assert.False(headerblock.IsAscii);
+            Assert.False(headerblock.IsGapped);
 
             block.Validate();            
         }

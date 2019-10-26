@@ -27,68 +27,18 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
     
-    [TestClass()]
     public class DragonDosFileNameTest
     {
 
 
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
-        public void Equals()
+        [Fact]
+        public void Equality()
         {
             var filename1 = new DragonDosFileName("FOOBAR.DAT");
             var filename2 = new DragonDosFileName("FOOFOO.DAT");
@@ -97,13 +47,13 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             var filename5 = filename1;
             var filename6 = filename1.Clone();
 
-            Assert.AreNotEqual(filename1, filename2);
-            Assert.AreEqual(filename1, filename3);
-            Assert.AreNotEqual(filename1, filename4);
-            Assert.AreEqual(filename1, filename5);
-            Assert.AreSame(filename1, filename5);
-            Assert.AreEqual(filename1, filename6);
-            Assert.AreNotSame(filename1, filename6);
+            Assert.NotEqual(filename1, filename2);
+            Assert.Equal(filename1, filename3);
+            Assert.NotEqual(filename1, filename4);
+            Assert.Equal(filename1, filename5);
+            Assert.Same(filename1, filename5);
+            Assert.Equal(filename1, filename6);
+            Assert.NotSame(filename1, filename6);
         }
     }
 }

@@ -27,69 +27,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonTape;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    
-    
-    [TestClass()]
     public class DragonTapeHeaderBlockTest
     {
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-
-        [TestMethod()]
+        [Fact]
         public void CreateDragonTapeHeaderBlock_BasicProgram()
         {
             var filename = "FOOBAR";
@@ -103,24 +49,24 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = new DragonTapeHeaderBlock(filename, filetype, isAscii, isGapped, loadAddress, startAddress);
 
-            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
-            Assert.AreEqual(filename, block.Filename);
-            Assert.AreEqual(filetype, block.FileType);
-            Assert.AreEqual(isAscii, block.IsAscii);
-            Assert.AreEqual(isGapped, block.IsGapped);
-            Assert.AreEqual(loadAddress, block.LoadAddress);
-            Assert.AreEqual(startAddress, block.StartAddress);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(DragonTapeBlockType.Header, block.BlockType);
+            Assert.Equal(filename, block.Filename);
+            Assert.Equal(filetype, block.FileType);
+            Assert.Equal(isAscii, block.IsAscii);
+            Assert.Equal(isGapped, block.IsGapped);
+            Assert.Equal(loadAddress, block.LoadAddress);
+            Assert.Equal(startAddress, block.StartAddress);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i=0; i<data.Length; i++) Assert.AreEqual(payload[i], data[i]);
-            Assert.AreEqual(0x07, block.Checksum);
+            for (int i=0; i<data.Length; i++) Assert.Equal(payload[i], data[i]);
+            Assert.Equal(0x07, block.Checksum);
 
             block.Validate();
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void CreateDragonTapeHeaderBlock_MacineCodeProgram()
         {
             var filename = "BARBAR";
@@ -134,17 +80,17 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
             var block = new DragonTapeHeaderBlock(filename, filetype, isAscii, isGapped, loadAddress, startAddress);
 
-            Assert.AreEqual(DragonTapeBlockType.Header, block.BlockType);
-            Assert.AreEqual(filename, block.Filename);
-            Assert.AreEqual(filetype, block.FileType);
-            Assert.AreEqual(isAscii, block.IsAscii);
-            Assert.AreEqual(isGapped, block.IsGapped);
-            Assert.AreEqual(loadAddress, block.LoadAddress);
-            Assert.AreEqual(startAddress, block.StartAddress);
-            Assert.AreEqual(payload.Length, block.Length);
+            Assert.Equal(DragonTapeBlockType.Header, block.BlockType);
+            Assert.Equal(filename, block.Filename);
+            Assert.Equal(filetype, block.FileType);
+            Assert.Equal(isAscii, block.IsAscii);
+            Assert.Equal(isGapped, block.IsGapped);
+            Assert.Equal(loadAddress, block.LoadAddress);
+            Assert.Equal(startAddress, block.StartAddress);
+            Assert.Equal(payload.Length, block.Length);
             var data = block.Data;
-            for (int i = 0; i < data.Length; i++) Assert.AreEqual(payload[i], data[i]);
-            Assert.AreEqual(0x45, block.Checksum);
+            for (int i = 0; i < data.Length; i++) Assert.Equal(payload[i], data[i]);
+            Assert.Equal(0x45, block.Checksum);
 
             block.Validate();
         }

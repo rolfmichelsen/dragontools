@@ -29,11 +29,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using RolfMichelsen.Dragon.DragonTools.Basic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class Basic
     {
         readonly String[] BasicProgramText = new string[]
@@ -60,28 +59,28 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             };
 
         
-        [TestMethod]
+        [Fact]
         public void DecodeTokenizedBasicToString()
         {
             var basicDecoder = new DragonBasicTokenizer();
             var basicProgram = basicDecoder.Decode(BasicProgramTokens).Split(new char[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
-            Assert.AreEqual(BasicProgramText.Length, basicProgram.Length);
+            Assert.Equal(BasicProgramText.Length, basicProgram.Length);
             for (int i = 0; i < BasicProgramText.Length; i++ )
-                Assert.AreEqual(BasicProgramText[i], basicProgram[i]);
+                Assert.Equal(BasicProgramText[i], basicProgram[i]);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void DecodeTokenizedBasicToBytes()
         {
             var basicProgramExpected = ConvertStringsToBytes(BasicProgramText);
             var basicDecoder = new DragonBasicTokenizer();
             var basicProgram = basicDecoder.DecodeToBytes(BasicProgramTokens);
 
-            Assert.AreEqual(basicProgramExpected.Length, basicProgram.Length);
+            Assert.Equal(basicProgramExpected.Length, basicProgram.Length);
             for (int i = 0; i < basicProgramExpected.Length; i++ )
-                Assert.AreEqual(basicProgramExpected[i], basicProgram[i]);
+                Assert.Equal(basicProgramExpected[i], basicProgram[i]);
         }
 
 

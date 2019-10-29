@@ -26,31 +26,28 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.ComponentModel;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class DmkDiskTest
     {
 
-        [TestMethod]
+        [Fact]
         public void DecodeDmkHeader()
         {
             byte[] encodedHeader = {0x00, 0x28, 0x00, 0x19, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
             var header = new DmkDiskHeader(new MemoryStream(encodedHeader));
 
-            Assert.AreEqual(true, header.IsWriteable);
-            Assert.AreEqual(false, header.IsSingleDensity);
-            Assert.AreEqual(false, header.IgnoreDensity);
-            Assert.AreEqual(40, header.Tracks);
-            Assert.AreEqual(1, header.Heads);
-            Assert.AreEqual(0x1900, header.EncodedTrackLength);
+            Assert.True(header.IsWriteable);
+            Assert.False(header.IsSingleDensity);
+            Assert.False(header.IgnoreDensity);
+            Assert.Equal(40, header.Tracks);
+            Assert.Equal(1, header.Heads);
+            Assert.Equal(0x1900, header.EncodedTrackLength);
         }
     }
 }

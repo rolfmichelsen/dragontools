@@ -26,16 +26,13 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class MemoryDiskTest
     {
         private MemoryDisk disk = null;
@@ -45,24 +42,23 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         private const int Sectors = 2;
         private const int SectorSize = 10;
 
-        [TestInitialize]
-        public void ClassInitialize()
+        public MemoryDiskTest()
         {
             disk = new MemoryDisk(Heads, Tracks, Sectors, SectorSize);
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public void SectorEnumeratorNotInitialized()
         {
             var enumerator = ((IEnumerable<ISector>) disk).GetEnumerator();
             var sector = enumerator.Current;
-            Assert.IsNull(sector);
+            Assert.Null(sector);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void SectorEnumeratorReturnsAllSectors()
         {
             var enumerator = ((IEnumerable<ISector>) disk).GetEnumerator();
@@ -71,7 +67,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             {
                 sectorCount++;
             }
-            Assert.AreEqual(Heads*Tracks*Sectors, sectorCount);
+            Assert.Equal(Heads*Tracks*Sectors, sectorCount);
         }
 
     }

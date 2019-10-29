@@ -26,19 +26,16 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
+using Xunit;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class HfeSectorTest
     {
 
-        [TestMethod]
+        [Fact]
         public void EncodeSectorDataRecord()
         {
             var sectorData = new byte[]
@@ -86,10 +83,10 @@ namespace RolfMichelsen.Dragon.DragonTools.test
             var sector = new HfeSector(0, 1, 1, sectorData, 0, sectorData.Length);
             var encoded = sector.Encode();
 
-            Assert.AreEqual(256, sectorData.Length);
-            Assert.AreEqual(encodedDataRecord.Length, encoded.Length);
+            Assert.Equal(256, sectorData.Length);
+            Assert.Equal(encodedDataRecord.Length, encoded.Length);
             for (var i=0; i<encoded.Length; i++)
-                Assert.AreEqual(encodedDataRecord[i], encoded[i]);
+                Assert.Equal(encodedDataRecord[i], encoded[i]);
         }
     }
 }

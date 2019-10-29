@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DragonDos")]
-[assembly: AssemblyDescription("Tools for accessing DragonDos virtual filesystems.")]
+[assembly: AssemblyDescription("Access virtual DragonDos filesystems.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Rolf Michelsen")]
-[assembly: AssemblyProduct("DragonDos Tools")]
-[assembly: AssemblyCopyright("(C) Copyright 2011-2015 Rolf Michelsen")]
+[assembly: AssemblyProduct("DragonTools")]
+[assembly: AssemblyCopyright("Copyright ©  2011-2019 Rolf Michelsen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ce8a7e42-0b32-4dd4-bf8b-9da70a0d8bab")]
+[assembly: Guid("0634aca3-3fac-4699-9df3-db396ae4ad9b")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,8 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.1.0")]
-[assembly: AssemblyFileVersion("0.5.1.0")]
+[assembly: AssemblyVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.0.0")]

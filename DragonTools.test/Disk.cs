@@ -28,8 +28,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
@@ -37,87 +37,43 @@ namespace RolfMichelsen.Dragon.DragonTools.test
     /// <summary>
     /// Tests all common functionality for the Disk interface.
     /// </summary>
-    [TestClass()]
     public class Disk
     {
-        private TestContext testContextInstance;
 
-        public TestContext TestContext
+        private readonly string testdata = "Testdata\\";
+
+
+        [Theory]
+        [InlineData("80t_18spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 80)]
+        [InlineData("128t_255spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 128)]
+        [InlineData("40t_255spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 40)]
+        [InlineData("80t_18spt_1024bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 80)]
+        [InlineData("40t_18spt_256bps_2s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 2, 40)]
+        [InlineData("40t_18spt_256bps_1s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 1, 40)]
+        [InlineData("80t_18spt_256bps_2s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 2, 80)]
+        [InlineData("80t_18spt_256bps_1s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 1, 80)]
+        public void DiskGeometry(string filename, string classtype, int heads, int tracks)
         {
-            get
+            using (var disk = DiskFactory.OpenDisk(testdata + filename, false))
             {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "DiskGeometry", DataAccessMethod.Sequential)]
-        [DeploymentItem("Disk.xml")]
-        [DeploymentItem("Testdata\\")]
-        [TestMethod()]
-        public void DiskGeometry()
-        {
-            var filename = Convert.ToString(TestContext.DataRow["file"]);
-            var classtype = Convert.ToString(TestContext.DataRow["class"]);
-            var heads = Convert.ToInt32(TestContext.DataRow["heads"]);
-            var tracks = Convert.ToInt32(TestContext.DataRow["tracks"]);
-
-            using (var disk = DiskFactory.OpenDisk(filename, false))
-            {
-                Assert.AreEqual(classtype, disk.GetType().FullName);
-                Assert.AreEqual(heads, disk.Heads);
-                Assert.AreEqual(tracks, disk.Tracks);
+                Assert.Equal(classtype, disk.GetType().FullName);
+                Assert.Equal(heads, disk.Heads);
+                Assert.Equal(tracks, disk.Tracks);
             }
 
         }
 
 
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\Disk.xml", "ReadSector", DataAccessMethod.Sequential)]
-        [DeploymentItem("Disk.xml")]
-        [DeploymentItem("Testdata\\")]
-        [TestMethod()]
-        public void ReadSector()
+        [Theory]
+        [InlineData("dragondos-tunes.vdk", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
+        [InlineData("dragondos-tunes.vdk", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
+        [InlineData("dragondos-tunes.dmk", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
+        [InlineData("dragondos-tunes.dmk", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
+        [InlineData("dragondos-tunes.hfe", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
+        [InlineData("dragondos-tunes.hfe", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
+        public void ReadSector(string filename, int head, int track, int sector, string data)
         {
-            var filename = Convert.ToString(TestContext.DataRow["file"]);
-            var head = Convert.ToInt32(TestContext.DataRow["head"]);
-            var track = Convert.ToInt32(TestContext.DataRow["track"]);
-            var sector = Convert.ToInt32(TestContext.DataRow["sector"]);
-            var expectedSectorDataRaw =
-                Convert.ToString(TestContext.DataRow["data"])
-                       .Split(new char[] {' ', '\t', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+            var expectedSectorDataRaw = data.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             var expectedSectorData = new byte[expectedSectorDataRaw.Length];
             for (int i = 0; i < expectedSectorDataRaw.Length; i++)
@@ -125,11 +81,11 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                 expectedSectorData[i] = Convert.ToByte(expectedSectorDataRaw[i], 16);
             }
 
-            using (var disk = DiskFactory.OpenDisk(filename, false))
+            using (var disk = DiskFactory.OpenDisk(testdata + filename, false))
             {
                 var sectorData = disk.ReadSector(head, track, sector);
                 for (int i = 0; i < expectedSectorData.Length; i++)
-                    Assert.AreEqual(expectedSectorData[i], sectorData[i]);
+                    Assert.Equal(expectedSectorData[i], sectorData[i]);
             }
         }
     }

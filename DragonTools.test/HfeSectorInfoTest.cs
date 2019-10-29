@@ -27,34 +27,31 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
-
+using Xunit;
 
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class HfeSectorInfoTest
     {
-        [TestMethod]
+        [Fact]
         public void CalculateCrc()
         {
             var sectorInfo = new HfeSectorInfo(0, 1, 1, 256);
-            Assert.AreEqual((uint) 0x8cb8, sectorInfo.Crc);
+            Assert.Equal((uint) 0x8cb8, sectorInfo.Crc);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void EncodeSectorIdRecord()
         {
             var sectorInfo = new HfeSectorInfo(0, 1, 1, 256);
             var idRecord = new byte[] { 0xfe, 0x01, 0x00, 0x01, 0x01, 0x8c, 0xb8 };
             var encoded = sectorInfo.Encode();
-            Assert.AreEqual(idRecord.Length, encoded.Length);
+            Assert.Equal(idRecord.Length, encoded.Length);
             for (var i = 0; i < idRecord.Length; i++ )
-                Assert.AreEqual(idRecord[i], encoded[i]);
+                Assert.Equal(idRecord[i], encoded[i]);
         }
     }
 }

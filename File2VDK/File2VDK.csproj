@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RolfMichelsen.Dragon.DragonTools.File2VDK</RootNamespace>
     <AssemblyName>File2VDK</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DragonTools\DragonTools.csproj">
-      <Project>{0aa6dbd3-ab80-4eda-a039-df7f8daf9ff7}</Project>
+      <Project>{808c2653-22c3-4790-a2ff-ff49baf7276d}</Project>
       <Name>DragonTools</Name>
     </ProjectReference>
   </ItemGroup>

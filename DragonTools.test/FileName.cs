@@ -27,45 +27,24 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.Flex;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9;
 using RolfMichelsen.Dragon.DragonTools.IO.Filesystem.RsDos;
+using Xunit;
+
 
 namespace RolfMichelsen.Dragon.DragonTools.test
 {
-    [TestClass]
     public class FileName
     {
-
-        private TestContext testContextInstance;
-
-        public TestContext TestContext
+        [Theory]
+        [InlineData("dragondos", "FOO.BAR", "FOO.BAR", "FOO", "BAR")]
+        [InlineData("flex", "FOO.BAR", "FOO.BAR", "FOO", "BAR")]
+        [InlineData("rsdos", "FOO.BAR", "FOO.BAR", "FOO", "BAR")]
+        public void FileNameAccess(string filesystem, string pathname, string name, string basename, string extension)
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML", "|DataDirectory|\\FileName.xml", "FileNameAccess", DataAccessMethod.Sequential)]
-        [DeploymentItem("FileName.xml")]
-        [TestMethod()]
-        public void FileNameAccess()
-        {
-            var filesystem = Convert.ToString(TestContext.DataRow["filesystem"]);
-            var pathname = Convert.ToString(TestContext.DataRow["pathname"]);
-            var name = Convert.ToString(TestContext.DataRow["name"]);
-            var basename = Convert.ToString(TestContext.DataRow["base"]);
-            var extension = Convert.ToString(TestContext.DataRow["extension"]);
-
             IFileName filename = null;
             switch (filesystem.ToLower())
             {
@@ -82,13 +61,13 @@ namespace RolfMichelsen.Dragon.DragonTools.test
                     filename = RsDos.GetFileName(pathname);
                     break;
                 default:
-                    Assert.Fail("Unknown filesystem " + filesystem);
+                    Assert.True(false, "Unknown filesystem " + filesystem);
                     break;
             }
 
-            Assert.AreEqual(name, filename.Name);
-            Assert.AreEqual(basename, filename.Base);
-            Assert.AreEqual(extension, filename.Extension);
+            Assert.Equal(name, filename.Name);
+            Assert.Equal(basename, filename.Base);
+            Assert.Equal(extension, filename.Extension);
             //TODO Add test for Ascend method
             //TODO Add test for Descend method
         }

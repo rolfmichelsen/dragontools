@@ -64,13 +64,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         }
 
 
-        [Theory]
-        [InlineData("dragondos-tunes.vdk", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
-        [InlineData("dragondos-tunes.vdk", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
-        [InlineData("dragondos-tunes.dmk", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
-        [InlineData("dragondos-tunes.dmk", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
-        [InlineData("dragondos-tunes.hfe", 0, 0, 1, "55 02 0c 00 44 de 3c 00 aa 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55")]
-        [InlineData("dragondos-tunes.hfe", 0, 21, 6, "22 20 bf 20 38 36 30 00 35 12 03 66 85 20 49 24 cb 22 31 22 20 bf 20 39 30 30 00")]
+//        [Theory]
         public void ReadSector(string filename, int head, int track, int sector, string data)
         {
             var expectedSectorDataRaw = data.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

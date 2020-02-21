@@ -1,29 +1,18 @@
 ﻿/*
-Copyright (c) 2011-2015, Rolf Michelsen
-All rights reserved.
+   Copyright 2011-2020 Rolf Michelsen
 
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions are met:
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    * Redistributions of source code must retain the above copyright 
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright 
-      notice, this list of conditions and the following disclaimer in the 
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of Rolf Michelsen nor the 
-      names of other contributors may be used to endorse or promote products 
-      derived from this software without specific prior written permission.
+       http://www.apache.org/licenses/LICENSE-2.0
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY 
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
 */
 
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
@@ -45,18 +34,13 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
         [Theory]
         [InlineData("dragondos-empty.vdk", "dragondos", 175104)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", 10752)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", 10752)]
         [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", 175104)]
         [InlineData("dragondos-empty-2s-40t.dmk", "dragondos", 359424)]
         [InlineData("dragondos-empty-1s-80t.vdk", "dragondos", 359424)]
         [InlineData("dragondos-empty-2s-40t.vdk", "dragondos", 359424)]
         [InlineData("dragondos-empty-2s-80t.vdk", "dragondos", 728064)]
         [InlineData("os9-empty.vdk", "os9", 177664)]
-        [InlineData("os9-system.vdk", "os9", 48896)]
-        [InlineData("os9-system.hfe", "os9", 48896)]
         [InlineData("rsdos-empty.dsk", "rsdos", 156672)]
-        [InlineData("rsdos-demos01.dsk", "rsdos", 59904)]
         public void Free(string diskimage, string filesystem, int freespace)
         {
             using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), testdata + diskimage, false))
@@ -69,15 +53,8 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         [Theory]
         [InlineData("dragondos-empty.vdk", "dragondos", "")]
         [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", "")]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN")]
-        [InlineData("dragondos-tunes.dmk", "dragondos", "NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN")]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "NOTABENE.BIN DRYBONES.BIN DANCER.BIN BARREL.BIN GARDEN.BIN ORGANIST.BIN SWAN.BIN QUARTETT.BIN")]
         [InlineData("os9-empty.vdk", "os9", ". ..")]
-        [InlineData("os9-system.vdk", "os9", ".. . OS9Boot CMDS SYS DEFS startup RUN32 RUN51")]
-        [InlineData("os9-system.hfe", "os9", ".. . OS9Boot CMDS SYS DEFS startup RUN32 RUN51")]
-        [InlineData("flex-system.vdk", "flex", "FLEX.SYS ERRORS.SYS PRINT.SYS SERIAL.SYS APPEND.CMD ASN.CMD BACKUP.CMD BAUD.CMD BUILD.CMD CAT.CMD COPY.CMD CS.CMD DATE.CMD DELETE.CMD DRIVES.CMD EXEC.CMD H.CMD I.CMD JUMP.CMD LINK.CMD LIST.CMD       NEWDISK.CMD O.CMD P.CMD PROT.CMD RENAME.CMD S.CMD SAVE.CMD SAVE.LOW SDC.CMD STEP.CMD TTYSET.CMD VERIFY.CMD VERSION.CMD XOUT.CMD STARTUP.TXT WELCOME.TXT DEMO1.TXT CS.ITA CS.UK CS.FRA CS.GER CS.DEN CS.SWE CS.USA CS.SPA CSTEST.TXT SERSYS.TXT")]
         [InlineData("rsdos-empty.dsk", "rsdos", "")]
-        [InlineData("rsdos-demos01.dsk", "rsdos", "SPACEDEM.BIN DANCER.BAS DANCER.BIN GLASDEMO.BIN LINEDEM2.BIN MPATDEMO.BIN STICKS.BIN 28.BAS 3GOONS.BAS DEMO4CC3.BAS FUNDEMO.BAS GETSMART.BAS RSDEMO.BAS SINX.BAS SPINNERS.BAS")]
         public void ListFiles(string diskimage, string filesystem, string filelist)
         {
             var expectedfiles = filelist.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -95,20 +72,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         [Theory]
         [InlineData("dragondos-empty.vdk", "dragondos", "FOO.BAR", false)]
         [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", "FOO.BAR", false)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "FOO.BAR", false)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "SWAN.BIN", true)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "FOO.BAR", false)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "SWAN.BIN", true)]
         [InlineData("os9-empty.vdk", "os9", "foo.bar", false)]
-        [InlineData("os9-system.vdk", "os9", "foo.bar", false)]
-        [InlineData("os9-system.vdk", "os9", "startup", true)]
-        [InlineData("os9-system.hfe", "os9", "foo.bar", false)]
-        [InlineData("os9-system.hfe", "os9", "startup", true)]
-        [InlineData("flex-system.vdk", "flex", "FLEX.SYS", true)]
-        [InlineData("flex-system.vdk", "flex", "FOO.BAR", false)]
-        [InlineData("rsdos-demos01.dsk", "rsdos", "FOO.BAR", false)]
-        [InlineData("rsdos-demos01.dsk", "rsdos", "SPINNERS.BAS", true)]
-        [InlineData("rsdos-demos01.dsk", "rsdos", "DANCER.BIN", true)]        
         public void FileExists(string diskimage, string filesystem, string file, bool exists)
         {
             using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), testdata + diskimage, false))
@@ -141,11 +105,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         [InlineData("dragondos-empty-1s-80t.vdk", "dragondos", true)]
         [InlineData("dragondos-empty-2s-40t.vdk", "dragondos", true)]
         [InlineData("dragondos-empty-2s-80t.vdk", "dragondos", true)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", true)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", true)]
         [InlineData("os9-empty.vdk", "os9", true)]
-        [InlineData("os9-system.vdk", "os9", true)]
-        [InlineData("rsdos-demos01.dsk", "rsdos", true)]
         public void Check(string diskimage, string filesystem, bool isvalid)
         {
             using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), testdata + diskimage, false))
@@ -163,12 +123,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         }
 
 
-        [Theory]
-        [InlineData("dragondos-tunes.vdk", "dragondos", false, "DRYBONES.BIN", null)]
-        [InlineData("dragondos-tunes.dmk", "dragondos", false, "DRYBONES.BIN", null)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", false, "DRYBONES.BIN", null)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", false, "FOO.BAS", "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException")]
-        [InlineData("dragondos-tunes.vdk", "dragondos", true, "DRYBONES.BIN", "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException")]
+//        [Theory]
         public void DeleteFile(string diskimage, string filesystem, bool writeprotected, string filename, string exception)
         {
             var readwrite = !writeprotected;
@@ -199,13 +154,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         }
 
 
-        [Theory]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "DRYBONES.BIN", "FOO.BAR", false, null)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "FOO.BAS", "FOOBAR.BAS", false, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException")]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "DRYBONES.BIN", "FOO.BAR", true, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FilesystemNotWriteableException")]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "DRYBONES.BIN", "DANCER.BIN", false, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileExistsException")]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "DRYBONES.BIN", "FOOBARFOOBAR.FOO", false, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.InvalidFilenameException")]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "DRYBONES.BIN", "FOO.BAR", false, null)]
+  //      [Theory]
         public void RenameFile(string diskimage, string filesystem, string oldfilename, string newfilename, bool writeprotected, string exception)
         {
             var readwrite = !writeprotected;
@@ -237,15 +186,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         }
 
 
-        [Theory]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "DRYBONES.BIN", 28490, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile", null)]
-        [InlineData("dragondos-tunes.vdk", "dragondos", "FOO.BAR", 0, null, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException")]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "DRYBONES.BIN", 28490, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.DragonDos.DragonDosFile", null)]
-        [InlineData("dragondos-tunes.hfe", "dragondos", "FOO.BAR", 0, null, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException")]
-        [InlineData("os9-system.vdk", "os9", "startup", 38, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9DataFile", null)]
-        [InlineData("os9-system.vdk", "os9", "os9boot", 12172, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9ModuleFile", null)]
-        [InlineData("os9-system.vdk", "os9", "foobar", 0, null, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.FileNotFoundException")]
-        [InlineData("os9-system.vdk", "os9", "sys/errmsg", 3172, "RolfMichelsen.Dragon.DragonTools.IO.Filesystem.OS9.OS9DataFile", null)]
+    //    [Theory]
         public void ReadFile(string diskimage, string filesystem, string filename, int length, string filetype, string exception)
         {
             //TODO Rewrite test to properly test for file type.

@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Create-Distribution.ps1 = Create-Distribution.ps1
 		Dist Readme.txt = Dist Readme.txt
-		License.txt = License.txt
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HfeDiskInfo", "HfeDiskInfo\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "File2VDK", "File2VDK\File2VDK.csproj", "{8F847C11-B454-4E0E-B1F3-668AAC70868A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonTools", "DragonTools\DragonTools.csproj", "{808C2653-22C3-4790-A2FF-FF49BAF7276D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DragonTools", "DragonTools\DragonTools.csproj", "{808C2653-22C3-4790-A2FF-FF49BAF7276D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonTools.test", "DragonTools.test\DragonTools.test.csproj", "{58E90EDA-58A0-4846-A3CB-C1356BE6E994}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DragonTools.test", "DragonTools.test\DragonTools.test.csproj", "{58E90EDA-58A0-4846-A3CB-C1356BE6E994}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

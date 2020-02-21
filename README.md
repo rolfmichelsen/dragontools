@@ -1,7 +1,7 @@
 DRAGON TOOLS
 ============
 
-&copy; Rolf Michelsen, 2011-2015
+&copy; Rolf Michelsen, 2011-2020
 All rights reserved.
 
 
@@ -20,8 +20,8 @@ Download binary distributions from the
 Source is available in the GitHub
 [Dragon Tools repository](http://github.com/rolfmichelsen/dragontools).
 Documentation for the tools and the library can be found in the corresponding
-wiki.  All code and binaries are available under a BSD-style open source
-license.  See the file *License.txt* for licensing terms and conditions.
+wiki.  All code and binaries are available under the Apache 2.0 open source
+license.  See the file *LICENSE* for licensing terms and conditions.
 
 The Microsoft .NET Framework 4.0 or later must be installed to use any of the
 programs in this package.  Use Windows Update to install the .NET 4.0 Framework

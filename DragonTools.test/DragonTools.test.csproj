@@ -100,4 +100,11 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Disk\" />
+    <Folder Include="Filesystem\" />
+    <Folder Include="Basic\" />
+    <Folder Include="Tape\" />
+  </ItemGroup>
+
 </Project>

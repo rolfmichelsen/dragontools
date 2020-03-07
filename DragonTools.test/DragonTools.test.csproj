@@ -33,30 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Testdata\128t_255spt_256bps_2s.dsk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\40t_18spt_256bps_1s.vdk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\40t_18spt_256bps_2s.vdk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\40t_255spt_256bps_2s.dsk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\80t_18spt_1024bps_2s.dsk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\80t_18spt_256bps_1s.vdk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\80t_18spt_256bps_2s.dsk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Testdata\80t_18spt_256bps_2s.vdk">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Testdata\Dancer.cas">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

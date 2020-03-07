@@ -15,12 +15,14 @@
 
 */
 
+using FluentAssertions;
 using System;
-using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 using Xunit;
 
+using RolfMichelsen.Dragon.DragonTools.IO.Disk;
 
-namespace RolfMichelsen.Dragon.DragonTools.test
+
+namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
 {
     
     /// <summary>
@@ -29,47 +31,24 @@ namespace RolfMichelsen.Dragon.DragonTools.test
     public class DiskTest
     {
 
-        private readonly string testdata = "Testdata\\";
+        private readonly string testdata = "Testdata\\Disk\\";
 
 
         [Theory]
-        [InlineData("80t_18spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 80)]
-        [InlineData("128t_255spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 128)]
-        [InlineData("40t_255spt_256bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 40)]
-        [InlineData("80t_18spt_1024bps_2s.dsk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.JvcDisk", 2, 80)]
-        [InlineData("40t_18spt_256bps_2s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 2, 40)]
-        [InlineData("40t_18spt_256bps_1s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 1, 40)]
-        [InlineData("80t_18spt_256bps_2s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 2, 80)]
-        [InlineData("80t_18spt_256bps_1s.vdk", "RolfMichelsen.Dragon.DragonTools.IO.Disk.VdkDisk", 1, 80)]
-        public void DiskGeometry(string filename, string classtype, int heads, int tracks)
+        [InlineData("testdisk-1s-40t.vdk", typeof(VdkDisk), 1, 40)]
+        [InlineData("testdisk-2s-80t.vdk", typeof(VdkDisk), 2, 80)]
+        [InlineData("testdisk-1s-40t.hfe", typeof(HfeDisk), 1, 40)]
+        [InlineData("testdisk-1s-40t.dmk", typeof(DmkDisk), 1, 40)]
+        [InlineData("testdisk-1s-40t.dsk", typeof(JvcDisk), 1, 40)]
+        public void DiskGeometry(string imagename, Type classtype, int heads, int tracks)
         {
-            using (var disk = DiskFactory.OpenDisk(testdata + filename, false))
+            using (var disk = DiskFactory.OpenDisk(testdata + imagename, false))
             {
-                Assert.Equal(classtype, disk.GetType().FullName);
-                Assert.Equal(heads, disk.Heads);
-                Assert.Equal(tracks, disk.Tracks);
+                disk.GetType().Should().Be(classtype);
+                disk.Heads.Should().Be(heads);
+                disk.Tracks.Should().Be(tracks);
             }
-
         }
 
-
-//        [Theory]
-        public void ReadSector(string filename, int head, int track, int sector, string data)
-        {
-            var expectedSectorDataRaw = data.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-            var expectedSectorData = new byte[expectedSectorDataRaw.Length];
-            for (int i = 0; i < expectedSectorDataRaw.Length; i++)
-            {
-                expectedSectorData[i] = Convert.ToByte(expectedSectorDataRaw[i], 16);
-            }
-
-            using (var disk = DiskFactory.OpenDisk(testdata + filename, false))
-            {
-                var sectorData = disk.ReadSector(head, track, sector);
-                for (int i = 0; i < expectedSectorData.Length; i++)
-                    Assert.Equal(expectedSectorData[i], sectorData[i]);
-            }
-        }
     }
 }

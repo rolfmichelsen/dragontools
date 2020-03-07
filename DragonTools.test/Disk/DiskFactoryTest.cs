@@ -31,6 +31,10 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
 
         [Theory]
         [InlineData("testdisk-1s-40t.vdk", typeof(VdkDisk))]
+        [InlineData("testdisk-2s-80t.vdk", typeof(VdkDisk))]
+        [InlineData("testdisk-1s-40t.hfe", typeof(HfeDisk))]
+        [InlineData("testdisk-1s-40t.dmk", typeof(DmkDisk))]
+        [InlineData("testdisk-1s-40t.dsk", typeof(JvcDisk))]
         public void OpenDisk(string imagename, Type imagetype)
         {
             var imagepath = testdata + imagename;
@@ -39,5 +43,17 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
                 disk.GetType().Should().Be(imagetype);
             }
         }
+
+        [Theory]
+        [InlineData("testdisk-1s-40t.xxx")]
+        public void OpenDiskUnknownFiletype(string imagename)
+        {
+            var imagepath = testdata + imagename;
+            using (var disk = DiskFactory.OpenDisk(imagepath, false))
+            {
+                disk.Should().BeNull();
+            }
+        }
+
     }
 }

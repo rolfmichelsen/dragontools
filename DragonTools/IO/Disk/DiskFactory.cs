@@ -34,21 +34,22 @@ namespace RolfMichelsen.Dragon.DragonTools.IO.Disk
         public static IDisk OpenDisk(string filename, bool iswriteable)
         {
             filename = filename.ToLowerInvariant();
+            var access = iswriteable ? FileAccess.ReadWrite : FileAccess.Read;
             if (filename.EndsWith(".vdk"))
             {
-                return VdkDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+                return VdkDisk.Open(new FileStream(filename, FileMode.Open, access), iswriteable);
             }
             if (filename.EndsWith(".dsk"))
             {
-                return JvcDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+                return JvcDisk.Open(new FileStream(filename, FileMode.Open, access), iswriteable);
             }
             if (filename.EndsWith(".hfe"))
             {
-                return HfeDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+                return HfeDisk.Open(new FileStream(filename, FileMode.Open, access), iswriteable);
             }
             if (filename.EndsWith(".dmk"))
             {
-                return DmkDisk.Open(new FileStream(filename, FileMode.Open), iswriteable);
+                return DmkDisk.Open(new FileStream(filename, FileMode.Open, access), iswriteable);
             }
             return null;
         }

@@ -26,7 +26,7 @@ namespace RolfMichelsen.Dragon.DragonTools.test
     /// <summary>
     /// Tests all common functionality for the Disk interface.
     /// </summary>
-    public class Disk
+    public class DiskTest
     {
 
         private readonly string testdata = "Testdata\\";

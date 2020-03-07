@@ -36,6 +36,7 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
 
         [Theory]
         [InlineData("testdisk-1s-40t.vdk", typeof(VdkDisk), 1, 40)]
+        [InlineData("testdisk-2s-40t.vdk", typeof(VdkDisk), 2, 40)]
         [InlineData("testdisk-2s-80t.vdk", typeof(VdkDisk), 2, 80)]
         [InlineData("testdisk-1s-40t.hfe", typeof(HfeDisk), 1, 40)]
         [InlineData("testdisk-1s-40t.dmk", typeof(DmkDisk), 1, 40)]

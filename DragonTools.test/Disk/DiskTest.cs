@@ -55,6 +55,10 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
         [Theory]
         [InlineData("testdisk-1s-40t.vdk")]
         [InlineData("testdisk-2s-40t.vdk")]
+        [InlineData("testdisk-2s-80t.vdk")]
+        [InlineData("testdisk-1s-40t.hfe")]
+        [InlineData("testdisk-1s-40t.dmk")]
+        [InlineData("testdisk-1s-40t.dsk")]
         public void ReadSectors(string imagename)
         {
             using (var disk = DiskFactory.OpenDisk(testdata + imagename, false))

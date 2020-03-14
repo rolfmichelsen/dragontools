@@ -51,5 +51,24 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
             }
         }
 
+
+        [Theory]
+        [InlineData("testdisk-1s-40t.vdk")]
+        [InlineData("testdisk-2s-40t.vdk")]
+        public void ReadSectors(string imagename)
+        {
+            using (var disk = DiskFactory.OpenDisk(testdata + imagename, false))
+            {
+                foreach (var sector in disk)
+                {
+                    int t = sector[0];
+                    int h = sector[1];
+                    int s = sector[2];
+                    t.Should().Be(sector.Track);
+                    h.Should().Be(sector.Head);
+                    s.Should().Be(sector.Sector);
+                }
+            }
+        }
     }
 }

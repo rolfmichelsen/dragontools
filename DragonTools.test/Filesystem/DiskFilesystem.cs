@@ -33,12 +33,6 @@ namespace RolfMichelsen.Dragon.DragonTools.test
         private readonly string testdata = "Testdata\\";
 
         [Theory]
-        [InlineData("dragondos-empty.vdk", "dragondos", 175104)]
-        [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", 175104)]
-        [InlineData("dragondos-empty-2s-40t.dmk", "dragondos", 359424)]
-        [InlineData("dragondos-empty-1s-80t.vdk", "dragondos", 359424)]
-        [InlineData("dragondos-empty-2s-40t.vdk", "dragondos", 359424)]
-        [InlineData("dragondos-empty-2s-80t.vdk", "dragondos", 728064)]
         [InlineData("os9-empty.vdk", "os9", 177664)]
         [InlineData("rsdos-empty.dsk", "rsdos", 156672)]
         public void Free(string diskimage, string filesystem, int freespace)
@@ -51,8 +45,6 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
 
         [Theory]
-        [InlineData("dragondos-empty.vdk", "dragondos", "")]
-        [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", "")]
         [InlineData("os9-empty.vdk", "os9", ". ..")]
         [InlineData("rsdos-empty.dsk", "rsdos", "")]
         public void ListFiles(string diskimage, string filesystem, string filelist)
@@ -70,8 +62,6 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
 
         [Theory]
-        [InlineData("dragondos-empty.vdk", "dragondos", "FOO.BAR", false)]
-        [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", "FOO.BAR", false)]
         [InlineData("os9-empty.vdk", "os9", "foo.bar", false)]
         public void FileExists(string diskimage, string filesystem, string file, bool exists)
         {
@@ -83,12 +73,6 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
 
 
-        [Theory]
-        [InlineData("dragondos-empty.vdk", "dragondos", "FOO.BAR", true)]
-        [InlineData("dragondos-empty.vdk", "dragondos", "FOO-BAR.BAR", true)]
-        [InlineData("dragondos-empty.vdk", "dragondos", "42FOO.BAR", true)]
-        [InlineData("dragondos-empty.vdk", "dragondos", "FOO.BARZ", false)]
-        [InlineData("dragondos-empty.vdk", "dragondos", "FOOBARFOO.BAR", false)]
         public void IsValidFilename(string diskimage, string filesystem, string filename, bool isvalid)
         {
             using (var dos = DiskFilesystemFactory.OpenFilesystem(ParseFilesystemID(filesystem), testdata + diskimage, false))
@@ -100,11 +84,6 @@ namespace RolfMichelsen.Dragon.DragonTools.test
 
 
         [Theory]
-        [InlineData("dragondos-empty.vdk", "dragondos", true)]
-        [InlineData("dragondos-empty-1s-40t.dmk", "dragondos", true)]
-        [InlineData("dragondos-empty-1s-80t.vdk", "dragondos", true)]
-        [InlineData("dragondos-empty-2s-40t.vdk", "dragondos", true)]
-        [InlineData("dragondos-empty-2s-80t.vdk", "dragondos", true)]
         [InlineData("os9-empty.vdk", "os9", true)]
         public void Check(string diskimage, string filesystem, bool isvalid)
         {

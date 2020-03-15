@@ -69,6 +69,18 @@
     <None Update="Testdata\dragondos-tunes.vdk">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Testdata\DragonDos\dragondos-empty-1s-40t.dmk">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Testdata\DragonDos\dragondos-empty-1s-80t.dmk">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Testdata\DragonDos\dragondos-empty-2s-40t.dmk">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Testdata\DragonDos\dragondos-empty-2s-80t.dmk">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Testdata\flex-system.VDK">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -17,6 +17,7 @@
 
 using FluentAssertions;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 using RolfMichelsen.Dragon.DragonTools.IO.Disk;
@@ -51,5 +52,66 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.Disk
             }
         }
 
+
+        [Theory]
+        [InlineData("testdisk-1s-40t.vdk")]
+        [InlineData("testdisk-2s-40t.vdk")]
+        [InlineData("testdisk-2s-80t.vdk")]
+        [InlineData("testdisk-1s-40t.hfe")]
+        [InlineData("testdisk-1s-40t.dmk")]
+        [InlineData("testdisk-1s-40t.dsk")]
+        public void ReadSectors(string imagename)
+        {
+            using (var disk = DiskFactory.OpenDisk(testdata + imagename, false))
+            {
+                foreach (var sector in disk)
+                {
+                    int t = sector[0];
+                    int h = sector[1];
+                    int s = sector[2];
+                    t.Should().Be(sector.Track);
+                    h.Should().Be(sector.Head);
+                    s.Should().Be(sector.Sector);
+                }
+            }
+        }
+
+
+        [Theory]
+        [InlineData("testdisk-1s-40t.vdk", 720)]
+        [InlineData("testdisk-2s-40t.vdk", 1440)]
+        [InlineData("testdisk-2s-80t.vdk", 2880)]
+        [InlineData("testdisk-1s-40t.hfe", 720)]
+        [InlineData("testdisk-1s-40t.dmk", 720)]
+        [InlineData("testdisk-1s-40t.dsk", 720)]
+        public void EnumerateSectors(string imagename, int sectorCount)
+        {
+            var sectors = new Dictionary<DiskPosition, bool>();
+            using (var disk = DiskFactory.OpenDisk(testdata + imagename, false))
+            {
+                foreach (var sector in disk)
+                {
+                    var pos = new DiskPosition(sector.Track, sector.Head, sector.Sector);
+                    sectors.ContainsKey(pos).Should().BeFalse();
+                    sectors[pos] = true;
+                }
+            }
+            sectors.Count.Should().Be(sectorCount);
+        }
+
+
+        private struct DiskPosition
+        {
+            readonly int Track;
+            readonly int Head;
+            readonly int Sector;
+
+            public DiskPosition(int t, int h, int s)
+            {
+                Track = t;
+                Head = h;
+                Sector = s;
+            }
+        }
     }
 }

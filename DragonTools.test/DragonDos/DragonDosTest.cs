@@ -40,5 +40,36 @@ namespace RolfMichelsen.Dragon.DragonTools.Test.DragonDos
                 fs.Free().Should().Be(free);
             }
         }
+
+
+        [Theory]
+        [InlineData("dragondos-empty-1s-40t.dmk")]
+        [InlineData("dragondos-empty-2s-40t.dmk")]
+        [InlineData("dragondos-empty-1s-80t.dmk")]
+        [InlineData("dragondos-empty-2s-80t.dmk")]
+        public void ListFiles(string imagename, params string[] filenames)
+        {
+            using (var fs = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, testdata + imagename, false))
+            {
+                var files = fs.ListFiles();
+                files.Should().HaveCount(filenames.Length);
+                if (filenames.Length > 0) files.Should().Contain(filenames);
+            }
+        }
+
+
+        [Theory]
+        [InlineData("dragondos-empty-1s-40t.dmk")]
+        [InlineData("dragondos-empty-2s-40t.dmk")]
+        [InlineData("dragondos-empty-1s-80t.dmk")]
+        [InlineData("dragondos-empty-2s-80t.dmk")]
+        public void CheckValidFilesystem(string imagename)
+        {
+            using (var fs = DiskFilesystemFactory.OpenFilesystem(DiskFilesystemIdentifier.DragonDos, testdata + imagename, false))
+            {
+                fs.Check();
+            }
+        }
+
     }
 }
